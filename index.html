@@ -39,10 +39,6 @@ button {
   text-align:center;
   font-weight:bold;
 }
-.small {
-  font-size:14px;
-  color:#666;
-}
 </style>
 </head>
 
@@ -56,24 +52,28 @@ button {
 <input id="t5" type="number" placeholder="T5 kills">
 <input id="deads" type="number" placeholder="Deads">
 
-<button id="calcBtn">Calculate</button>
+<button id="btn">Calculate</button>
 
 <div class="result" id="dkpResult">DKP: 0</div>
-<div class="result small" id="percentResult">DKP %: 0%</div>
+<div class="result" id="percentResult">DKP %: 0%</div>
 </div>
 
 <script>
-document.getElementById("calcBtn").addEventListener("click", function() {
-  const p = parseFloat(document.getElementById("power").value) || 0;
-  const t4 = parseFloat(document.getElementById("t4").value) || 0;
-  const t5 = parseFloat(document.getElementById("t5").value) || 0;
-  const d = parseFloat(document.getElementById("deads").value) || 0;
+document.getElementById("btn").addEventListener("click", function () {
 
-  const dkp = (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
-  const percent = p > 0 ? (dkp / p) * 100 : 0;
+  const power = Number(document.getElementById("power").value) || 0;
+  const t4 = Number(document.getElementById("t4").value) || 0;
+  const t5 = Number(document.getElementById("t5").value) || 0;
+  const deads = Number(document.getElementById("deads").value) || 0;
 
-  document.getElementById("dkpResult").innerText = "DKP: " + dkp.toLocaleString();
-  document.getElementById("percentResult").innerText = "DKP %: " + percent.toFixed(2) + "%";
+  const dkp = (power * 0.15) + (t4 * 2) + (t5 * 5) + (deads * 10);
+  const percent = power > 0 ? (dkp / power) * 100 : 0;
+
+  document.getElementById("dkpResult").innerText =
+    "DKP: " + dkp.toLocaleString();
+
+  document.getElementById("percentResult").innerText =
+    "DKP %: " + percent.toFixed(2) + "%";
 });
 </script>
 
