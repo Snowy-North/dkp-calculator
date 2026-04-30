@@ -167,10 +167,10 @@ function clearInputs() {
 }
 
 function tier(dkp) {
-  if (dkp >= 100000) return "🔥 Whale";
-  if (dkp >= 50000) return "Elite";
-  if (dkp >= 20000) return "Veteran";
-  return "Rookie";
+  if (dkp % >= 50) return "🔥 Whale";
+  if (dkp % >= 30) return "Soldier";
+  if (dkp % >= 15) return "Rookie";
+  return "Noob";
 }
 
 function render() {
