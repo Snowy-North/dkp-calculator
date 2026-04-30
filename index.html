@@ -109,7 +109,7 @@ function updateLive() {
   const t5 = Number(document.getElementById("t5").value) || 0;
   const d = Number(document.getElementById("deads").value) || 0;
 
-  const dkp = calcDKP(t4, t5, d);
+  const dkp = calcDKP(p, t4, t5, d);
   const percent = p > 0 ? (dkp / p) * 100 : 0;
 
   document.getElementById("live").innerText =
