@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Guild DKP System</title>
+<title>DKP Tracker</title>
 
 <style>
 body {
@@ -15,7 +15,7 @@ body {
 }
 
 .container {
-  max-width:500px;
+  max-width:450px;
   margin:auto;
   background:white;
   padding:20px;
@@ -29,22 +29,14 @@ input {
   font-size:16px;
 }
 
-button {
-  width:100%;
-  padding:12px;
-  margin-top:6px;
-  background:#007aff;
-  color:white;
-  border:none;
-  border-radius:10px;
-}
-
 .player {
   border-top:1px solid #eee;
   padding:10px 0;
 }
 
-.rank { font-weight:bold; }
+.rank {
+  font-weight:bold;
+}
 
 .gold { color:#d4af37; }
 .silver { color:#9aa0a6; }
@@ -55,20 +47,13 @@ button {
   color:#666;
 }
 
-.actions button {
-  width:auto;
-  margin-right:5px;
-  padding:6px 10px;
-  font-size:12px;
-}
-
-.live {
+.liveBox {
   margin-top:10px;
   padding:10px;
-  background:#eef3ff;
+  background:#f1f5ff;
   border-radius:10px;
-  text-align:center;
   font-weight:bold;
+  text-align:center;
 }
 </style>
 </head>
@@ -76,7 +61,7 @@ button {
 <body>
 
 <div class="container">
-<h2>🏰 Guild DKP System</h2>
+<h2>⚡ DKP Tracker</h2>
 
 <input id="name" placeholder="Player name">
 <input id="power" type="number" placeholder="Power">
@@ -84,141 +69,91 @@ button {
 <input id="t5" type="number" placeholder="T5 kills">
 <input id="deads" type="number" placeholder="Deads">
 
-<div class="live" id="live">DKP: 0 | %: 0%</div>
-
-<button onclick="savePlayer()">Save / Update Player</button>
+<div class="liveBox" id="livePreview">
+DKP: 0 | DKP %: 0%
+</div>
 
 <div id="list"></div>
 </div>
 
 <script>
 
-let editIndex = -1;
-
 function calcDKP(p, t4, t5, d) {
   return (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
 }
 
-function tier(dkp) {
-  if (dkp >= 100000) return "🔥 Whale";
-  if (dkp >= 50000) return "Elite";
-  if (dkp >= 20000) return "Veteran";
-  return "Rookie";
-}
-
-// LIVE UPDATE
+// 🔥 LIVE UPDATE WHILE TYPING
 function updateLive() {
-  const p = +power.value || 0;
-  const t4 = +t4.value || 0;
-  const t5 = +t5.value || 0;
-  const d = +deads.value || 0;
+  const p = Number(document.getElementById("power").value) || 0;
+  const t4 = Number(document.getElementById("t4").value) || 0;
+  const t5 = Number(document.getElementById("t5").value) || 0;
+  const d = Number(document.getElementById("deads").value) || 0;
 
   const dkp = calcDKP(p, t4, t5, d);
-  const percent = p ? (dkp / p) * 100 : 0;
+  const percent = p > 0 ? (dkp / p) * 100 : 0;
 
-  live.innerText = `DKP: ${dkp.toLocaleString()} | %: ${percent.toFixed(2)}%`;
+  document.getElementById("livePreview").innerText =
+    `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
 }
 
-["power","t4","t5","deads"].forEach(id => {
-  document.getElementById(id).addEventListener("input", updateLive);
-});
-
+// Save player (optional tap by clicking live box)
 function savePlayer() {
   const name = document.getElementById("name").value.trim();
-  const p = +power.value || 0;
-  const t4v = +t4.value || 0;
-  const t5v = +t5.value || 0;
-  const dv = +deads.value || 0;
+  const p = Number(document.getElementById("power").value) || 0;
+  const t4 = Number(document.getElementById("t4").value) || 0;
+  const t5 = Number(document.getElementById("t5").value) || 0;
+  const d = Number(document.getElementById("deads").value) || 0;
 
-  if (!name) return alert("Enter name");
+  if (!name) return alert("Enter player name");
 
-  const dkp = calcDKP(p, t4v, t5v, dv);
+  const dkp = calcDKP(p, t4, t5, d);
 
-  let players = JSON.parse(localStorage.getItem("guild") || "[]");
+  let players = JSON.parse(localStorage.getItem("players") || "[]");
 
-  const data = {
-    name,
-    power: p,
-    t4: t4v,
-    t5: t5v,
-    deads: dv,
-    dkp
-  };
+  const index = players.findIndex(x => x.name === name);
 
-  if (editIndex >= 0) {
-    players[editIndex] = data;
-    editIndex = -1;
-  } else {
-    players.push(data);
-  }
+  const data = { name, power: p, t4, t5, deads: d, dkp };
 
-  localStorage.setItem("guild", JSON.stringify(players));
+  if (index >= 0) players[index] = data;
+  else players.push(data);
 
-  clearInputs();
+  localStorage.setItem("players", JSON.stringify(players));
+
   render();
 }
 
-function clearInputs() {
-  name.value = "";
-  power.value = "";
-  t4.value = "";
-  t5.value = "";
-  deads.value = "";
-  updateLive();
-}
-
-function editPlayer(i) {
-  let players = JSON.parse(localStorage.getItem("guild") || "[]");
-  const p = players[i];
-
-  name.value = p.name;
-  power.value = p.power;
-  t4.value = p.t4;
-  t5.value = p.t5;
-  deads.value = p.deads;
-
-  editIndex = i;
-  updateLive();
-}
-
-function deletePlayer(i) {
-  let players = JSON.parse(localStorage.getItem("guild") || "[]");
-  players.splice(i, 1);
-  localStorage.setItem("guild", JSON.stringify(players));
-  render();
-}
-
+// leaderboard
 function render() {
-  let players = JSON.parse(localStorage.getItem("guild") || "[]");
+  let players = JSON.parse(localStorage.getItem("players") || "[]");
 
   players.sort((a,b) => b.dkp - a.dkp);
 
-  let html = "<h3>🏆 Guild Leaderboard</h3>";
+  let html = "<h3>🏆 Leaderboard</h3>";
 
   players.forEach((p, i) => {
-    let rank = i + 1;
-    let medal =
-      rank === 1 ? "🥇" :
-      rank === 2 ? "🥈" :
-      rank === 3 ? "🥉" :
-      "#" + rank;
+    const rank = i + 1;
+
+    let medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "#" + rank;
 
     html += `
       <div class="player">
-        <div class="rank">${medal} ${p.name} (${tier(p.dkp)})</div>
+        <div class="rank">${medal} ${p.name}</div>
         <div>DKP: ${p.dkp.toLocaleString()}</div>
         <div class="small">Power: ${p.power}</div>
-
-        <div class="actions">
-          <button onclick="editPlayer(${i})">Edit</button>
-          <button onclick="deletePlayer(${i})">Delete</button>
-        </div>
       </div>
     `;
   });
 
   document.getElementById("list").innerHTML = html;
 }
+
+// 🔥 attach live updates
+["power","t4","t5","deads"].forEach(id => {
+  document.getElementById(id).addEventListener("input", updateLive);
+});
+
+// optional save on name field change (or you can add a button later)
+document.getElementById("name").addEventListener("input", updateLive);
 
 render();
 
