@@ -110,7 +110,7 @@ function updateLive() {
   const d = Number(document.getElementById("deads").value) || 0;
 
   const dkp = calcDKP(t4, t5, d);
-  const percent = p > 0 ? (dkp / p * 0.60) * 100 : 0;
+  const percent = p > 0 ? (dkp / p) * 100 : 0;
 
   document.getElementById("live").innerText =
     `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
@@ -190,7 +190,7 @@ function render() {
       "#" + rank;
 
     const percent = p.startingPower > 0
-      ? (p.dkp / p.startingPower * 0.60) * 100
+      ? (p.dkp / p.startingPower) * 100
       : 0;
 
     html += `
