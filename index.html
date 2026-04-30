@@ -1,94 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Guild DKP System</title>
-
-<style>
-body {
-  font-family: -apple-system, Arial;
-  background:#f4f6f8;
-  margin:0;
-  padding:20px;
-}
-
-.container {
-  max-width:500px;
-  margin:auto;
-  background:white;
-  padding:20px;
-  border-radius:16px;
-}
-
-input {
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  font-size:16px;
-}
-
-button {
-  width:100%;
-  padding:12px;
-  margin-top:6px;
-  background:#007aff;
-  color:white;
-  border:none;
-  border-radius:10px;
-}
-
-.player {
-  border-top:1px solid #eee;
-  padding:10px 0;
-}
-
-.rank {
-  font-weight:bold;
-}
-
-.small {
-  font-size:13px;
-  color:#666;
-}
-
-.live {
-  margin-top:10px;
-  padding:10px;
-  background:#eef3ff;
-  border-radius:10px;
-  text-align:center;
-  font-weight:bold;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-<h2>🏆 Guild DKP System</h2>
-
-<input id="name" placeholder="Player name">
-<input id="startingPower" type="number" placeholder="Starting Power">
-<input id="t4" type="number" placeholder="T4 kills">
-<input id="t5" type="number" placeholder="T5 kills">
-<input id="deads" type="number" placeholder="Deads">
-
-<div class="live" id="live">
-DKP: 0 | DKP %: 0%
-</div>
-
-<button onclick="savePlayer()">Save Player</button>
-
-<div id="list"></div>
-</div>
-
 <script>
 
-// DKP formula
 function calcDKP(p, t4, t5, d) {
   return (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
+}
+
+// STORAGE SAFETY CHECK
+function canUseStorage() {
+  try {
+    const test = "__test__";
+    localStorage.setItem(test, "1");
+    localStorage.removeItem(test);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 // LIVE UPDATE
@@ -109,8 +34,14 @@ function updateLive() {
   document.getElementById(id).addEventListener("input", updateLive);
 });
 
-// SAVE PLAYER (starting power only once)
+// SAVE
 function savePlayer() {
+
+  if (!canUseStorage()) {
+    alert("Storage is blocked (likely Private Mode). Turn off private browsing.");
+    return;
+  }
+
   const name = document.getElementById("name").value.trim();
   const newPower = Number(document.getElementById("startingPower").value) || 0;
   const t4 = Number(document.getElementById("t4").value) || 0;
@@ -126,32 +57,25 @@ function savePlayer() {
   let startingPower;
 
   if (index >= 0) {
-    // keep original power
     startingPower = players[index].startingPower;
   } else {
-    // new player must have power
     if (!newPower) return alert("Enter starting power for new player");
     startingPower = newPower;
   }
 
   const dkp = calcDKP(startingPower, t4, t5, d);
 
-  const data = {
-    name,
-    startingPower,
-    t4,
-    t5,
-    deads: d,
-    dkp
-  };
+  const data = { name, startingPower, t4, t5, deads: d, dkp };
 
-  if (index >= 0) {
-    players[index] = data;
-  } else {
-    players.push(data);
+  if (index >= 0) players[index] = data;
+  else players.push(data);
+
+  try {
+    localStorage.setItem("guild", JSON.stringify(players));
+  } catch (e) {
+    alert("Failed to save data. Storage may be full or blocked.");
+    return;
   }
-
-  localStorage.setItem("guild", JSON.stringify(players));
 
   clearInputs();
   render();
@@ -166,7 +90,6 @@ function clearInputs() {
   updateLive();
 }
 
-// leaderboard tiers
 function tier(dkp) {
   if (dkp >= 100000) return "🔥 Whale";
   if (dkp >= 50000) return "Elite";
@@ -174,7 +97,6 @@ function tier(dkp) {
   return "Rookie";
 }
 
-// RENDER LEADERBOARD
 function render() {
   let players = JSON.parse(localStorage.getItem("guild") || "[]");
 
@@ -183,6 +105,7 @@ function render() {
   let html = "<h3>🏆 Leaderboard</h3>";
 
   players.forEach((p, i) => {
+
     const rank = i + 1;
 
     const medal =
@@ -208,10 +131,6 @@ function render() {
   document.getElementById("list").innerHTML = html;
 }
 
-// initial load
 render();
 
 </script>
-
-</body>
-</html>
