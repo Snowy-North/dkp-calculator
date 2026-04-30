@@ -190,7 +190,7 @@ function render() {
       "#" + rank;
 
     const percent = p.startingPower > 0
-      ? (p.dkp / p.startingPower) * 100
+      ? (p.dkp / p.startingPower * 0.25) * 100
       : 0;
 
     html += `
