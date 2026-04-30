@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="DKP Calc">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>DKP Calculator</title>
 
@@ -59,25 +56,25 @@ button {
 <input id="t5" type="number" placeholder="T5 kills">
 <input id="deads" type="number" placeholder="Deads">
 
-<button onclick="calc()">Calculate</button>
+<button id="calcBtn">Calculate</button>
 
 <div class="result" id="dkpResult">DKP: 0</div>
 <div class="result small" id="percentResult">DKP %: 0%</div>
 </div>
 
 <script>
-function calc() {
-  let p = +power.value || 0;
-  let t4 = +t4.value || 0;
-  let t5 = +t5.value || 0;
-  let d = +deads.value || 0;
+document.getElementById("calcBtn").addEventListener("click", function() {
+  const p = parseFloat(document.getElementById("power").value) || 0;
+  const t4 = parseFloat(document.getElementById("t4").value) || 0;
+  const t5 = parseFloat(document.getElementById("t5").value) || 0;
+  const d = parseFloat(document.getElementById("deads").value) || 0;
 
-  let dkp = (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
-  let percent = p ? (dkp / p) * 100 : 0;
+  const dkp = (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
+  const percent = p > 0 ? (dkp / p) * 100 : 0;
 
-  dkpResult.innerText = "DKP: " + dkp.toLocaleString();
-  percentResult.innerText = "DKP %: " + percent.toFixed(2) + "%";
-}
+  document.getElementById("dkpResult").innerText = "DKP: " + dkp.toLocaleString();
+  document.getElementById("percentResult").innerText = "DKP %: " + percent.toFixed(2) + "%";
+});
 </script>
 
 </body>
