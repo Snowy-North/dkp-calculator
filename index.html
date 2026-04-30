@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DKP Calculator</title>
+<title>DKP Leaderboard</title>
 
 <style>
 body {
@@ -13,31 +13,48 @@ body {
   margin:0;
   padding:20px;
 }
+
 .container {
-  max-width:420px;
+  max-width:450px;
   margin:auto;
   background:white;
   padding:20px;
   border-radius:16px;
 }
+
 input {
   width:100%;
-  padding:14px;
-  margin:8px 0;
+  padding:12px;
+  margin:6px 0;
   font-size:16px;
 }
+
 button {
   width:100%;
-  padding:14px;
+  padding:12px;
+  margin-top:8px;
   background:#007aff;
   color:white;
   border:none;
   border-radius:10px;
 }
-.result {
-  margin-top:15px;
-  text-align:center;
+
+.player {
+  border-top:1px solid #eee;
+  padding:10px 0;
+}
+
+.rank {
   font-weight:bold;
+}
+
+.gold { color:#d4af37; }
+.silver { color:#9aa0a6; }
+.bronze { color:#cd7f32; }
+
+.small {
+  font-size:13px;
+  color:#666;
 }
 </style>
 </head>
@@ -45,36 +62,104 @@ button {
 <body>
 
 <div class="container">
-<h2>DKP Calculator</h2>
+<h2>🏆 DKP Leaderboard</h2>
 
+<input id="name" placeholder="Player name">
 <input id="power" type="number" placeholder="Power">
 <input id="t4" type="number" placeholder="T4 kills">
 <input id="t5" type="number" placeholder="T5 kills">
 <input id="deads" type="number" placeholder="Deads">
 
-<button id="btn">Calculate</button>
+<button onclick="savePlayer()">Save / Update Player</button>
 
-<div class="result" id="dkpResult">DKP: 0</div>
-<div class="result" id="percentResult">DKP %: 0%</div>
+<div id="list"></div>
 </div>
 
 <script>
-document.getElementById("btn").addEventListener("click", function () {
 
-  const power = Number(document.getElementById("power").value) || 0;
-  const t4 = Number(document.getElementById("t4").value) || 0;
-  const t5 = Number(document.getElementById("t5").value) || 0;
-  const deads = Number(document.getElementById("deads").value) || 0;
+function calcDKP(p, t4, t5, d) {
+  return (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
+}
 
-  const dkp = (power * 0.15) + (t4 * 2) + (t5 * 5) + (deads * 10);
-  const percent = power > 0 ? (dkp / power) * 100 : 0;
+function savePlayer() {
+  const name = document.getElementById("name").value.trim();
+  const power = +document.getElementById("power").value || 0;
+  const t4 = +document.getElementById("t4").value || 0;
+  const t5 = +document.getElementById("t5").value || 0;
+  const deads = +document.getElementById("deads").value || 0;
 
-  document.getElementById("dkpResult").innerText =
-    "DKP: " + dkp.toLocaleString();
+  if (!name) return alert("Enter player name");
 
-  document.getElementById("percentResult").innerText =
-    "DKP %: " + percent.toFixed(2) + "%";
-});
+  const dkp = calcDKP(power, t4, t5, deads);
+
+  let players = JSON.parse(localStorage.getItem("players") || "[]");
+
+  const index = players.findIndex(p => p.name === name);
+
+  const playerData = { name, power, t4, t5, deads, dkp };
+
+  if (index >= 0) {
+    players[index] = playerData;
+  } else {
+    players.push(playerData);
+  }
+
+  localStorage.setItem("players", JSON.stringify(players));
+
+  render();
+  clearInputs();
+}
+
+function clearInputs() {
+  name.value = "";
+  power.value = "";
+  t4.value = "";
+  t5.value = "";
+  deads.value = "";
+}
+
+function getMedal(rank) {
+  if (rank === 1) return "🥇";
+  if (rank === 2) return "🥈";
+  if (rank === 3) return "🥉";
+  return "#" + rank;
+}
+
+function getColor(rank) {
+  if (rank === 1) return "gold";
+  if (rank === 2) return "silver";
+  if (rank === 3) return "bronze";
+  return "";
+}
+
+function render() {
+  let players = JSON.parse(localStorage.getItem("players") || "[]");
+
+  players.sort((a, b) => b.dkp - a.dkp);
+
+  let html = "<h3>Leaderboard</h3>";
+
+  players.forEach((p, i) => {
+    let rank = i + 1;
+    let medal = getMedal(rank);
+    let color = getColor(rank);
+
+    html += `
+      <div class="player">
+        <div class="rank ${color}">
+          ${medal} ${p.name}
+        </div>
+        <div>DKP: ${p.dkp.toLocaleString()}</div>
+        <div class="small">Power: ${p.power}</div>
+      </div>
+    `;
+  });
+
+  document.getElementById("list").innerHTML = html;
+}
+
+render();
+
 </script>
 
 </body>
