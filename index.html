@@ -88,34 +88,24 @@ DKP: 0 | DKP %: 0%
 
 let players = [];
 
-// ---------- STORAGE SAFETY ----------
-function canUseStorage() {
-  try {
-    const test = "__test__";
-    localStorage.setItem(test, "1");
-    localStorage.removeItem(test);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
+// ---------- SAFE LOAD ----------
 function loadData() {
-  if (!canUseStorage()) {
-    alert("⚠️ Local storage blocked (likely Private Mode). Data will not save.");
-    return;
+  try {
+    const raw = localStorage.getItem("guild");
+    players = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(players)) players = [];
+  } catch (e) {
+    console.log("Load error:", e);
+    players = [];
   }
-
-  const data = localStorage.getItem("guild");
-  if (data) players = JSON.parse(data);
 }
 
-// ---------- DKP CALC ----------
+// ---------- DKP ----------
 function calcDKP(p, t4, t5, d) {
   return (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
 }
 
-// ---------- LIVE PREVIEW ----------
+// ---------- LIVE UPDATE ----------
 function updateLive() {
   const p = Number(document.getElementById("startingPower").value) || 0;
   const t4 = Number(document.getElementById("t4").value) || 0;
@@ -133,12 +123,8 @@ function updateLive() {
   document.getElementById(id).addEventListener("input", updateLive);
 });
 
-// ---------- SAVE ----------
+// ---------- SAVE / OVERWRITE ----------
 function savePlayer() {
-  if (!canUseStorage()) {
-    alert("Storage blocked. Cannot save data.");
-    return;
-  }
 
   const name = document.getElementById("name").value.trim();
   const p = Number(document.getElementById("startingPower").value) || 0;
@@ -170,14 +156,16 @@ function savePlayer() {
     dkp
   };
 
-  if (index >= 0) players[index] = data;
-  else players.push(data);
+  if (index >= 0) {
+    players[index] = data;
+  } else {
+    players.push(data);
+  }
 
   try {
     localStorage.setItem("guild", JSON.stringify(players));
   } catch (e) {
-    alert("Failed to save (storage full or blocked).");
-    return;
+    alert("Storage failed (private mode or full storage).");
   }
 
   clearInputs();
@@ -204,9 +192,14 @@ function tier(dkp) {
 
 // ---------- RENDER ----------
 function render() {
+
   players.sort((a,b) => b.dkp - a.dkp);
 
   let html = "<h3>🏆 Leaderboard</h3>";
+
+  if (players.length === 0) {
+    html += "<p>No players yet</p>";
+  }
 
   players.forEach((p, i) => {
 
