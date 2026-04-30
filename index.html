@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DKP Tracker</title>
+<title>Guild DKP System</title>
 
 <style>
 body {
@@ -15,7 +15,7 @@ body {
 }
 
 .container {
-  max-width:450px;
+  max-width:500px;
   margin:auto;
   background:white;
   padding:20px;
@@ -27,6 +27,16 @@ input {
   padding:12px;
   margin:6px 0;
   font-size:16px;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  background:#007aff;
+  color:white;
+  border:none;
+  border-radius:10px;
 }
 
 .player {
@@ -47,13 +57,13 @@ input {
   color:#666;
 }
 
-.liveBox {
+.live {
   margin-top:10px;
   padding:10px;
-  background:#f1f5ff;
+  background:#eef3ff;
   border-radius:10px;
-  font-weight:bold;
   text-align:center;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -61,7 +71,7 @@ input {
 <body>
 
 <div class="container">
-<h2>⚡ DKP Tracker</h2>
+<h2>🏆 Guild DKP System</h2>
 
 <input id="name" placeholder="Player name">
 <input id="power" type="number" placeholder="Power">
@@ -69,9 +79,11 @@ input {
 <input id="t5" type="number" placeholder="T5 kills">
 <input id="deads" type="number" placeholder="Deads">
 
-<div class="liveBox" id="livePreview">
+<div class="live" id="live">
 DKP: 0 | DKP %: 0%
 </div>
+
+<button onclick="savePlayer()">Save Player</button>
 
 <div id="list"></div>
 </div>
@@ -82,7 +94,7 @@ function calcDKP(p, t4, t5, d) {
   return (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
 }
 
-// 🔥 LIVE UPDATE WHILE TYPING
+// LIVE UPDATE
 function updateLive() {
   const p = Number(document.getElementById("power").value) || 0;
   const t4 = Number(document.getElementById("t4").value) || 0;
@@ -92,11 +104,15 @@ function updateLive() {
   const dkp = calcDKP(p, t4, t5, d);
   const percent = p > 0 ? (dkp / p) * 100 : 0;
 
-  document.getElementById("livePreview").innerText =
+  document.getElementById("live").innerText =
     `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
 }
 
-// Save player (optional tap by clicking live box)
+["power","t4","t5","deads"].forEach(id => {
+  document.getElementById(id).addEventListener("input", updateLive);
+});
+
+// SAVE OR OVERWRITE BY NAME
 function savePlayer() {
   const name = document.getElementById("name").value.trim();
   const p = Number(document.getElementById("power").value) || 0;
@@ -108,23 +124,50 @@ function savePlayer() {
 
   const dkp = calcDKP(p, t4, t5, d);
 
-  let players = JSON.parse(localStorage.getItem("players") || "[]");
+  let players = JSON.parse(localStorage.getItem("guild") || "[]");
 
-  const index = players.findIndex(x => x.name === name);
+  // 🔥 OVERWRITE if name already exists
+  const index = players.findIndex(x => x.name.toLowerCase() === name.toLowerCase());
 
-  const data = { name, power: p, t4, t5, deads: d, dkp };
+  const data = {
+    name,
+    power: p,
+    t4,
+    t5,
+    deads: d,
+    dkp
+  };
 
-  if (index >= 0) players[index] = data;
-  else players.push(data);
+  if (index >= 0) {
+    players[index] = data;
+  } else {
+    players.push(data);
+  }
 
-  localStorage.setItem("players", JSON.stringify(players));
+  localStorage.setItem("guild", JSON.stringify(players));
 
+  clearInputs();
   render();
 }
 
-// leaderboard
+function clearInputs() {
+  document.getElementById("name").value = "";
+  document.getElementById("power").value = "";
+  document.getElementById("t4").value = "";
+  document.getElementById("t5").value = "";
+  document.getElementById("deads").value = "";
+  updateLive();
+}
+
+function tier(dkp) {
+  if (dkp >= 100000) return "🔥 Whale";
+  if (dkp >= 50000) return "Elite";
+  if (dkp >= 20000) return "Veteran";
+  return "Rookie";
+}
+
 function render() {
-  let players = JSON.parse(localStorage.getItem("players") || "[]");
+  let players = JSON.parse(localStorage.getItem("guild") || "[]");
 
   players.sort((a,b) => b.dkp - a.dkp);
 
@@ -133,12 +176,19 @@ function render() {
   players.forEach((p, i) => {
     const rank = i + 1;
 
-    let medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "#" + rank;
+    const medal =
+      rank === 1 ? "🥇" :
+      rank === 2 ? "🥈" :
+      rank === 3 ? "🥉" :
+      "#" + rank;
+
+    const percent = p.power > 0 ? (p.dkp / p.power) * 100 : 0;
 
     html += `
       <div class="player">
-        <div class="rank">${medal} ${p.name}</div>
+        <div class="rank">${medal} ${p.name} (${tier(p.dkp)})</div>
         <div>DKP: ${p.dkp.toLocaleString()}</div>
+        <div>DKP %: ${percent.toFixed(2)}%</div>
         <div class="small">Power: ${p.power}</div>
       </div>
     `;
@@ -146,14 +196,6 @@ function render() {
 
   document.getElementById("list").innerHTML = html;
 }
-
-// 🔥 attach live updates
-["power","t4","t5","deads"].forEach(id => {
-  document.getElementById(id).addEventListener("input", updateLive);
-});
-
-// optional save on name field change (or you can add a button later)
-document.getElementById("name").addEventListener("input", updateLive);
 
 render();
 
