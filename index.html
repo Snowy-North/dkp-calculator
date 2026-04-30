@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DKP Calc">
+
+<title>DKP Calculator</title>
+
+<style>
+body {
+  font-family: -apple-system, Arial;
+  background:#f4f6f8;
+  margin:0;
+  padding:20px;
+}
+.container {
+  max-width:420px;
+  margin:auto;
+  background:white;
+  padding:20px;
+  border-radius:16px;
+}
+input {
+  width:100%;
+  padding:14px;
+  margin:8px 0;
+  font-size:16px;
+}
+button {
+  width:100%;
+  padding:14px;
+  background:#007aff;
+  color:white;
+  border:none;
+  border-radius:10px;
+}
+.result {
+  margin-top:15px;
+  text-align:center;
+  font-weight:bold;
+}
+.small {
+  font-size:14px;
+  color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>DKP Calculator</h2>
+
+<input id="power" type="number" placeholder="Power">
+<input id="t4" type="number" placeholder="T4 kills">
+<input id="t5" type="number" placeholder="T5 kills">
+<input id="deads" type="number" placeholder="Deads">
+
+<button onclick="calc()">Calculate</button>
+
+<div class="result" id="dkpResult">DKP: 0</div>
+<div class="result small" id="percentResult">DKP %: 0%</div>
+</div>
+
+<script>
+function calc() {
+  let p = +power.value || 0;
+  let t4 = +t4.value || 0;
+  let t5 = +t5.value || 0;
+  let d = +deads.value || 0;
+
+  let dkp = (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
+  let percent = p ? (dkp / p) * 100 : 0;
+
+  dkpResult.innerText = "DKP: " + dkp.toLocaleString();
+  percentResult.innerText = "DKP %: " + percent.toFixed(2) + "%";
+}
+</script>
+
+</body>
+</html>
