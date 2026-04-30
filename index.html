@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DKP Leaderboard</title>
+<title>Guild DKP System</title>
 
 <style>
 body {
@@ -15,7 +15,7 @@ body {
 }
 
 .container {
-  max-width:450px;
+  max-width:500px;
   margin:auto;
   background:white;
   padding:20px;
@@ -32,7 +32,7 @@ input {
 button {
   width:100%;
   padding:12px;
-  margin-top:8px;
+  margin-top:6px;
   background:#007aff;
   color:white;
   border:none;
@@ -54,13 +54,29 @@ button {
   font-size:13px;
   color:#666;
 }
+
+.actions button {
+  width:auto;
+  margin-right:5px;
+  padding:6px 10px;
+  font-size:12px;
+}
+
+.live {
+  margin-top:10px;
+  padding:10px;
+  background:#eef3ff;
+  border-radius:10px;
+  text-align:center;
+  font-weight:bold;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-<h2>🏆 DKP Leaderboard</h2>
+<h2>🏰 Guild DKP System</h2>
 
 <input id="name" placeholder="Player name">
 <input id="power" type="number" placeholder="Power">
@@ -68,95 +84,135 @@ button {
 <input id="t5" type="number" placeholder="T5 kills">
 <input id="deads" type="number" placeholder="Deads">
 
-<button id="saveBtn">Save / Update Player</button>
+<div class="live" id="live">DKP: 0 | %: 0%</div>
+
+<button onclick="savePlayer()">Save / Update Player</button>
 
 <div id="list"></div>
 </div>
 
 <script>
 
+let editIndex = -1;
+
 function calcDKP(p, t4, t5, d) {
   return (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
 }
 
+function tier(dkp) {
+  if (dkp >= 100000) return "🔥 Whale";
+  if (dkp >= 50000) return "Elite";
+  if (dkp >= 20000) return "Veteran";
+  return "Rookie";
+}
+
+// LIVE UPDATE
+function updateLive() {
+  const p = +power.value || 0;
+  const t4 = +t4.value || 0;
+  const t5 = +t5.value || 0;
+  const d = +deads.value || 0;
+
+  const dkp = calcDKP(p, t4, t5, d);
+  const percent = p ? (dkp / p) * 100 : 0;
+
+  live.innerText = `DKP: ${dkp.toLocaleString()} | %: ${percent.toFixed(2)}%`;
+}
+
+["power","t4","t5","deads"].forEach(id => {
+  document.getElementById(id).addEventListener("input", updateLive);
+});
+
 function savePlayer() {
-  const nameVal = document.getElementById("name").value.trim();
-  const powerVal = Number(document.getElementById("power").value) || 0;
-  const t4Val = Number(document.getElementById("t4").value) || 0;
-  const t5Val = Number(document.getElementById("t5").value) || 0;
-  const deadsVal = Number(document.getElementById("deads").value) || 0;
+  const name = document.getElementById("name").value.trim();
+  const p = +power.value || 0;
+  const t4v = +t4.value || 0;
+  const t5v = +t5.value || 0;
+  const dv = +deads.value || 0;
 
-  if (!nameVal) {
-    alert("Enter player name");
-    return;
-  }
+  if (!name) return alert("Enter name");
 
-  const dkp = calcDKP(powerVal, t4Val, t5Val, deadsVal);
+  const dkp = calcDKP(p, t4v, t5v, dv);
 
-  let players = JSON.parse(localStorage.getItem("players") || "[]");
+  let players = JSON.parse(localStorage.getItem("guild") || "[]");
 
-  const index = players.findIndex(p => p.name === nameVal);
-
-  const playerData = {
-    name: nameVal,
-    power: powerVal,
-    t4: t4Val,
-    t5: t5Val,
-    deads: deadsVal,
-    dkp: dkp
+  const data = {
+    name,
+    power: p,
+    t4: t4v,
+    t5: t5v,
+    deads: dv,
+    dkp
   };
 
-  if (index >= 0) {
-    players[index] = playerData;
+  if (editIndex >= 0) {
+    players[editIndex] = data;
+    editIndex = -1;
   } else {
-    players.push(playerData);
+    players.push(data);
   }
 
-  localStorage.setItem("players", JSON.stringify(players));
+  localStorage.setItem("guild", JSON.stringify(players));
 
-  render();
   clearInputs();
+  render();
 }
 
 function clearInputs() {
-  document.getElementById("name").value = "";
-  document.getElementById("power").value = "";
-  document.getElementById("t4").value = "";
-  document.getElementById("t5").value = "";
-  document.getElementById("deads").value = "";
+  name.value = "";
+  power.value = "";
+  t4.value = "";
+  t5.value = "";
+  deads.value = "";
+  updateLive();
 }
 
-function getMedal(rank) {
-  if (rank === 1) return "🥇";
-  if (rank === 2) return "🥈";
-  if (rank === 3) return "🥉";
-  return "#" + rank;
+function editPlayer(i) {
+  let players = JSON.parse(localStorage.getItem("guild") || "[]");
+  const p = players[i];
+
+  name.value = p.name;
+  power.value = p.power;
+  t4.value = p.t4;
+  t5.value = p.t5;
+  deads.value = p.deads;
+
+  editIndex = i;
+  updateLive();
 }
 
-function getColor(rank) {
-  if (rank === 1) return "gold";
-  if (rank === 2) return "silver";
-  if (rank === 3) return "bronze";
-  return "";
+function deletePlayer(i) {
+  let players = JSON.parse(localStorage.getItem("guild") || "[]");
+  players.splice(i, 1);
+  localStorage.setItem("guild", JSON.stringify(players));
+  render();
 }
 
 function render() {
-  let players = JSON.parse(localStorage.getItem("players") || "[]");
+  let players = JSON.parse(localStorage.getItem("guild") || "[]");
 
-  players.sort((a, b) => b.dkp - a.dkp);
+  players.sort((a,b) => b.dkp - a.dkp);
 
-  let html = "<h3>Leaderboard</h3>";
+  let html = "<h3>🏆 Guild Leaderboard</h3>";
 
   players.forEach((p, i) => {
     let rank = i + 1;
+    let medal =
+      rank === 1 ? "🥇" :
+      rank === 2 ? "🥈" :
+      rank === 3 ? "🥉" :
+      "#" + rank;
 
     html += `
       <div class="player">
-        <div class="rank ${getColor(rank)}">
-          ${getMedal(rank)} ${p.name}
-        </div>
+        <div class="rank">${medal} ${p.name} (${tier(p.dkp)})</div>
         <div>DKP: ${p.dkp.toLocaleString()}</div>
         <div class="small">Power: ${p.power}</div>
+
+        <div class="actions">
+          <button onclick="editPlayer(${i})">Edit</button>
+          <button onclick="deletePlayer(${i})">Delete</button>
+        </div>
       </div>
     `;
   });
@@ -164,10 +220,6 @@ function render() {
   document.getElementById("list").innerHTML = html;
 }
 
-// IMPORTANT: safe event binding
-document.getElementById("saveBtn").addEventListener("click", savePlayer);
-
-// initial load
 render();
 
 </script>
