@@ -44,9 +44,7 @@ button {
   padding:10px 0;
 }
 
-.rank {
-  font-weight:bold;
-}
+.rank { font-weight:bold; }
 
 .gold { color:#d4af37; }
 .silver { color:#9aa0a6; }
@@ -70,7 +68,7 @@ button {
 <input id="t5" type="number" placeholder="T5 kills">
 <input id="deads" type="number" placeholder="Deads">
 
-<button onclick="savePlayer()">Save / Update Player</button>
+<button id="saveBtn">Save / Update Player</button>
 
 <div id="list"></div>
 </div>
@@ -82,21 +80,31 @@ function calcDKP(p, t4, t5, d) {
 }
 
 function savePlayer() {
-  const name = document.getElementById("name").value.trim();
-  const power = +document.getElementById("power").value || 0;
-  const t4 = +document.getElementById("t4").value || 0;
-  const t5 = +document.getElementById("t5").value || 0;
-  const deads = +document.getElementById("deads").value || 0;
+  const nameVal = document.getElementById("name").value.trim();
+  const powerVal = Number(document.getElementById("power").value) || 0;
+  const t4Val = Number(document.getElementById("t4").value) || 0;
+  const t5Val = Number(document.getElementById("t5").value) || 0;
+  const deadsVal = Number(document.getElementById("deads").value) || 0;
 
-  if (!name) return alert("Enter player name");
+  if (!nameVal) {
+    alert("Enter player name");
+    return;
+  }
 
-  const dkp = calcDKP(power, t4, t5, deads);
+  const dkp = calcDKP(powerVal, t4Val, t5Val, deadsVal);
 
   let players = JSON.parse(localStorage.getItem("players") || "[]");
 
-  const index = players.findIndex(p => p.name === name);
+  const index = players.findIndex(p => p.name === nameVal);
 
-  const playerData = { name, power, t4, t5, deads, dkp };
+  const playerData = {
+    name: nameVal,
+    power: powerVal,
+    t4: t4Val,
+    t5: t5Val,
+    deads: deadsVal,
+    dkp: dkp
+  };
 
   if (index >= 0) {
     players[index] = playerData;
@@ -111,11 +119,11 @@ function savePlayer() {
 }
 
 function clearInputs() {
-  name.value = "";
-  power.value = "";
-  t4.value = "";
-  t5.value = "";
-  deads.value = "";
+  document.getElementById("name").value = "";
+  document.getElementById("power").value = "";
+  document.getElementById("t4").value = "";
+  document.getElementById("t5").value = "";
+  document.getElementById("deads").value = "";
 }
 
 function getMedal(rank) {
@@ -141,13 +149,11 @@ function render() {
 
   players.forEach((p, i) => {
     let rank = i + 1;
-    let medal = getMedal(rank);
-    let color = getColor(rank);
 
     html += `
       <div class="player">
-        <div class="rank ${color}">
-          ${medal} ${p.name}
+        <div class="rank ${getColor(rank)}">
+          ${getMedal(rank)} ${p.name}
         </div>
         <div>DKP: ${p.dkp.toLocaleString()}</div>
         <div class="small">Power: ${p.power}</div>
@@ -158,6 +164,10 @@ function render() {
   document.getElementById("list").innerHTML = html;
 }
 
+// IMPORTANT: safe event binding
+document.getElementById("saveBtn").addEventListener("click", savePlayer);
+
+// initial load
 render();
 
 </script>
