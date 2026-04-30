@@ -74,7 +74,7 @@ button {
 <h2>🏆 Guild DKP System</h2>
 
 <input id="name" placeholder="Player name">
-<input id="power" type="number" placeholder="Power">
+<input id="startingPower" type="number" placeholder="Starting Power">
 <input id="t4" type="number" placeholder="T4 kills">
 <input id="t5" type="number" placeholder="T5 kills">
 <input id="deads" type="number" placeholder="Deads">
@@ -96,7 +96,7 @@ function calcDKP(p, t4, t5, d) {
 
 // LIVE UPDATE
 function updateLive() {
-  const p = Number(document.getElementById("power").value) || 0;
+  const p = Number(document.getElementById("startingPower").value) || 0;
   const t4 = Number(document.getElementById("t4").value) || 0;
   const t5 = Number(document.getElementById("t5").value) || 0;
   const d = Number(document.getElementById("deads").value) || 0;
@@ -108,14 +108,14 @@ function updateLive() {
     `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
 }
 
-["power","t4","t5","deads"].forEach(id => {
+["startingPower","t4","t5","deads"].forEach(id => {
   document.getElementById(id).addEventListener("input", updateLive);
 });
 
-// SAVE OR OVERWRITE BY NAME
+// SAVE OR OVERWRITE
 function savePlayer() {
   const name = document.getElementById("name").value.trim();
-  const p = Number(document.getElementById("power").value) || 0;
+  const p = Number(document.getElementById("startingPower").value) || 0;
   const t4 = Number(document.getElementById("t4").value) || 0;
   const t5 = Number(document.getElementById("t5").value) || 0;
   const d = Number(document.getElementById("deads").value) || 0;
@@ -126,12 +126,11 @@ function savePlayer() {
 
   let players = JSON.parse(localStorage.getItem("guild") || "[]");
 
-  // 🔥 OVERWRITE if name already exists
   const index = players.findIndex(x => x.name.toLowerCase() === name.toLowerCase());
 
   const data = {
     name,
-    power: p,
+    startingPower: p,
     t4,
     t5,
     deads: d,
@@ -152,7 +151,7 @@ function savePlayer() {
 
 function clearInputs() {
   document.getElementById("name").value = "";
-  document.getElementById("power").value = "";
+  document.getElementById("startingPower").value = "";
   document.getElementById("t4").value = "";
   document.getElementById("t5").value = "";
   document.getElementById("deads").value = "";
@@ -182,14 +181,16 @@ function render() {
       rank === 3 ? "🥉" :
       "#" + rank;
 
-    const percent = p.power > 0 ? (p.dkp / p.power) * 100 : 0;
+    const percent = p.startingPower > 0
+      ? (p.dkp / p.startingPower) * 100
+      : 0;
 
     html += `
       <div class="player">
         <div class="rank">${medal} ${p.name} (${tier(p.dkp)})</div>
         <div>DKP: ${p.dkp.toLocaleString()}</div>
         <div>DKP %: ${percent.toFixed(2)}%</div>
-        <div class="small">Power: ${p.power}</div>
+        <div class="small">Starting Power: ${p.startingPower}</div>
       </div>
     `;
   });
