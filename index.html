@@ -48,6 +48,10 @@ button {
   font-weight:bold;
 }
 
+.gold { color:#d4af37; }
+.silver { color:#9aa0a6; }
+.bronze { color:#cd7f32; }
+
 .small {
   font-size:13px;
   color:#666;
@@ -86,26 +90,11 @@ DKP: 0 | DKP %: 0%
 
 <script>
 
-let players = [];
-
-// ---------- SAFE LOAD ----------
-function loadData() {
-  try {
-    const raw = localStorage.getItem("guild");
-    players = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(players)) players = [];
-  } catch (e) {
-    console.log("Load error:", e);
-    players = [];
-  }
-}
-
-// ---------- DKP ----------
 function calcDKP(p, t4, t5, d) {
   return (p * 0.15) + (t4 * 2) + (t5 * 5) + (d * 10);
 }
 
-// ---------- LIVE UPDATE ----------
+// LIVE UPDATE
 function updateLive() {
   const p = Number(document.getElementById("startingPower").value) || 0;
   const t4 = Number(document.getElementById("t4").value) || 0;
@@ -123,9 +112,8 @@ function updateLive() {
   document.getElementById(id).addEventListener("input", updateLive);
 });
 
-// ---------- SAVE / OVERWRITE ----------
+// SAVE OR OVERWRITE
 function savePlayer() {
-
   const name = document.getElementById("name").value.trim();
   const p = Number(document.getElementById("startingPower").value) || 0;
   const t4 = Number(document.getElementById("t4").value) || 0;
@@ -134,22 +122,15 @@ function savePlayer() {
 
   if (!name) return alert("Enter player name");
 
+  const dkp = calcDKP(p, t4, t5, d);
+
+  let players = JSON.parse(localStorage.getItem("guild") || "[]");
+
   const index = players.findIndex(x => x.name.toLowerCase() === name.toLowerCase());
-
-  let startingPower;
-
-  if (index >= 0) {
-    startingPower = players[index].startingPower;
-  } else {
-    if (!p) return alert("Enter starting power for new player");
-    startingPower = p;
-  }
-
-  const dkp = calcDKP(startingPower, t4, t5, d);
 
   const data = {
     name,
-    startingPower,
+    startingPower: p,
     t4,
     t5,
     deads: d,
@@ -162,17 +143,12 @@ function savePlayer() {
     players.push(data);
   }
 
-  try {
-    localStorage.setItem("guild", JSON.stringify(players));
-  } catch (e) {
-    alert("Storage failed (private mode or full storage).");
-  }
+  localStorage.setItem("guild", JSON.stringify(players));
 
   clearInputs();
   render();
 }
 
-// ---------- CLEAR ----------
 function clearInputs() {
   document.getElementById("name").value = "";
   document.getElementById("startingPower").value = "";
@@ -182,7 +158,6 @@ function clearInputs() {
   updateLive();
 }
 
-// ---------- TIER ----------
 function tier(dkp) {
   if (dkp >= 100000) return "🔥 Whale";
   if (dkp >= 50000) return "Elite";
@@ -190,19 +165,14 @@ function tier(dkp) {
   return "Rookie";
 }
 
-// ---------- RENDER ----------
 function render() {
+  let players = JSON.parse(localStorage.getItem("guild") || "[]");
 
   players.sort((a,b) => b.dkp - a.dkp);
 
   let html = "<h3>🏆 Leaderboard</h3>";
 
-  if (players.length === 0) {
-    html += "<p>No players yet</p>";
-  }
-
   players.forEach((p, i) => {
-
     const rank = i + 1;
 
     const medal =
@@ -228,8 +198,6 @@ function render() {
   document.getElementById("list").innerHTML = html;
 }
 
-// ---------- INIT ----------
-loadData();
 render();
 
 </script>
