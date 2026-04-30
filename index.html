@@ -98,8 +98,8 @@ DKP: 0 | DKP %: 0%
 
 <script>
 
-function calcDKP(t4, t5, d) {
-  return (t4 * 2) + (t5 * 5) + (d * 15);
+function calcDKP(p, t4, t5, d) {
+  return (p * 0) + (t4 * 2) + (t5 * 5) + (d * 15);
 }
 
 // LIVE UPDATE
@@ -110,7 +110,7 @@ function updateLive() {
   const d = Number(document.getElementById("deads").value) || 0;
 
   const dkp = calcDKP(t4, t5, d);
-  const percent = (dkp / p * 0.60) * 100 : 0;
+  const percent = p > 0 ? (dkp / p * 0.60) * 100 : 0;
 
   document.getElementById("live").innerText =
     `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
