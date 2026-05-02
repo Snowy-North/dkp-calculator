@@ -54,12 +54,21 @@ button:hover {
   background: #005bb5;
 }
 
-.btn-danger {
+/* New smaller delete button for individual players */
+.btn-small-danger {
   background: #ff3b30;
-  margin-top: 20px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+  font-weight: bold;
 }
 
-.btn-danger:hover {
+.btn-small-danger:hover {
   background: #d32f2f;
 }
 
@@ -84,7 +93,6 @@ button:hover {
   color: #333;
 }
 
-/* New grouped player card styles */
 .player-card {
   background: #fff;
   padding: 15px;
@@ -101,7 +109,6 @@ button:hover {
   margin-bottom: 8px;
 }
 
-/* Progress bar styles */
 .progress-bg {
   background: #e0e0e0;
   border-radius: 8px;
@@ -118,7 +125,6 @@ button:hover {
   transition: width 0.4s ease;
 }
 
-/* Nested log entries styles */
 .log-entry {
   background: #f9f9f9;
   padding: 10px;
@@ -128,7 +134,6 @@ button:hover {
   font-size: 14px;
 }
 
-/* Highlight the most recent edit */
 .log-entry:first-of-type {
   border-left: 3px solid #007aff;
 }
@@ -166,8 +171,6 @@ DKP: 0 | DKP %: 0%
 <div id="savedDataContainer">
   <h3>💾 Player Logs & Progress</h3>
   <div id="savedDataList"></div>
-  
-  <button class="btn-danger" onclick="clearAllData()">🗑️ Clear All Logs</button>
 </div>
 
 </div>
@@ -272,6 +275,27 @@ function clearInputs() {
   updateLive(); 
 }
 
+// New function specifically for deleting a single player's history
+function clearPlayerLogs(playerName) {
+  if (confirm(`Are you sure you want to delete all logs for ${playerName}?`)) {
+    let players = getSafeData();
+    
+    // Keep everyone EXCEPT the player we want to delete
+    players = players.filter(p => p.name.toLowerCase() !== playerName.toLowerCase());
+    
+    localStorage.setItem("guildLog", JSON.stringify(players));
+    
+    // If you are currently looking at the deleted player in the input boxes, clear their power
+    const currentInputName = document.getElementById("name").value.trim().toLowerCase();
+    if (currentInputName === playerName.toLowerCase()) {
+       document.getElementById("startingPower").value = "";
+       clearInputs();
+    }
+    
+    displaySavedData();
+  }
+}
+
 function displaySavedData() {
   let players = getSafeData();
   let html = "";
@@ -282,7 +306,6 @@ function displaySavedData() {
     return;
   }
 
-  // 1. Group the flat log entries by player name
   const groupedPlayers = {};
   players.forEach(p => {
     const key = p.name.toLowerCase();
@@ -295,14 +318,10 @@ function displaySavedData() {
     groupedPlayers[key].entries.push(p);
   });
 
-  // 2. Build the HTML for each player
   Object.values(groupedPlayers).forEach(group => {
-    // The first entry is the most recent because we unshift() when saving
     const latest = group.entries[0];
     const sp = latest.startingPower || 0;
     const percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00";
-    
-    // Cap visual progress bar at 100% so it doesn't overflow the container
     const visualWidth = Math.min(parseFloat(percent), 100);
 
     html += `
@@ -319,7 +338,6 @@ function displaySavedData() {
         <div class="small" style="margin-bottom: 6px; font-weight: bold;">Edit History:</div>
     `;
 
-    // 3. Loop through their personal edit history
     group.entries.forEach(entry => {
       const e_sp = entry.startingPower || 0;
       const e_percent = e_sp > 0 ? ((entry.dkp / e_sp) * 100).toFixed(2) : "0.00";
@@ -336,22 +354,17 @@ function displaySavedData() {
       `;
     });
 
-    html += `</div>`; // Close player-card
+    // Automatically generated Clear button for this specific player
+    const safeName = group.displayName.replace(/"/g, '&quot;');
+    html += `
+        <button class="btn-small-danger" data-name="${safeName}" onclick="clearPlayerLogs(this.getAttribute('data-name'))">
+          🗑️ Clear Logs for ${group.displayName}
+        </button>
+      </div>
+    `;
   });
   
   document.getElementById("savedDataList").innerHTML = html;
-}
-
-function clearAllData() {
-  if (confirm("Are you sure you want to delete the entire edit log? This cannot be undone.")) {
-    localStorage.removeItem("guildLog");
-    
-    document.getElementById("name").value = "";
-    document.getElementById("startingPower").value = "";
-    
-    clearInputs();
-    displaySavedData();
-  }
 }
 
 // Initial load
