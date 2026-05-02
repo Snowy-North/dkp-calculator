@@ -58,7 +58,7 @@ body {
 /* Top Controls */
 .top-controls {
   display: flex;
-  justify-content: space-between; /* Changed to space-between to push them to opposite sides */
+  justify-content: space-between; 
   align-items: center;
   margin-bottom: 20px;
 }
@@ -69,12 +69,21 @@ body {
   border: none;
   border-radius: 20px;
   padding: 8px 14px;
-  font-size: 13px;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   outline: none;
+}
+
+/* Specific styling for the now smaller theme button */
+.theme-toggle {
+  font-size: 16px;
+  padding: 8px 12px;
+}
+
+.lang-select {
+  font-size: 13px;
   max-width: 200px;
 }
 
@@ -345,7 +354,7 @@ body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; borde
 <div class="container">
   
   <div class="top-controls">
-    <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+    <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">🌙</button>
     
     <select id="langSelect" class="lang-select" onchange="changeLanguage()">
       <optgroup label="Europe">
@@ -426,7 +435,6 @@ const engine = Engine.create();
 const world = engine.world;
 const canvas = document.getElementById('potato-canvas');
 
-// Create the renderer (hidden background canvas)
 const render = Render.create({
     canvas: canvas,
     engine: engine,
@@ -444,10 +452,9 @@ Runner.run(runner, engine);
 
 let floor, leftWall, rightWall;
 let potatoes = [];
-let trapdoorOpen = false; // System flag to track if the trap door is currently open
+let trapdoorOpen = false; 
 
 function createWalls() {
-    // Puts the floor right beneath the screen edge
     floor = Bodies.rectangle(window.innerWidth / 2, window.innerHeight + 25, window.innerWidth * 2, 50, { isStatic: true });
     leftWall = Bodies.rectangle(-25, window.innerHeight / 2, 50, window.innerHeight * 2, { isStatic: true });
     rightWall = Bodies.rectangle(window.innerWidth + 25, window.innerHeight / 2, 50, window.innerHeight * 2, { isStatic: true });
@@ -455,50 +462,54 @@ function createWalls() {
 }
 createWalls();
 
+// We still want to reset walls if they resize the browser significantly
 window.addEventListener('resize', () => {
     render.canvas.width = window.innerWidth;
     render.canvas.height = window.innerHeight;
     render.options.width = window.innerWidth;
     render.options.height = window.innerHeight;
-    if (!trapdoorOpen) {
-        resetPotatoes();
-    }
-});
-
-function resetPotatoes() {
+    
     Composite.clear(world);
     Engine.clear(engine);
     potatoes = [];
+    trapdoorOpen = false;
     createWalls();
-}
+});
 
-// Drops a new potato
+
 function dropPotato() {
+    // 🧹 GARBAGE COLLECTION: Silently remove potatoes that have fallen way below the screen
+    for (let i = potatoes.length - 1; i >= 0; i--) {
+        if (potatoes[i].body.position.y > window.innerHeight + 300) {
+            Composite.remove(world, potatoes[i].body);
+            potatoes.splice(i, 1);
+        }
+    }
+
+    // 🚪 TRAP DOOR LOGIC
     if (!trapdoorOpen) {
-        // Check if the pile has reached 1/4 of the screen from the bottom (75% from the top)
         let settledNearQuarter = 0;
         for (let p of potatoes) {
+            // Count how many potatoes are settling 1/4 of the way up from the bottom
             if (p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) {
                 settledNearQuarter++;
             }
         }
 
-        // If the pile hits the 1/4 mark, open the trap door!
+        // Pop the trapdoor!
         if (settledNearQuarter > 5 || potatoes.length > 300) {
             trapdoorOpen = true;
+            Composite.remove(world, floor); 
             
-            // Literally remove the floor physics body so they all fall
-            Composite.remove(world, floor);
-            
-            // Wait 3 seconds for them to satisfyingly flush out of the screen, then reset
+            // Wait 3.5 seconds, then put the floor back (without wiping the world!)
             setTimeout(() => {
-                resetPotatoes();
+                Composite.add(world, floor);
                 trapdoorOpen = false;
-            }, 3000); 
+            }, 3500); 
         }
     }
 
-    // Create random potato body (we still drop them even if the trap door is open for a continuous rain effect)
+    // Always keep spawning the continuous rain of potatoes
     const radius = Math.random() * 8 + 14; 
     const x = Math.random() * (window.innerWidth - 60) + 30; 
     
@@ -513,7 +524,6 @@ function dropPotato() {
     potatoes.push({ body: body, fontSize: radius * 2 }); 
 }
 
-// Hook into the render engine to draw emojis perfectly over the invisible physics bodies
 Events.on(render, 'afterRender', function() {
     const context = render.context;
     context.textAlign = "center";
@@ -532,7 +542,6 @@ Events.on(render, 'afterRender', function() {
     context.globalAlpha = 1.0;
 });
 
-// Drop a potato every 120 milliseconds
 setInterval(dropPotato, 120); 
 
 
@@ -550,8 +559,8 @@ const i18n = {
   tr: { title: "🏆 1854 DKP Sistemi 🏆", points: "T4 Leş: 2 Puan &nbsp;|&nbsp; T5 Leş: 5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", dkpGoal: "DKP Hedefi = Başlangıç Gücü", phName: "Oyuncu adı", phPower: "Başlangıç Gücü", phT4: "T4 Leş", phT5: "T5 Leş", phDeads: "Ölü", btnSave: "Oyuncuyu Kaydet", logTitle: "💾 Kayıtlar ve İlerleme", noLogs: "Kayıt yok. Yukarıya veri girin!", progress: "Mevcut İlerleme:", history: "Geçmiş:", clearBtn: "🗑️ Kayıtları Temizle", alertName: "Oyuncu adını girin", confirmDel: "Tüm kayıtları silmek istediğinizden emin misiniz:" },
   zh: { title: "🏆 1854 DKP 系统 🏆", points: "T4 击杀: 2 分 &nbsp;|&nbsp; T5 击杀: 5 分 &nbsp;|&nbsp; 阵亡: 15 分", dkpGoal: "DKP 目标 = 初始战力", phName: "玩家名字", phPower: "初始战力", phT4: "T4 击杀", phT5: "T5 击杀", phDeads: "阵亡", btnSave: "保存玩家", logTitle: "💾 记录与进度", noLogs: "暂无记录。在上方输入数据！", progress: "当前进度:", history: "历史记录:", clearBtn: "🗑️ 清除记录", alertName: "请输入玩家名字", confirmDel: "您确定要删除所有记录吗" },
   ja: { title: "🏆 1854 DKP システム 🏆", points: "T4 撃破: 2 pt &nbsp;|&nbsp; T5 撃破: 5 pt &nbsp;|&nbsp; 戦死: 15 pt", dkpGoal: "DKP 目標 = 初期戦力", phName: "プレイヤー名", phPower: "初期戦力", phT4: "T4 撃破", phT5: "T5 撃破", phDeads: "戦死", btnSave: "保存する", logTitle: "💾 ログと進行状況", noLogs: "ログがありません。データを入力してください！", progress: "現在の進行状況:", history: "履歴:", clearBtn: "🗑️ ログを消去", alertName: "プレイヤー名を入力してください", confirmDel: "本当にすべてのログを削除しますか" },
-  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", 유T5: "T5 킬", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "🗑️ 기록 삭제", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까" },
-  hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: 2 अंक &nbsp;|&nbsp; T5 किल्स: 5 अंक &nbsp;|&nbsp; मृत: 15 अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं। ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "🗑️ लॉग साफ़ करें", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं" },
+  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "🗑️ 기록 삭제", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까" },
+  hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: 2 अंक &nbsp;|&nbsp; T5 किल्स: 5 अंक &nbsp;|&nbsp; मृत: 15 अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं。ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "🗑️ लॉग साफ़ करें", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं" },
   ar: { title: "🏆 نظام 1854 DKP 🏆", points: "قتلى T4: 2 نقطة &nbsp;|&nbsp; قتلى T5: 5 نقاط &nbsp;|&nbsp; الموتى: 15 نقطة", dkpGoal: "هدف DKP = القوة الأولية", phName: "اسم اللاعب", phPower: "القوة الأولية", phT4: "قتلى T4", phT5: "قتلى T5", phDeads: "الموتى", btnSave: "حفظ اللاعب", logTitle: "💾 السجلات والتقدم", noLogs: "لا توجد سجلات. أدخل البيانات أعلاه!", progress: "التقدم الحالي:", history: "التاريخ:", clearBtn: "🗑️ مسح سجلات", alertName: "أدخل اسم اللاعب", confirmDel: "هل أنت متأكد أنك تريد حذف جميع سجلات" },
   vi: { title: "🏆 Hệ thống DKP 1854 🏆", points: "Giết T4: 2 điểm &nbsp;|&nbsp; Giết T5: 5 điểm &nbsp;|&nbsp; Lính chết: 15 điểm", dkpGoal: "Mục tiêu DKP = Sức mạnh ban đầu", phName: "Tên người chơi", phPower: "Sức mạnh ban đầu", phT4: "Giết T4", phT5: "Giết T5", phDeads: "Lính chết", btnSave: "Lưu", logTitle: "💾 Nhật ký & Tiến độ", noLogs: "Chưa có dữ liệu. Nhập ở trên!", progress: "Tiến độ:", history: "Lịch sử:", clearBtn: "🗑️ Xóa nhật ký của", alertName: "Nhập tên", confirmDel: "Bạn có chắc chắn muốn xóa nhật ký của" },
   th: { title: "🏆 ระบบ 1854 DKP 🏆", points: "คิล T4: 2 แต้ม &nbsp;|&nbsp; คิล T5: 5 แต้ม &nbsp;|&nbsp; ตาย: 15 แต้ม", dkpGoal: "เป้าหมาย DKP = พลังเริ่มต้น", phName: "ชื่อผู้เล่น", phPower: "พลังเริ่มต้น", phT4: "คิล T4", phT5: "คิล T5", phDeads: "ทหารตาย", btnSave: "บันทึก", logTitle: "💾 บันทึกและความคืบหน้า", noLogs: "ยังไม่มีบันทึก ป้อนข้อมูลด้านบน!", progress: "ความคืบหน้าปัจจุบัน:", history: "ประวัติ:", clearBtn: "🗑️ ล้างบันทึกของ", alertName: "กรุณาใส่ชื่อ", confirmDel: "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึกทั้งหมดของ" },
@@ -598,16 +607,22 @@ function toggleTheme() {
   
   if (body.classList.contains("dark-mode")) {
     localStorage.setItem("theme", "dark");
-    toggleBtn.innerText = "☀️ Light";
+    // Removed text from button
+    toggleBtn.innerText = "☀️";
   } else {
     localStorage.setItem("theme", "light");
-    toggleBtn.innerText = "🌙 Dark";
+    // Removed text from button
+    toggleBtn.innerText = "🌙";
   }
 }
 
+// Initial theme setup (removed text from buttons here too)
 if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark-mode");
-  document.getElementById("themeToggle").innerText = "☀️ Light";
+  document.getElementById("themeToggle").innerText = "☀️";
+} else {
+  // Default light mode icon setup just in case
+  document.getElementById("themeToggle").innerText = "🌙";
 }
 
 function calcDKP(p, t4, t5, d) {
