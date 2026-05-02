@@ -150,12 +150,10 @@ input:focus {
   outline: none;
 }
 
-/* Split/Combine Toggle Link */
+/* Centered Toggle Link Container */
 .toggle-link-container {
-  text-align: right;
-  margin-top: 8px;
-  margin-bottom: 2px;
-  padding-right: 4px;
+  text-align: center; /* Centered as requested */
+  margin: 12px 0 4px 0;
 }
 
 .toggle-link {
@@ -163,12 +161,16 @@ input:focus {
   color: #007aff;
   cursor: pointer;
   font-weight: 600;
-  transition: color 0.3s;
+  transition: all 0.3s;
   user-select: none;
+  background: #eef3ff;
+  padding: 4px 12px;
+  border-radius: 20px;
 }
 
 .toggle-link:hover {
-  text-decoration: underline;
+  background: #d1e0ff;
+  text-decoration: none;
 }
 
 button.main-btn {
@@ -351,7 +353,8 @@ body.dark-mode .theme-toggle:hover, body.dark-mode .lang-select:hover { backgrou
 body.dark-mode .unified-panel { background: #252525; border-color: #333; }
 body.dark-mode .header-section h2, body.dark-mode .logs-header, body.dark-mode .player-title { color: #fff; }
 body.dark-mode .point-values, body.dark-mode .small, body.dark-mode .dkp-goal { color: #aaa; }
-body.dark-mode .toggle-link { color: #66a3ff; }
+body.dark-mode .toggle-link { background: #1a2639; color: #66a3ff; }
+body.dark-mode .toggle-link:hover { background: #233554; }
 body.dark-mode input { background: #252525; color: #fff; border-color: #333; }
 body.dark-mode input:focus { border-color: #0d84ff; background: #2a2a2a; box-shadow: 0 0 0 4px rgba(13, 132, 255, 0.2); }
 body.dark-mode input::placeholder { color: #777; }
@@ -374,74 +377,35 @@ body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; borde
   
   <div class="top-controls">
     <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">🌙</button>
-    
-    <select id="langSelect" class="lang-select" onchange="changeLanguage()">
-      <optgroup label="Europe">
-        <option value="en">🇬🇧 United Kingdom (EN)</option>
-        <option value="fr">🇫🇷 France (FR)</option>
-        <option value="de">🇩🇪 Germany (DE)</option>
-        <option value="it">🇮🇹 Italy (IT)</option>
-        <option value="es">🇪🇸 Spain (ES)</option>
-        <option value="pt">🇵🇹 Portugal (PT)</option>
-        <option value="ru">🇷🇺 Russia (RU)</option>
-        <option value="tr">🇹🇷 Turkey (TR)</option>
-      </optgroup>
-      <optgroup label="South America">
-        <option value="es">🇦🇷 Argentina (ES)</option>
-        <option value="es">🇧🇴 Bolivia (ES)</option>
-        <option value="pt">🇧🇷 Brazil (PT)</option>
-        <option value="es">🇨🇱 Chile (ES)</option>
-        <option value="es">🇨🇴 Colombia (ES)</option>
-        <option value="es">🇪🇨 Ecuador (ES)</option>
-        <option value="es">🇵🇪 Peru (ES)</option>
-        <option value="es">🇺🇾 Uruguay (ES)</option>
-        <option value="es">🇻🇪 Venezuela (ES)</option>
-      </optgroup>
-      <optgroup label="Asia">
-        <option value="zh">🇨🇳 China (ZH)</option>
-        <option value="ja">🇯🇵 Japan (JA)</option>
-        <option value="ko">🇰🇷 South Korea (KO)</option>
-        <option value="hi">🇮🇳 India (HI)</option>
-        <option value="ar">🇸🇦 Saudi Arabia (AR)</option>
-        <option value="vi">🇻🇳 Vietnam (VI)</option>
-        <option value="th">🇹🇭 Thailand (TH)</option>
-        <option value="id">🇮🇩 Indonesia (ID)</option>
-      </optgroup>
-    </select>
+    <select id="langSelect" class="lang-select" onchange="changeLanguage()"></select>
   </div>
 
   <div class="unified-panel header-section">
     <h2 id="mainTitle">🏆 1854 DKP System 🏆</h2>
-    <div id="pointValues" class="point-values">
-      T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts
-    </div>
-    <div id="dkpGoal" class="dkp-goal">
-      DKP Target = Starting power
-    </div>
+    <div id="pointValues" class="point-values"></div>
+    <div id="dkpGoal" class="dkp-goal"></div>
   </div>
 
 <input id="name" placeholder="Player name">
 <input id="startingPower" type="text" inputmode="numeric" placeholder="Starting Power">
 
 <div class="toggle-link-container">
-  <span id="toggleModeText" class="toggle-link" onclick="toggleKillMode()">Combine T4 & T5 Kills</span>
+  <span id="toggleModeText" class="toggle-link" onclick="toggleKillMode()"></span>
 </div>
 
 <input id="t4" type="text" inputmode="numeric" placeholder="T4 kills">
 <input id="t5" type="text" inputmode="numeric" placeholder="T5 kills">
-
 <input id="t4t5" type="text" inputmode="numeric" placeholder="T4 & T5 Kills" style="display: none;">
-
 <input id="deads" type="text" inputmode="numeric" placeholder="Deads">
 
 <div class="unified-panel live" id="live">
 DKP: 0 | DKP %: 0%
 </div>
 
-<button id="saveBtn" class="main-btn" onclick="savePlayer()">Save Player</button>
+<button id="saveBtn" class="main-btn" onclick="savePlayer()"></button>
 
 <div id="savedDataContainer">
-  <h3 id="logsTitle" class="unified-panel logs-header">💾 Player Logs & Progress</h3>
+  <h3 id="logsTitle" class="unified-panel logs-header"></h3>
   <div id="savedDataList"></div>
 </div>
 
@@ -451,30 +415,13 @@ DKP: 0 | DKP %: 0%
 // ==========================================
 // 🥔 POTATO PHYSICS ENGINE
 // ==========================================
-const Engine = Matter.Engine,
-      Render = Matter.Render,
-      Runner = Matter.Runner,
-      Bodies = Matter.Bodies,
-      Composite = Matter.Composite,
-      Events = Matter.Events;
-
-const engine = Engine.create();
-const world = engine.world;
+const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bodies = Matter.Bodies, Composite = Matter.Composite, Events = Matter.Events;
+const engine = Engine.create(), world = engine.world;
 const canvas = document.getElementById('potato-canvas');
-
-const render = Render.create({
-    canvas: canvas,
-    engine: engine,
-    options: { width: window.innerWidth, height: window.innerHeight, background: 'transparent', wireframes: false }
-});
+const render = Render.create({ canvas, engine, options: { width: window.innerWidth, height: window.innerHeight, background: 'transparent', wireframes: false } });
 Render.run(render);
-
-const runner = Runner.create();
-Runner.run(runner, engine);
-
-let floor, leftWall, rightWall;
-let potatoes = [];
-let trapdoorOpen = false; 
+const runner = Runner.create(); Runner.run(runner, engine);
+let floor, leftWall, rightWall, potatoes = [], trapdoorOpen = false; 
 
 function createWalls() {
     floor = Bodies.rectangle(window.innerWidth / 2, window.innerHeight + 25, window.innerWidth * 2, 50, { isStatic: true });
@@ -483,75 +430,44 @@ function createWalls() {
     Composite.add(world, [floor, leftWall, rightWall]);
 }
 createWalls();
-
 window.addEventListener('resize', () => {
-    render.canvas.width = window.innerWidth;
-    render.canvas.height = window.innerHeight;
-    render.options.width = window.innerWidth;
-    render.options.height = window.innerHeight;
-    Composite.clear(world);
-    Engine.clear(engine);
-    potatoes = [];
-    trapdoorOpen = false;
-    createWalls();
+    render.canvas.width = window.innerWidth; render.canvas.height = window.innerHeight;
+    render.options.width = window.innerWidth; render.options.height = window.innerHeight;
+    Composite.clear(world); Engine.clear(engine); potatoes = []; trapdoorOpen = false; createWalls();
 });
 
 function dropPotato() {
     for (let i = potatoes.length - 1; i >= 0; i--) {
-        if (potatoes[i].body.position.y > window.innerHeight + 300) {
-            Composite.remove(world, potatoes[i].body);
-            potatoes.splice(i, 1);
-        }
+        if (potatoes[i].body.position.y > window.innerHeight + 300) { Composite.remove(world, potatoes[i].body); potatoes.splice(i, 1); }
     }
-
     if (!trapdoorOpen) {
         let settledNearQuarter = 0;
-        for (let p of potatoes) {
-            if (p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) {
-                settledNearQuarter++;
-            }
-        }
+        for (let p of potatoes) { if (p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) settledNearQuarter++; }
         if (settledNearQuarter > 5 || potatoes.length > 300) {
-            trapdoorOpen = true;
-            Composite.remove(world, floor); 
-            setTimeout(() => {
-                Composite.add(world, floor);
-                trapdoorOpen = false;
-            }, 3500); 
+            trapdoorOpen = true; Composite.remove(world, floor); 
+            setTimeout(() => { Composite.add(world, floor); trapdoorOpen = false; }, 3500); 
         }
     }
-
-    const radius = Math.random() * 8 + 14; 
-    const x = Math.random() * (window.innerWidth - 60) + 30; 
+    const radius = Math.random() * 8 + 14, x = Math.random() * (window.innerWidth - 60) + 30; 
     const body = Bodies.circle(x, -50, radius, { restitution: 0.3, friction: 0.8, density: 0.05, render: { visible: false } });
-    Composite.add(world, body);
-    potatoes.push({ body: body, fontSize: radius * 2 }); 
+    Composite.add(world, body); potatoes.push({ body, fontSize: radius * 2 }); 
 }
 
 Events.on(render, 'afterRender', function() {
-    const context = render.context;
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.globalAlpha = 0.35; 
-    for (let i = 0; i < potatoes.length; i++) {
-        const p = potatoes[i];
-        context.font = p.fontSize + "px Arial";
-        context.save();
-        context.translate(p.body.position.x, p.body.position.y);
-        context.rotate(p.body.angle);
-        context.fillText("🥔", 0, 0);
-        context.restore();
+    const context = render.context; context.textAlign = "center"; context.textBaseline = "middle"; context.globalAlpha = 0.35; 
+    for (let p of potatoes) {
+        context.font = p.fontSize + "px Arial"; context.save();
+        context.translate(p.body.position.x, p.body.position.y); context.rotate(p.body.angle);
+        context.fillText("🥔", 0, 0); context.restore();
     }
     context.globalAlpha = 1.0;
 });
 setInterval(dropPotato, 120); 
 
-
 // ==========================================
 // APP LOGIC & TRANSLATIONS
 // ==========================================
-let isCombinedMode = false; // System flag for T4/T5 input mode
-
+let isCombinedMode = false;
 const i18n = {
   en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts", pointsCombined: "T4 & T5 Kills: 3.5 pts &nbsp;|&nbsp; Deads: 15 pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phT4T5: "T4 & T5 Kills", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "🗑️ Clear Logs for", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for" },
   es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: 2 pts &nbsp;|&nbsp; Muertes T5: 5 pts &nbsp;|&nbsp; Muertos: 15 pts", pointsCombined: "Muertes T4 y T5: 3.5 pts &nbsp;|&nbsp; Muertos: 15 pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phT4T5: "Muertes T4 y T5", btnCombine: "Combinar Muertes T4 y T5", btnSplit: "Separar Muertes T4 y T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "🗑️ Borrar registros de", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de" },
@@ -560,7 +476,7 @@ const i18n = {
   it: { title: "🏆 Sistema DKP 1854 🏆", points: "Uccisioni T4: 2 pt &nbsp;|&nbsp; Uccisioni T5: 5 pt &nbsp;|&nbsp; Morti: 15 pt", pointsCombined: "Uccisioni T4 & T5: 3.5 pt &nbsp;|&nbsp; Morti: 15 pt", dkpGoal: "Obiettivo DKP = Potere Iniziale", phName: "Nome giocatore", phPower: "Potere Iniziale", phT4: "Uccisioni T4", phT5: "Uccisioni T5", phT4T5: "Uccisioni T4 & T5", btnCombine: "Combina Uccisioni T4 & T5", btnSplit: "Separa Uccisioni T4 & T5", phDeads: "Morti", btnSave: "Salva Giocatore", logTitle: "💾 Registri e Progressi", noLogs: "Nessun registro. Inserisci i dati sopra!", progress: "Progresso Attuale:", history: "Cronologia:", clearBtn: "🗑️ Cancella registri di", alertName: "Inserisci il nome del giocatore", confirmDel: "Sei sicuro di voler eliminare i registri di" },
   pt: { title: "🏆 Sistema DKP 1854 🏆", points: "Mortes T4: 2 pts &nbsp;|&nbsp; Mortes T5: 5 pts &nbsp;|&nbsp; Mortos: 15 pts", pointsCombined: "Mortes T4 e T5: 3.5 pts &nbsp;|&nbsp; Mortos: 15 pts", dkpGoal: "Meta DKP = Poder Inicial", phName: "Nome do jogador", phPower: "Poder Inicial", phT4: "Mortes T4", phT5: "Mortes T5", phT4T5: "Mortes T4 e T5", btnCombine: "Combinar Mortes T4 e T5", btnSplit: "Separar Mortes T4 e T5", phDeads: "Mortos", btnSave: "Salvar Jogador", logTitle: "💾 Registros e Progresso", noLogs: "Nenhum registro. Insira os dados acima!", progress: "Progresso Atual:", history: "Histórico:", clearBtn: "🗑️ Limpar registros de", alertName: "Insira o nome do jogador", confirmDel: "Tem certeza de que deseja excluir os registros de" },
   ru: { title: "🏆 Система DKP 1854 🏆", points: "Убийства T4: 2 оч &nbsp;|&nbsp; Убийства T5: 5 оч &nbsp;|&nbsp; Мертвые: 15 оч", pointsCombined: "Убийства T4 и T5: 3.5 оч &nbsp;|&nbsp; Мертвые: 15 оч", dkpGoal: "Цель DKP = Начальная мощь", phName: "Имя игрока", phPower: "Начальная мощь", phT4: "Убийства T4", phT5: "Убийства T5", phT4T5: "Убийства T4 и T5", btnCombine: "Объединить T4 и T5", btnSplit: "Разделить T4 и T5", phDeads: "Мертвые", btnSave: "Сохранить", logTitle: "💾 Журналы и прогресс", noLogs: "Нет записей. Введите данные выше!", progress: "Текущий прогресс:", history: "История:", clearBtn: "🗑️ Очистить журналы для", alertName: "Введите имя игрока", confirmDel: "Вы уверены, что хотите удалить все журналы для" },
-  tr: { title: "🏆 1854 DKP Sistemi 🏆", points: "T4 Leş: 2 Puan &nbsp;|&nbsp; T5 Leş: 5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", pointsCombined: "T4 & T5 Leş: 3.5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", dkpGoal: "DKP Hedefi = Başlangıç Gücü", phName: "Oyuncu adı", phPower: "Başlangıç Gücü", phT4: "T4 Leş", phT5: "T5 Leş", phT4T5: "T4 & T5 Leş", btnCombine: "T4 & T5 Leşlerini Birleştir", btnSplit: "T4 & T5 Leşlerini Ayır", phDeads: "Ölü", btnSave: "Oyuncuyu Kaydet", logTitle: "💾 Kayıtlar ve İlerleme", noLogs: "Kayıt yok. Yukarıya veri girin!", progress: "Mevcut İlerleme:", history: "Geçmiş:", clearBtn: "🗑️ Kayıtları Temizle", alertName: "Oyuncu adını girin", confirmDel: "Tüm kayıtları silmek istediğinizden emin misiniz:" },
+  tr: { title: "🏆 1854 DKP Sistemi 🏆", points: "T4 Leş: 2 Puan &nbsp;|&nbsp; T5 Leş: 5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", pointsCombined: "T4 & T5 Leş: 3.5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", dkpGoal: "DKP Hedefi = Başlangıç Gücü", phName: "Oyuncu adı", phPower: "Başlangıç Gücü", phT4: "T4 Leş", phT5: "T5 Leş", phT4T5: "T4 & T5 Leş", btnCombine: "T4 & T5 Leşlerini Birleştir", btnSplit: "T4 & T5 Leşlerini Ayır", phDeads: "Ölü", btnSave: "Oyuncuyu Kaydet", logTitle: "💾 Kayıtlar e İlerleme", noLogs: "Kayıt yok. Yukarıya veri girin!", progress: "Mevcut İlerleme:", history: "Geçmiş:", clearBtn: "🗑️ Kayıtları Temizle", alertName: "Oyuncu adını girin", confirmDel: "Tüm kayıtları silmek istediğinizden emin misiniz:" },
   zh: { title: "🏆 1854 DKP 系统 🏆", points: "T4 击杀: 2 分 &nbsp;|&nbsp; T5 击杀: 5 分 &nbsp;|&nbsp; 阵亡: 15 分", pointsCombined: "T4 & T5 击杀: 3.5 分 &nbsp;|&nbsp; 阵亡: 15 分", dkpGoal: "DKP 目标 = 初始战力", phName: "玩家名字", phPower: "初始战力", phT4: "T4 击杀", phT5: "T5 击杀", phT4T5: "T4 & T5 击杀", btnCombine: "合并 T4 & T5 击杀", btnSplit: "分开 T4 & T5 击杀", phDeads: "阵亡", btnSave: "保存玩家", logTitle: "💾 记录与进度", noLogs: "暂无记录。在上方输入数据！", progress: "当前进度:", history: "历史记录:", clearBtn: "🗑️ 清除记录", alertName: "请输入玩家名字", confirmDel: "您确定要删除所有记录吗" },
   ja: { title: "🏆 1854 DKP システム 🏆", points: "T4 撃破: 2 pt &nbsp;|&nbsp; T5 撃破: 5 pt &nbsp;|&nbsp; 戦死: 15 pt", pointsCombined: "T4 & T5 撃破: 3.5 pt &nbsp;|&nbsp; 戦死: 15 pt", dkpGoal: "DKP 目標 = 初期戦力", phName: "プレイヤー名", phPower: "初期戦力", phT4: "T4 撃破", phT5: "T5 撃破", phT4T5: "T4 & T5 撃破", btnCombine: "T4 & T5 撃破を統合", btnSplit: "T4 & T5 撃破を分割", phDeads: "戦死", btnSave: "保存する", logTitle: "💾 ログと進行状況", noLogs: "ログがありません。データを入力してください！", progress: "現在の進行状況:", history: "履歴:", clearBtn: "🗑️ ログを消去", alertName: "プレイヤー名を入力してください", confirmDel: "本当にすべてのログを削除しますか" },
   ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", pointsCombined: "T4 & T5 킬: 3.5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phT4T5: "T4 & T5 킬", btnCombine: "T4 & T5 킬 통합", btnSplit: "T4 & T5 킬 분리", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "🗑️ 기록 삭제", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까" },
@@ -571,312 +487,126 @@ const i18n = {
   id: { title: "🏆 Sistem DKP 1854 🏆", points: "Kill T4: 2 Poin &nbsp;|&nbsp; Kill T5: 5 Poin &nbsp;|&nbsp; Mati: 15 Poin", pointsCombined: "Kill T4 & T5: 3.5 Poin &nbsp;|&nbsp; Mati: 15 Poin", dkpGoal: "Target DKP = Kekuatan Awal", phName: "Nama Pemain", phPower: "Kekuatan Awal", phT4: "Kill T4", phT5: "Kill T5", phT4T5: "Kill T4 & T5", btnCombine: "Gabungkan Kill T4 & T5", btnSplit: "Pisahkan Kill T4 & T5", phDeads: "Mati", btnSave: "Simpan Pemain", logTitle: "💾 Log & Kemajuan", noLogs: "Belum ada data. Masukkan data di atas!", progress: "Kemajuan Saat Ini:", history: "Riwayat:", clearBtn: "🗑️ Hapus Log untuk", alertName: "Masukkan nama pemain", confirmDel: "Apakah Anda yakin ingin menghapus semua log untuk" }
 };
 
-let currentLang = localStorage.getItem("lang") || "en";
-let selectBox = document.getElementById("langSelect");
-for(let i=0; i < selectBox.options.length; i++) {
-  if(selectBox.options[i].value === currentLang) {
-    selectBox.selectedIndex = i;
-    break;
-  }
-}
+// Language Selector Construction
+const langSelect = document.getElementById("langSelect");
+const continents = {
+  Europe: [ {v:"en", n:"🇬🇧 United Kingdom (EN)"}, {v:"fr", n:"🇫🇷 France (FR)"}, {v:"de", n:"🇩🇪 Germany (DE)"}, {v:"it", n:"🇮🇹 Italy (IT)"}, {v:"es", n:"🇪🇸 Spain (ES)"}, {v:"pt", n:"🇵🇹 Portugal (PT)"}, {v:"ru", n:"🇷🇺 Russia (RU)"}, {v:"tr", n:"🇹🇷 Turkey (TR)"} ],
+  "South America": [ {v:"es", n:"🇦🇷 Argentina (ES)"}, {v:"es", n:"🇧🇴 Bolivia (ES)"}, {v:"pt", n:"🇧🇷 Brazil (PT)"}, {v:"es", n:"🇨🇱 Chile (ES)"}, {v:"es", n:"🇨🇴 Colombia (ES)"}, {v:"es", n:"🇪🇨 Ecuador (ES)"}, {v:"es", n:"🇵🇪 Peru (ES)"}, {v:"es", n:"🇺🇾 Uruguay (ES)"}, {v:"es", n:"🇻🇪 Venezuela (ES)"} ],
+  Asia: [ {v:"zh", n:"🇨🇳 China (ZH)"}, {v:"ja", n:"🇯🇵 Japan (JA)"}, {v:"ko", n:"🇰🇷 South Korea (KO)"}, {v:"hi", n:"🇮🇳 India (HI)"}, {v:"ar", n:"🇸🇦 Saudi Arabia (AR)"}, {v:"vi", n:"🇻🇳 Vietnam (VI)"}, {v:"th", n:"🇹🇭 Thailand (TH)"}, {v:"id", n:"🇮🇩 Indonesia (ID)"} ]
+};
 
-function changeLanguage() {
-  currentLang = document.getElementById("langSelect").value;
-  localStorage.setItem("lang", currentLang);
-  applyTranslations();
-}
+Object.entries(continents).forEach(([name, countries]) => {
+  const group = document.createElement("optgroup"); group.label = name;
+  countries.forEach(c => { const opt = document.createElement("option"); opt.value = c.v; opt.innerText = c.n; group.appendChild(opt); });
+  langSelect.appendChild(group);
+});
+
+let currentLang = localStorage.getItem("lang") || "en";
+langSelect.value = currentLang;
+
+function changeLanguage() { currentLang = langSelect.value; localStorage.setItem("lang", currentLang); applyTranslations(); }
 
 function applyTranslations() {
   const t = i18n[currentLang];
-  
   document.getElementById("mainTitle").innerHTML = t.title;
   document.getElementById("pointValues").innerHTML = isCombinedMode ? t.pointsCombined : t.points;
   document.getElementById("dkpGoal").innerHTML = t.dkpGoal; 
   document.getElementById("name").placeholder = t.phName;
   document.getElementById("startingPower").placeholder = t.phPower;
-  
-  // Input Placeholders
   document.getElementById("t4").placeholder = t.phT4;
   document.getElementById("t5").placeholder = t.phT5;
   document.getElementById("t4t5").placeholder = t.phT4T5;
   document.getElementById("deads").placeholder = t.phDeads;
-  
-  // Buttons and Titles
   document.getElementById("toggleModeText").innerText = isCombinedMode ? t.btnSplit : t.btnCombine;
   document.getElementById("saveBtn").innerText = t.btnSave;
   document.getElementById("logsTitle").innerText = t.logTitle;
-  
   displaySavedData();
 }
 
 function toggleTheme() {
-  const body = document.body;
-  const toggleBtn = document.getElementById("themeToggle");
-  body.classList.toggle("dark-mode");
-  if (body.classList.contains("dark-mode")) {
-    localStorage.setItem("theme", "dark");
-    toggleBtn.innerText = "☀️";
-  } else {
-    localStorage.setItem("theme", "light");
-    toggleBtn.innerText = "🌙";
-  }
+  document.body.classList.toggle("dark-mode");
+  const isDark = document.body.classList.contains("dark-mode");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  document.getElementById("themeToggle").innerText = isDark ? "☀️" : "🌙";
 }
+if (localStorage.getItem("theme") === "dark") { document.body.classList.add("dark-mode"); document.getElementById("themeToggle").innerText = "☀️"; }
 
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark-mode");
-  document.getElementById("themeToggle").innerText = "☀️";
-} else {
-  document.getElementById("themeToggle").innerText = "🌙";
-}
-
-// TOGGLE SPLIT / COMBINED MODE
 function toggleKillMode() {
   isCombinedMode = !isCombinedMode;
-  
-  const t4Input = document.getElementById("t4");
-  const t5Input = document.getElementById("t5");
-  const t4t5Input = document.getElementById("t4t5");
-
-  if (isCombinedMode) {
-    t4Input.style.display = "none";
-    t5Input.style.display = "none";
-    t4t5Input.style.display = "block";
-    t4Input.value = "";
-    t5Input.value = "";
-  } else {
-    t4Input.style.display = "block";
-    t5Input.style.display = "block";
-    t4t5Input.style.display = "none";
-    t4t5Input.value = "";
-  }
-  
-  applyTranslations(); // Updates the header and button text automatically
-  updateLive();
+  document.getElementById("t4").style.display = isCombinedMode ? "none" : "block";
+  document.getElementById("t5").style.display = isCombinedMode ? "none" : "block";
+  document.getElementById("t4t5").style.display = isCombinedMode ? "block" : "none";
+  document.getElementById("t4").value = ""; document.getElementById("t5").value = ""; document.getElementById("t4t5").value = "";
+  applyTranslations(); updateLive();
 }
 
-
-function calcDKP(p, t4, t5, t4t5, d) {
-  return (p * 0) + (t4 * 2) + (t5 * 5) + (t4t5 * 3.5) + (d * 15);
-}
-
-function getNum(id) {
-  const rawValue = document.getElementById(id).value;
-  return Number(rawValue.replace(/,/g, '')) || 0;
-}
+function calcDKP(p, t4, t5, t4t5, d) { return (t4 * 2) + (t5 * 5) + (t4t5 * 3.5) + (d * 15); }
+function getNum(id) { return Number(document.getElementById(id).value.replace(/,/g, '')) || 0; }
 
 function updateLive() {
-  const p = getNum("startingPower");
-  const t4 = isCombinedMode ? 0 : getNum("t4");
-  const t5 = isCombinedMode ? 0 : getNum("t5");
-  const t4t5 = isCombinedMode ? getNum("t4t5") : 0;
-  const d = getNum("deads");
-
+  const p = getNum("startingPower"), t4 = isCombinedMode ? 0 : getNum("t4"), t5 = isCombinedMode ? 0 : getNum("t5"), t4t5 = isCombinedMode ? getNum("t4t5") : 0, d = getNum("deads");
   const dkp = calcDKP(p, t4, t5, t4t5, d);
   const percent = p > 0 ? (dkp / p) * 100 : 0;
-
-  document.getElementById("live").innerText =
-    `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
+  document.getElementById("live").innerText = `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
 }
 
 ["startingPower","t4","t5","t4t5","deads"].forEach(id => {
-  document.getElementById(id).addEventListener("input", function(e) {
+  document.getElementById(id).addEventListener("input", function() {
     let rawStr = this.value.replace(/,/g, "").replace(/\D/g, "");
-    if (rawStr !== "") {
-      this.value = parseInt(rawStr, 10).toLocaleString('en-US');
-    } else {
-      this.value = "";
-    }
+    this.value = rawStr !== "" ? parseInt(rawStr, 10).toLocaleString('en-US') : "";
     updateLive();
   });
 });
 
 document.getElementById("name").addEventListener("input", function() {
   const currentName = this.value.trim().toLowerCase();
-  let players = getSafeData();
-  const existingPlayer = players.find(x => x.name.toLowerCase() === currentName);
-  
-  if (existingPlayer) {
-    document.getElementById("startingPower").value = existingPlayer.startingPower.toLocaleString('en-US');
-    updateLive();
-  }
+  const existingPlayer = getSafeData().find(x => x.name.toLowerCase() === currentName);
+  if (existingPlayer) { document.getElementById("startingPower").value = existingPlayer.startingPower.toLocaleString('en-US'); updateLive(); }
 });
 
-function getSafeData() {
-  try {
-    let data = JSON.parse(localStorage.getItem("guildLog"));
-    if (!Array.isArray(data)) { return []; }
-    return data;
-  } catch (error) {
-    return [];
-  }
-}
+function getSafeData() { try { let d = JSON.parse(localStorage.getItem("guildLog")); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
 
 function savePlayer() {
-  const t = i18n[currentLang];
-  const name = document.getElementById("name").value.trim();
-  const p = getNum("startingPower");
-  const t4 = isCombinedMode ? 0 : getNum("t4");
-  const t5 = isCombinedMode ? 0 : getNum("t5");
-  const t4t5 = isCombinedMode ? getNum("t4t5") : 0;
-  const d = getNum("deads");
-
-  if (!name) return alert(t.alertName);
-
-  const dkp = calcDKP(p, t4, t5, t4t5, d);
-  let players = getSafeData();
-  const currentTime = new Date().toLocaleString();
-
-  const data = {
-    name, 
-    startingPower: p, 
-    t4, 
-    t5, 
-    t4t5, // Saves the combined stat 
-    deads: d, 
-    dkp, 
-    timestamp: currentTime,
-    isCombined: isCombinedMode // Identifies which mode was used
-  };
-
-  players.unshift(data);
+  const name = document.getElementById("name").value.trim(), p = getNum("startingPower"), t4 = isCombinedMode ? 0 : getNum("t4"), t5 = isCombinedMode ? 0 : getNum("t5"), t4t5 = isCombinedMode ? getNum("t4t5") : 0, d = getNum("deads");
+  if (!name) return alert(i18n[currentLang].alertName);
+  const dkp = calcDKP(p, t4, t5, t4t5, d), players = getSafeData(), currentTime = new Date().toLocaleString();
+  players.unshift({ name, startingPower: p, t4, t5, t4t5, deads: d, dkp, timestamp: currentTime, isCombined: isCombinedMode });
   localStorage.setItem("guildLog", JSON.stringify(players));
-
-  clearInputs();
-  displaySavedData();
-}
-
-function clearInputs() {
-  document.getElementById("t4").value = "";
-  document.getElementById("t5").value = "";
-  document.getElementById("t4t5").value = "";
-  document.getElementById("deads").value = "";
-  updateLive(); 
+  ["t4","t5","t4t5","deads"].forEach(id => document.getElementById(id).value = "");
+  updateLive(); displaySavedData();
 }
 
 function clearPlayerLogs(playerName) {
-  const t = i18n[currentLang];
-  if (confirm(`${t.confirmDel} ${playerName}?`)) {
-    let players = getSafeData();
-    players = players.filter(p => p.name.toLowerCase() !== playerName.toLowerCase());
-    localStorage.setItem("guildLog", JSON.stringify(players));
-    
-    const currentInputName = document.getElementById("name").value.trim().toLowerCase();
-    if (currentInputName === playerName.toLowerCase()) {
-       document.getElementById("startingPower").value = "";
-       clearInputs();
-    }
+  if (confirm(`${i18n[currentLang].confirmDel} ${playerName}?`)) {
+    let d = getSafeData().filter(p => p.name.toLowerCase() !== playerName.toLowerCase());
+    localStorage.setItem("guildLog", JSON.stringify(d));
     displaySavedData();
   }
 }
 
 function displaySavedData() {
-  const t = i18n[currentLang];
-  let players = getSafeData();
-  let html = "";
-  
-  if (players.length === 0) {
-    html = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`;
-    document.getElementById("savedDataList").innerHTML = html;
-    return;
-  }
-
-  const groupedPlayers = {};
-  players.forEach(p => {
-    const key = p.name.toLowerCase();
-    if (!groupedPlayers[key]) {
-      groupedPlayers[key] = { displayName: p.name, entries: [] };
-    }
-    groupedPlayers[key].entries.push(p);
-  });
-
-  Object.values(groupedPlayers).forEach((group, index) => {
-    const latest = group.entries[0];
-    const sp = latest.startingPower || 0;
-    const percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00";
-    const visualWidth = Math.min(parseFloat(percent), 100);
-    
-    const pValue = parseFloat(percent);
-    let potatoText = "";
-    let barColorStyle = "";
-    let barClass = "progress-fill";
-
-    if (pValue < 10) {
-      potatoText = "Under performing potato";
-      barColorStyle = "background: #ff3b30;"; 
-    } else if (pValue < 50) {
-      potatoText = "Safe but do better potato";
-      barColorStyle = "background: #ff9500;"; 
-    } else if (pValue < 96) {
-      potatoText = "Met potato expectations";
-      barColorStyle = "background: #ffcc00; color: #333; text-shadow: 0px 1px 2px rgba(255,255,255,0.8);"; 
-    } else if (pValue < 100) {
-      potatoText = "ooooo so close potato";
-      barColorStyle = "background: #34c759;"; 
-    } else {
-      potatoText = "You're an amazing potato!";
-      barClass += " gold-bar"; 
-    }
-
-    const animationDelay = index * 0.05;
-
-    html += `
-      <div class="unified-panel player-card" style="animation-delay: ${animationDelay}s;">
-        <div class="player-title">👤 ${group.displayName}</div>
-        
-        <div class="small" style="margin-bottom: 6px;">
-          <strong>${t.progress}</strong> ${percent}%
-        </div>
-        <div class="progress-bg">
-          <div class="${barClass}" style="width: ${visualWidth}%; ${barColorStyle}"></div>
-          <div class="progress-text" style="${barColorStyle.includes('text-shadow') ? barColorStyle : ''}">${potatoText}</div>
-        </div>
-        
-        <div class="small" style="margin-bottom: 8px; font-weight: bold;">${t.history}</div>
-    `;
-
-    group.entries.forEach(entry => {
-      const e_sp = entry.startingPower || 0;
-      const e_percent = e_sp > 0 ? ((entry.dkp / e_sp) * 100).toFixed(2) : "0.00";
-      const timeString = entry.timestamp ? entry.timestamp : "Unknown";
-      
-      // Select the correct history string based on how they logged their kills
-      let statsHtml = "";
-      if (entry.isCombined) {
-         statsHtml = `${t.phT4T5}: ${(entry.t4t5||0).toLocaleString()} | ${t.phDeads}: ${(entry.deads||0).toLocaleString()}`;
-      } else {
-         statsHtml = `${t.phT4}: ${(entry.t4||0).toLocaleString()} | ${t.phT5}: ${(entry.t5||0).toLocaleString()} | ${t.phDeads}: ${(entry.deads||0).toLocaleString()}`;
-      }
-      
-      html += `
-        <div class="log-entry">
-          <span class="timestamp">${timeString}</span>
-          <strong>DKP: ${(entry.dkp||0).toLocaleString()} (${e_percent}%)</strong><br>
-          <span class="small">${statsHtml}</span>
-        </div>
-      `;
+  const t = i18n[currentLang]; let players = getSafeData(), html = "";
+  if (players.length === 0) { document.getElementById("savedDataList").innerHTML = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`; return; }
+  const groups = {}; players.forEach(p => { const k = p.name.toLowerCase(); if (!groups[k]) groups[k] = { name: p.name, entries: [] }; groups[k].entries.push(p); });
+  Object.values(groups).forEach((g, idx) => {
+    const latest = g.entries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00", visualWidth = Math.min(parseFloat(percent), 100);
+    const pVal = parseFloat(percent);
+    let potato = pVal < 10 ? "Under performing potato" : pVal < 50 ? "Safe but do better potato" : pVal < 96 ? "Met potato expectations" : pVal < 100 ? "ooooo so close potato" : "You're an amazing potato!";
+    let barStyle = pVal < 10 ? "background:#ff3b30;" : pVal < 50 ? "background:#ff9500;" : pVal < 96 ? "background:#ffcc00;color:#333;text-shadow:none;" : pVal < 100 ? "background:#34c759;" : "";
+    html += `<div class="unified-panel player-card" style="animation-delay:${idx*0.05}s">
+        <div class="player-title">👤 ${g.name}</div>
+        <div class="small"><strong>${t.progress}</strong> ${percent}%</div>
+        <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; ${barStyle}"></div><div class="progress-text" style="${pVal>=50&&pVal<96?'color:#333;text-shadow:none;':''}">${potato}</div></div>
+        <div class="small" style="font-weight:bold">${t.history}</div>`;
+    g.entries.forEach(e => {
+      let stats = e.isCombined ? `${t.phT4T5}: ${(e.t4t5||0).toLocaleString()} | ${t.phDeads}: ${(e.deads||0).toLocaleString()}` : `${t.phT4}: ${(e.t4||0).toLocaleString()} | ${t.phT5}: ${(e.t5||0).toLocaleString()} | ${t.phDeads}: ${(e.deads||0).toLocaleString()}`;
+      html += `<div class="log-entry"><span class="timestamp">${e.timestamp}</span><strong>DKP: ${e.dkp.toLocaleString()} (${(sp>0?(e.dkp/sp*100):0).toFixed(2)}%)</strong><br><span class="small">${stats}</span></div>`;
     });
-
-    const safeName = group.displayName.replace(/"/g, '&quot;');
-    html += `
-        <button class="btn-small-danger" data-name="${safeName}" onclick="clearPlayerLogs(this.getAttribute('data-name'))">
-          ${t.clearBtn} ${group.displayName}
-        </button>
-      </div>
-    `;
+    html += `<button class="btn-small-danger" onclick="clearPlayerLogs('${g.name.replace(/'/g,"\\'")}')">${t.clearBtn} ${g.name}</button></div>`;
   });
-  
   document.getElementById("savedDataList").innerHTML = html;
 }
-
-// Initial loads
-applyTranslations(); 
-displaySavedData();
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
-  
+applyTranslations();
 </script>
-
 </body>
 </html>
