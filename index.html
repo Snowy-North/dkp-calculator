@@ -14,56 +14,92 @@
 <title>1854 DKP System</title>
 
 <style>
+/* Light Mode (Default) Variables & Base Styles */
 body {
   font-family: -apple-system, Arial;
-  background:#f4f6f8;
-  margin:0;
-  padding:20px;
+  background: #f4f6f8;
+  color: #333;
+  margin: 0;
+  padding: 20px;
+  transition: background 0.3s, color 0.3s;
 }
 
 .container {
-  max-width:500px;
-  margin:auto;
-  background:white;
-  padding:20px;
-  border-radius:16px;
+  max-width: 500px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  position: relative; /* Needed to position the theme toggle */
+  transition: background 0.3s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-/* New header styles */
+/* Theme Toggle Button */
+.theme-toggle {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  width: auto;
+  margin: 0;
+  transition: background 0.3s, color 0.3s;
+}
+
+.theme-toggle:hover {
+  background: #d0d0d0;
+}
+
+/* Header Styles */
 .header-section {
   text-align: center;
   margin-bottom: 20px;
+  padding-top: 10px;
   padding-bottom: 15px;
   border-bottom: 1px solid #eee;
+  transition: border-color 0.3s;
 }
 
 .header-section h2 {
   margin: 0 0 8px 0;
   color: #000;
+  transition: color 0.3s;
 }
 
 .point-values {
   font-size: 14px;
   color: #666;
   font-weight: 500;
+  transition: color 0.3s;
 }
 
+/* Inputs & Buttons */
 input {
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  font-size:16px;
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  font-size: 16px;
   box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 button {
-  width:100%;
-  padding:12px;
-  margin-top:6px;
-  background:#007aff;
-  color:white;
-  border:none;
-  border-radius:10px;
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  background: #007aff;
+  color: white;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
@@ -90,25 +126,30 @@ button:hover {
   background: #d32f2f;
 }
 
+/* Live DKP Preview */
 .live {
-  margin-top:10px;
-  padding:10px;
-  background:#eef3ff;
-  border-radius:10px;
-  text-align:center;
-  font-weight:bold;
+  margin-top: 10px;
+  padding: 10px;
+  background: #eef3ff;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  transition: background 0.3s, color 0.3s;
 }
 
+/* Saved Data Section */
 #savedDataContainer {
   margin-top: 25px;
   padding-top: 15px;
   border-top: 2px dashed #ddd;
+  transition: border-color 0.3s;
 }
 
 #savedDataContainer h3 {
   margin-top: 0;
   font-size: 18px;
   color: #333;
+  transition: color 0.3s;
 }
 
 .player-card {
@@ -118,6 +159,7 @@ button:hover {
   border-radius: 12px;
   border: 1px solid #e0e0e0;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .player-title {
@@ -125,8 +167,10 @@ button:hover {
   font-weight: bold;
   color: #000;
   margin-bottom: 8px;
+  transition: color 0.3s;
 }
 
+/* Progress Bar */
 .progress-bg {
   background: #e0e0e0;
   border-radius: 8px;
@@ -134,6 +178,7 @@ button:hover {
   width: 100%;
   overflow: hidden;
   margin-bottom: 12px;
+  transition: background 0.3s;
 }
 
 .progress-fill {
@@ -143,6 +188,7 @@ button:hover {
   transition: width 0.4s ease;
 }
 
+/* Log Entries */
 .log-entry {
   background: #f9f9f9;
   padding: 10px;
@@ -150,6 +196,7 @@ button:hover {
   border-radius: 6px;
   border-left: 3px solid #ccc;
   font-size: 14px;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .log-entry:first-of-type {
@@ -165,7 +212,83 @@ button:hover {
 .small {
   font-size: 13px;
   color: #666;
+  transition: color 0.3s;
 }
+
+/* =========================================
+   DARK MODE OVERRIDES
+   ========================================= */
+body.dark-mode {
+  background: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode .container {
+  background: #1e1e1e;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+body.dark-mode .theme-toggle {
+  background: #333;
+  color: #e0e0e0;
+}
+
+body.dark-mode .theme-toggle:hover {
+  background: #444;
+}
+
+body.dark-mode .header-section {
+  border-color: #333;
+}
+
+body.dark-mode .header-section h2,
+body.dark-mode #savedDataContainer h3,
+body.dark-mode .player-title {
+  color: #fff;
+}
+
+body.dark-mode .point-values,
+body.dark-mode .small {
+  color: #aaa;
+}
+
+body.dark-mode input {
+  background: #2d2d2d;
+  color: #fff;
+  border-color: #444;
+}
+
+body.dark-mode input::placeholder {
+  color: #888;
+}
+
+body.dark-mode .live {
+  background: #2a354d; /* Darker blue tint */
+  color: #fff;
+}
+
+body.dark-mode #savedDataContainer {
+  border-color: #444;
+}
+
+body.dark-mode .player-card {
+  background: #252525;
+  border-color: #333;
+}
+
+body.dark-mode .progress-bg {
+  background: #444;
+}
+
+body.dark-mode .log-entry {
+  background: #2d2d2d;
+  border-left-color: #555;
+}
+
+body.dark-mode .log-entry:first-of-type {
+  border-left-color: #007aff;
+}
+
 </style>
 </head>
 
@@ -173,6 +296,8 @@ button:hover {
 
 <div class="container">
   
+  <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+
   <div class="header-section">
     <h2>🏆 1854 DKP System 🏆</h2>
     <div class="point-values">
@@ -201,6 +326,29 @@ DKP: 0 | DKP %: 0%
 
 <script>
 
+// --- THEME TOGGLE LOGIC ---
+function toggleTheme() {
+  const body = document.body;
+  const toggleBtn = document.getElementById("themeToggle");
+  
+  body.classList.toggle("dark-mode");
+  
+  if (body.classList.contains("dark-mode")) {
+    localStorage.setItem("theme", "dark");
+    toggleBtn.innerText = "☀️ Light";
+  } else {
+    localStorage.setItem("theme", "light");
+    toggleBtn.innerText = "🌙 Dark";
+  }
+}
+
+// Load saved theme on startup
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark-mode");
+  document.getElementById("themeToggle").innerText = "☀️ Light";
+}
+
+// --- DKP LOGIC ---
 function calcDKP(p, t4, t5, d) {
   return (p * 0) + (t4 * 2) + (t5 * 5) + (d * 15);
 }
