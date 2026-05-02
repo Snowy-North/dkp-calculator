@@ -28,7 +28,7 @@ body {
   margin: 0;
   padding: 20px;
   transition: background 0.4s ease, color 0.4s ease;
-  overflow-x: hidden; /* Prevent scrolling off screen */
+  overflow-x: hidden; 
 }
 
 /* PHYSICS CANVAS BACKGROUND */
@@ -76,7 +76,6 @@ body {
   outline: none;
 }
 
-/* Specific styling for the now smaller theme button */
 .theme-toggle {
   font-size: 16px;
   padding: 8px 12px;
@@ -92,12 +91,22 @@ body {
   transform: translateY(-1px);
 }
 
+/* ==========================================
+   THE UNIFIED PANEL DESIGN
+   Applied to headers, previews, and cards
+========================================== */
+.unified-panel {
+  background: #fafafa;
+  border: 2px solid #e4e6eb;
+  border-radius: 12px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
 .header-section {
   text-align: center;
   margin-bottom: 25px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #f0f2f5;
-  transition: border-color 0.4s ease;
+  padding: 20px 15px;
 }
 
 .header-section h2 {
@@ -110,13 +119,9 @@ body {
 
 .point-values {
   font-size: 13px;
-  color: #666;
+  color: #555;
   font-weight: 600;
   transition: color 0.4s ease;
-  background: #f8f9fa;
-  padding: 8px;
-  border-radius: 8px;
-  display: inline-block;
 }
 
 .dkp-goal {
@@ -198,15 +203,11 @@ button.main-btn:active {
 /* Live DKP Preview */
 .live {
   margin-top: 15px;
-  padding: 12px;
-  background: #eef3ff;
-  color: #0044aa;
-  border-radius: 12px;
+  padding: 14px;
+  color: #007aff;
   text-align: center;
   font-weight: 700;
   font-size: 15px;
-  border: 1px solid #d1e0ff;
-  transition: all 0.4s ease;
 }
 
 /* Saved Data Section */
@@ -217,10 +218,13 @@ button.main-btn:active {
   transition: border-color 0.4s ease;
 }
 
-#savedDataContainer h3 {
+.logs-header {
+  padding: 14px;
+  text-align: center;
   margin-top: 0;
-  font-size: 18px;
+  margin-bottom: 20px;
   color: #1a1a1a;
+  font-size: 18px;
   font-weight: 700;
   transition: color 0.4s ease;
 }
@@ -232,13 +236,9 @@ button.main-btn:active {
 }
 
 .player-card {
-  background: #fff;
   padding: 18px;
   margin-bottom: 18px;
-  border-radius: 16px;
-  border: 1px solid #e4e6eb;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-  transition: all 0.4s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
   animation: slideUpFade 0.4s ease forwards;
 }
 
@@ -297,10 +297,11 @@ button.main-btn:active {
 }
 
 .log-entry {
-  background: #f8f9fa;
+  background: #fff; /* Adjusted to stand out slightly from the panel */
   padding: 12px;
   margin-bottom: 8px;
   border-radius: 10px;
+  border: 1px solid #e4e6eb;
   border-left: 4px solid #ccc;
   font-size: 13px;
   transition: all 0.4s ease;
@@ -329,19 +330,25 @@ body.dark-mode { background: #121212; color: #e0e0e0; }
 body.dark-mode .container { background: #1e1e1e; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
 body.dark-mode .theme-toggle, body.dark-mode .lang-select { background: #2d2d2d; color: #e0e0e0; }
 body.dark-mode .theme-toggle:hover, body.dark-mode .lang-select:hover { background: #3d3d3d; }
-body.dark-mode .header-section { border-color: #2d2d2d; }
-body.dark-mode .header-section h2, body.dark-mode #savedDataContainer h3, body.dark-mode .player-title { color: #fff; }
-body.dark-mode .point-values { background: #2d2d2d; color: #bbb; }
-body.dark-mode .small, body.dark-mode .dkp-goal { color: #aaa; }
+
+/* Applying Dark Mode to all Unified Panels */
+body.dark-mode .unified-panel { background: #252525; border-color: #333; }
+
+body.dark-mode .header-section h2, body.dark-mode .logs-header, body.dark-mode .player-title { color: #fff; }
+body.dark-mode .point-values, body.dark-mode .small, body.dark-mode .dkp-goal { color: #aaa; }
+
 body.dark-mode input { background: #252525; color: #fff; border-color: #333; }
 body.dark-mode input:focus { border-color: #0d84ff; background: #2a2a2a; box-shadow: 0 0 0 4px rgba(13, 132, 255, 0.2); }
 body.dark-mode input::placeholder { color: #777; }
-body.dark-mode .live { background: #1a2639; color: #66a3ff; border-color: #233554; }
+
+body.dark-mode .live { color: #66a3ff; }
 body.dark-mode #savedDataContainer { border-color: #333; }
-body.dark-mode .player-card { background: #252525; border-color: #333; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+body.dark-mode .player-card { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 body.dark-mode .progress-bg { background: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-body.dark-mode .log-entry { background: #2d2d2d; border-left-color: #555; }
+
+body.dark-mode .log-entry { background: #2d2d2d; border-color: #444; border-left-color: #555; }
 body.dark-mode .log-entry:first-of-type { border-left-color: #0d84ff; background: #1a2639; }
+
 body.dark-mode .btn-small-danger { background: #3d1c1c; color: #ff453a; border-color: #5c2424; }
 body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; border-color: #ff453a; }
 </style>
@@ -391,7 +398,7 @@ body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; borde
     </select>
   </div>
 
-  <div class="header-section">
+  <div class="unified-panel header-section">
     <h2 id="mainTitle">🏆 1854 DKP System 🏆</h2>
     <div id="pointValues" class="point-values">
       T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts
@@ -407,14 +414,14 @@ body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; borde
 <input id="t5" type="text" inputmode="numeric" placeholder="T5 kills">
 <input id="deads" type="text" inputmode="numeric" placeholder="Deads">
 
-<div class="live" id="live">
+<div class="unified-panel live" id="live">
 DKP: 0 | DKP %: 0%
 </div>
 
 <button id="saveBtn" class="main-btn" onclick="savePlayer()">Save Player</button>
 
 <div id="savedDataContainer">
-  <h3 id="logsTitle">💾 Player Logs & Progress</h3>
+  <h3 id="logsTitle" class="unified-panel logs-header">💾 Player Logs & Progress</h3>
   <div id="savedDataList"></div>
 </div>
 
@@ -462,7 +469,6 @@ function createWalls() {
 }
 createWalls();
 
-// We still want to reset walls if they resize the browser significantly
 window.addEventListener('resize', () => {
     render.canvas.width = window.innerWidth;
     render.canvas.height = window.innerHeight;
@@ -478,7 +484,7 @@ window.addEventListener('resize', () => {
 
 
 function dropPotato() {
-    // 🧹 GARBAGE COLLECTION: Silently remove potatoes that have fallen way below the screen
+    // 🧹 GARBAGE COLLECTION
     for (let i = potatoes.length - 1; i >= 0; i--) {
         if (potatoes[i].body.position.y > window.innerHeight + 300) {
             Composite.remove(world, potatoes[i].body);
@@ -490,18 +496,15 @@ function dropPotato() {
     if (!trapdoorOpen) {
         let settledNearQuarter = 0;
         for (let p of potatoes) {
-            // Count how many potatoes are settling 1/4 of the way up from the bottom
             if (p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) {
                 settledNearQuarter++;
             }
         }
 
-        // Pop the trapdoor!
         if (settledNearQuarter > 5 || potatoes.length > 300) {
             trapdoorOpen = true;
             Composite.remove(world, floor); 
             
-            // Wait 3.5 seconds, then put the floor back (without wiping the world!)
             setTimeout(() => {
                 Composite.add(world, floor);
                 trapdoorOpen = false;
@@ -509,7 +512,6 @@ function dropPotato() {
         }
     }
 
-    // Always keep spawning the continuous rain of potatoes
     const radius = Math.random() * 8 + 14; 
     const x = Math.random() * (window.innerWidth - 60) + 30; 
     
@@ -560,7 +562,7 @@ const i18n = {
   zh: { title: "🏆 1854 DKP 系统 🏆", points: "T4 击杀: 2 分 &nbsp;|&nbsp; T5 击杀: 5 分 &nbsp;|&nbsp; 阵亡: 15 分", dkpGoal: "DKP 目标 = 初始战力", phName: "玩家名字", phPower: "初始战力", phT4: "T4 击杀", phT5: "T5 击杀", phDeads: "阵亡", btnSave: "保存玩家", logTitle: "💾 记录与进度", noLogs: "暂无记录。在上方输入数据！", progress: "当前进度:", history: "历史记录:", clearBtn: "🗑️ 清除记录", alertName: "请输入玩家名字", confirmDel: "您确定要删除所有记录吗" },
   ja: { title: "🏆 1854 DKP システム 🏆", points: "T4 撃破: 2 pt &nbsp;|&nbsp; T5 撃破: 5 pt &nbsp;|&nbsp; 戦死: 15 pt", dkpGoal: "DKP 目標 = 初期戦力", phName: "プレイヤー名", phPower: "初期戦力", phT4: "T4 撃破", phT5: "T5 撃破", phDeads: "戦死", btnSave: "保存する", logTitle: "💾 ログと進行状況", noLogs: "ログがありません。データを入力してください！", progress: "現在の進行状況:", history: "履歴:", clearBtn: "🗑️ ログを消去", alertName: "プレイヤー名を入力してください", confirmDel: "本当にすべてのログを削除しますか" },
   ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "🗑️ 기록 삭제", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까" },
-  hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: 2 अंक &nbsp;|&nbsp; T5 किल्स: 5 अंक &nbsp;|&nbsp; मृत: 15 अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं。ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "🗑️ लॉग साफ़ करें", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं" },
+  hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: 2 अंक &nbsp;|&nbsp; T5 किल्स: 5 अंक &nbsp;|&nbsp; मृत: 15 अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं। ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "🗑️ लॉग साफ़ करें", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं" },
   ar: { title: "🏆 نظام 1854 DKP 🏆", points: "قتلى T4: 2 نقطة &nbsp;|&nbsp; قتلى T5: 5 نقاط &nbsp;|&nbsp; الموتى: 15 نقطة", dkpGoal: "هدف DKP = القوة الأولية", phName: "اسم اللاعب", phPower: "القوة الأولية", phT4: "قتلى T4", phT5: "قتلى T5", phDeads: "الموتى", btnSave: "حفظ اللاعب", logTitle: "💾 السجلات والتقدم", noLogs: "لا توجد سجلات. أدخل البيانات أعلاه!", progress: "التقدم الحالي:", history: "التاريخ:", clearBtn: "🗑️ مسح سجلات", alertName: "أدخل اسم اللاعب", confirmDel: "هل أنت متأكد أنك تريد حذف جميع سجلات" },
   vi: { title: "🏆 Hệ thống DKP 1854 🏆", points: "Giết T4: 2 điểm &nbsp;|&nbsp; Giết T5: 5 điểm &nbsp;|&nbsp; Lính chết: 15 điểm", dkpGoal: "Mục tiêu DKP = Sức mạnh ban đầu", phName: "Tên người chơi", phPower: "Sức mạnh ban đầu", phT4: "Giết T4", phT5: "Giết T5", phDeads: "Lính chết", btnSave: "Lưu", logTitle: "💾 Nhật ký & Tiến độ", noLogs: "Chưa có dữ liệu. Nhập ở trên!", progress: "Tiến độ:", history: "Lịch sử:", clearBtn: "🗑️ Xóa nhật ký của", alertName: "Nhập tên", confirmDel: "Bạn có chắc chắn muốn xóa nhật ký của" },
   th: { title: "🏆 ระบบ 1854 DKP 🏆", points: "คิล T4: 2 แต้ม &nbsp;|&nbsp; คิล T5: 5 แต้ม &nbsp;|&nbsp; ตาย: 15 แต้ม", dkpGoal: "เป้าหมาย DKP = พลังเริ่มต้น", phName: "ชื่อผู้เล่น", phPower: "พลังเริ่มต้น", phT4: "คิล T4", phT5: "คิล T5", phDeads: "ทหารตาย", btnSave: "บันทึก", logTitle: "💾 บันทึกและความคืบหน้า", noLogs: "ยังไม่มีบันทึก ป้อนข้อมูลด้านบน!", progress: "ความคืบหน้าปัจจุบัน:", history: "ประวัติ:", clearBtn: "🗑️ ล้างบันทึกของ", alertName: "กรุณาใส่ชื่อ", confirmDel: "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึกทั้งหมดของ" },
@@ -607,21 +609,17 @@ function toggleTheme() {
   
   if (body.classList.contains("dark-mode")) {
     localStorage.setItem("theme", "dark");
-    // Removed text from button
     toggleBtn.innerText = "☀️";
   } else {
     localStorage.setItem("theme", "light");
-    // Removed text from button
     toggleBtn.innerText = "🌙";
   }
 }
 
-// Initial theme setup (removed text from buttons here too)
 if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark-mode");
   document.getElementById("themeToggle").innerText = "☀️";
 } else {
-  // Default light mode icon setup just in case
   document.getElementById("themeToggle").innerText = "🌙";
 }
 
@@ -734,7 +732,8 @@ function displaySavedData() {
   let html = "";
   
   if (players.length === 0) {
-    html = `<div style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`;
+    // The "No edits" message is now inside the unified panel style as well
+    html = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`;
     document.getElementById("savedDataList").innerHTML = html;
     return;
   }
@@ -778,8 +777,9 @@ function displaySavedData() {
 
     const animationDelay = index * 0.05;
 
+    // Added unified-panel class to player cards to guarantee exact matching
     html += `
-      <div class="player-card" style="animation-delay: ${animationDelay}s;">
+      <div class="unified-panel player-card" style="animation-delay: ${animationDelay}s;">
         <div class="player-title">👤 ${group.displayName}</div>
         
         <div class="small" style="margin-bottom: 6px;">
