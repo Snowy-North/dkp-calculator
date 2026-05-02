@@ -7,7 +7,6 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#007aff">
 
-<!-- iPhone support -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -35,7 +34,7 @@ input {
   padding:12px;
   margin:6px 0;
   font-size:16px;
-  box-sizing: border-box; /* Keeps inputs inside the container bounds */
+  box-sizing: border-box;
 }
 
 button {
@@ -47,6 +46,12 @@ button {
   border:none;
   border-radius:10px;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #005bb5;
 }
 
 .live {
@@ -56,6 +61,39 @@ button {
   border-radius:10px;
   text-align:center;
   font-weight:bold;
+}
+
+/* Styles for the new saved data section */
+#savedDataContainer {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 2px dashed #ddd;
+}
+
+#savedDataContainer h3 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.saved-item {
+  background: #f9f9f9;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border-left: 4px solid #007aff;
+}
+
+.saved-item strong {
+  font-size: 16px;
+  color: #000;
+}
+
+.small {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+  display: block;
 }
 </style>
 </head>
@@ -76,6 +114,11 @@ DKP: 0 | DKP %: 0%
 </div>
 
 <button onclick="savePlayer()">Save Player</button>
+
+<div id="savedDataContainer">
+  <h3>💾 Saved Data</h3>
+  <div id="savedDataList"></div>
+</div>
 
 </div>
 
@@ -129,17 +172,17 @@ function savePlayer() {
   };
 
   if (index >= 0) {
-    players[index] = data;
+    players[index] = data; // Overwrite existing player
   } else {
-    players.push(data);
+    players.push(data); // Add new player
   }
 
   localStorage.setItem("guild", JSON.stringify(players));
 
   clearInputs();
   
-  // Added a small notification so you know the save worked!
-  alert(`${name} saved successfully!`);
+  // Refresh the display list immediately after saving
+  displaySavedData();
 }
 
 function clearInputs() {
@@ -150,6 +193,36 @@ function clearInputs() {
   document.getElementById("deads").value = "";
   updateLive();
 }
+
+// NEW FUNCTION: Read local storage and display the raw saved data
+function displaySavedData() {
+  let players = JSON.parse(localStorage.getItem("guild") || "[]");
+  let html = "";
+  
+  if (players.length === 0) {
+    html = "<span class='small'>No players saved yet.</span>";
+  } else {
+    players.forEach(p => {
+      const percent = p.startingPower > 0 ? ((p.dkp / p.startingPower) * 100).toFixed(2) : 0;
+      
+      html += `
+        <div class="saved-item">
+          <strong>${p.name}</strong>
+          <span class="small">
+            Power: ${p.startingPower.toLocaleString()} | T4: ${p.t4.toLocaleString()} | T5: ${p.t5.toLocaleString()} | Deads: ${p.deads.toLocaleString()}
+            <br>
+            <strong>DKP: ${p.dkp.toLocaleString()} (${percent}%)</strong>
+          </span>
+        </div>
+      `;
+    });
+  }
+  
+  document.getElementById("savedDataList").innerHTML = html;
+}
+
+// Call this once when the page loads so data appears immediately
+displaySavedData();
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
