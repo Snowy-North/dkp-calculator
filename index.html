@@ -158,8 +158,23 @@ function updateLive() {
     `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
 }
 
+// Update live preview when number inputs change
 ["startingPower","t4","t5","deads"].forEach(id => {
   document.getElementById(id).addEventListener("input", updateLive);
+});
+
+// Auto-fill Starting Power if the player name is already in the log
+document.getElementById("name").addEventListener("input", function() {
+  const currentName = this.value.trim().toLowerCase();
+  let players = getSafeData();
+  
+  // Look for the most recent entry with this name
+  const existingPlayer = players.find(x => x.name.toLowerCase() === currentName);
+  
+  if (existingPlayer) {
+    document.getElementById("startingPower").value = existingPlayer.startingPower;
+    updateLive();
+  }
 });
 
 function getSafeData() {
@@ -186,8 +201,6 @@ function savePlayer() {
   const dkp = calcDKP(p, t4, t5, d);
 
   let players = getSafeData();
-
-  // Create a timestamp for this specific edit
   const currentTime = new Date().toLocaleString();
 
   const data = {
@@ -200,10 +213,7 @@ function savePlayer() {
     timestamp: currentTime
   };
 
-  // Add the new edit to the TOP of the list instead of overwriting
   players.unshift(data);
-
-  // Note: I changed the local storage key to "guildLog" so it doesn't conflict with your old data
   localStorage.setItem("guildLog", JSON.stringify(players));
 
   clearInputs();
@@ -211,12 +221,11 @@ function savePlayer() {
 }
 
 function clearInputs() {
-  document.getElementById("name").value = "";
-  document.getElementById("startingPower").value = "";
+  // We intentionally leave "name" and "startingPower" alone so they persist
   document.getElementById("t4").value = "";
   document.getElementById("t5").value = "";
   document.getElementById("deads").value = "";
-  updateLive();
+  updateLive(); // Reset the live DKP preview to 0 for the next entry
 }
 
 function displaySavedData() {
@@ -250,6 +259,12 @@ function displaySavedData() {
 function clearAllData() {
   if (confirm("Are you sure you want to delete the entire edit log? This cannot be undone.")) {
     localStorage.removeItem("guildLog");
+    
+    // Also clear the name and power inputs since the log is wiped
+    document.getElementById("name").value = "";
+    document.getElementById("startingPower").value = "";
+    
+    clearInputs();
     displaySavedData();
   }
 }
