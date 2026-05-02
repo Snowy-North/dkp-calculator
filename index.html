@@ -38,8 +38,8 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -1; /* Puts the canvas firmly in the background */
-  pointer-events: none; /* So you can click right through the potatoes */
+  z-index: -1; 
+  pointer-events: none; 
 }
 
 /* Main Container */
@@ -52,14 +52,14 @@ body {
   transition: background 0.4s ease, box-shadow 0.4s ease;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   position: relative;
-  z-index: 10; /* Keeps the app interface above the physics canvas */
+  z-index: 10; 
 }
 
 /* Top Controls */
 .top-controls {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: space-between; /* Changed to space-between to push them to opposite sides */
+  align-items: center;
   margin-bottom: 20px;
 }
 
@@ -345,6 +345,8 @@ body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; borde
 <div class="container">
   
   <div class="top-controls">
+    <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+    
     <select id="langSelect" class="lang-select" onchange="changeLanguage()">
       <optgroup label="Europe">
         <option value="en">🇬🇧 United Kingdom (EN)</option>
@@ -378,7 +380,6 @@ body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; borde
         <option value="id">🇮🇩 Indonesia (ID)</option>
       </optgroup>
     </select>
-    <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
   </div>
 
   <div class="header-section">
@@ -433,7 +434,7 @@ const render = Render.create({
         width: window.innerWidth,
         height: window.innerHeight,
         background: 'transparent',
-        wireframes: false // Important so default physics circles don't draw
+        wireframes: false 
     }
 });
 Render.run(render);
@@ -443,9 +444,10 @@ Runner.run(runner, engine);
 
 let floor, leftWall, rightWall;
 let potatoes = [];
+let trapdoorOpen = false; // System flag to track if the trap door is currently open
 
-// Build invisible walls so potatoes pile up
 function createWalls() {
+    // Puts the floor right beneath the screen edge
     floor = Bodies.rectangle(window.innerWidth / 2, window.innerHeight + 25, window.innerWidth * 2, 50, { isStatic: true });
     leftWall = Bodies.rectangle(-25, window.innerHeight / 2, 50, window.innerHeight * 2, { isStatic: true });
     rightWall = Bodies.rectangle(window.innerWidth + 25, window.innerHeight / 2, 50, window.innerHeight * 2, { isStatic: true });
@@ -453,13 +455,14 @@ function createWalls() {
 }
 createWalls();
 
-// Clear and rebuild when window resizes
 window.addEventListener('resize', () => {
     render.canvas.width = window.innerWidth;
     render.canvas.height = window.innerHeight;
     render.options.width = window.innerWidth;
     render.options.height = window.innerHeight;
-    resetPotatoes();
+    if (!trapdoorOpen) {
+        resetPotatoes();
+    }
 });
 
 function resetPotatoes() {
@@ -471,33 +474,43 @@ function resetPotatoes() {
 
 // Drops a new potato
 function dropPotato() {
-    // Check if the pile has reached the top 15% of the screen
-    let settledNearTop = 0;
-    for (let p of potatoes) {
-        if (p.body.position.y < window.innerHeight * 0.15 && p.body.speed < 0.2) {
-            settledNearTop++;
+    if (!trapdoorOpen) {
+        // Check if the pile has reached 1/4 of the screen from the bottom (75% from the top)
+        let settledNearQuarter = 0;
+        for (let p of potatoes) {
+            if (p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) {
+                settledNearQuarter++;
+            }
+        }
+
+        // If the pile hits the 1/4 mark, open the trap door!
+        if (settledNearQuarter > 5 || potatoes.length > 300) {
+            trapdoorOpen = true;
+            
+            // Literally remove the floor physics body so they all fall
+            Composite.remove(world, floor);
+            
+            // Wait 3 seconds for them to satisfyingly flush out of the screen, then reset
+            setTimeout(() => {
+                resetPotatoes();
+                trapdoorOpen = false;
+            }, 3000); 
         }
     }
 
-    // Reset if it's hitting the top, or hard cap at 500 to save memory
-    if (settledNearTop > 3 || potatoes.length > 500) {
-        resetPotatoes();
-        return;
-    }
-
-    // Create random potato body
-    const radius = Math.random() * 8 + 14; // Size variation
-    const x = Math.random() * (window.innerWidth - 60) + 30; // Random X placement
+    // Create random potato body (we still drop them even if the trap door is open for a continuous rain effect)
+    const radius = Math.random() * 8 + 14; 
+    const x = Math.random() * (window.innerWidth - 60) + 30; 
     
     const body = Bodies.circle(x, -50, radius, {
-        restitution: 0.3, // Bounciness
-        friction: 0.8,    // They stick together slightly
+        restitution: 0.3, 
+        friction: 0.8,    
         density: 0.05,
-        render: { visible: false } // Hide the default geometric shape
+        render: { visible: false } 
     });
 
     Composite.add(world, body);
-    potatoes.push({ body: body, fontSize: radius * 2 }); // Save info for drawing
+    potatoes.push({ body: body, fontSize: radius * 2 }); 
 }
 
 // Hook into the render engine to draw emojis perfectly over the invisible physics bodies
@@ -505,7 +518,7 @@ Events.on(render, 'afterRender', function() {
     const context = render.context;
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.globalAlpha = 0.35; // Faded so it doesn't distract from the app
+    context.globalAlpha = 0.35; 
     
     for (let i = 0; i < potatoes.length; i++) {
         const p = potatoes[i];
@@ -537,7 +550,7 @@ const i18n = {
   tr: { title: "🏆 1854 DKP Sistemi 🏆", points: "T4 Leş: 2 Puan &nbsp;|&nbsp; T5 Leş: 5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", dkpGoal: "DKP Hedefi = Başlangıç Gücü", phName: "Oyuncu adı", phPower: "Başlangıç Gücü", phT4: "T4 Leş", phT5: "T5 Leş", phDeads: "Ölü", btnSave: "Oyuncuyu Kaydet", logTitle: "💾 Kayıtlar ve İlerleme", noLogs: "Kayıt yok. Yukarıya veri girin!", progress: "Mevcut İlerleme:", history: "Geçmiş:", clearBtn: "🗑️ Kayıtları Temizle", alertName: "Oyuncu adını girin", confirmDel: "Tüm kayıtları silmek istediğinizden emin misiniz:" },
   zh: { title: "🏆 1854 DKP 系统 🏆", points: "T4 击杀: 2 分 &nbsp;|&nbsp; T5 击杀: 5 分 &nbsp;|&nbsp; 阵亡: 15 分", dkpGoal: "DKP 目标 = 初始战力", phName: "玩家名字", phPower: "初始战力", phT4: "T4 击杀", phT5: "T5 击杀", phDeads: "阵亡", btnSave: "保存玩家", logTitle: "💾 记录与进度", noLogs: "暂无记录。在上方输入数据！", progress: "当前进度:", history: "历史记录:", clearBtn: "🗑️ 清除记录", alertName: "请输入玩家名字", confirmDel: "您确定要删除所有记录吗" },
   ja: { title: "🏆 1854 DKP システム 🏆", points: "T4 撃破: 2 pt &nbsp;|&nbsp; T5 撃破: 5 pt &nbsp;|&nbsp; 戦死: 15 pt", dkpGoal: "DKP 目標 = 初期戦力", phName: "プレイヤー名", phPower: "初期戦力", phT4: "T4 撃破", phT5: "T5 撃破", phDeads: "戦死", btnSave: "保存する", logTitle: "💾 ログと進行状況", noLogs: "ログがありません。データを入力してください！", progress: "現在の進行状況:", history: "履歴:", clearBtn: "🗑️ ログを消去", alertName: "プレイヤー名を入力してください", confirmDel: "本当にすべてのログを削除しますか" },
-  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "🗑️ 기록 삭제", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까" },
+  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", 유T5: "T5 킬", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "🗑️ 기록 삭제", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까" },
   hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: 2 अंक &nbsp;|&nbsp; T5 किल्स: 5 अंक &nbsp;|&nbsp; मृत: 15 अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं। ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "🗑️ लॉग साफ़ करें", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं" },
   ar: { title: "🏆 نظام 1854 DKP 🏆", points: "قتلى T4: 2 نقطة &nbsp;|&nbsp; قتلى T5: 5 نقاط &nbsp;|&nbsp; الموتى: 15 نقطة", dkpGoal: "هدف DKP = القوة الأولية", phName: "اسم اللاعب", phPower: "القوة الأولية", phT4: "قتلى T4", phT5: "قتلى T5", phDeads: "الموتى", btnSave: "حفظ اللاعب", logTitle: "💾 السجلات والتقدم", noLogs: "لا توجد سجلات. أدخل البيانات أعلاه!", progress: "التقدم الحالي:", history: "التاريخ:", clearBtn: "🗑️ مسح سجلات", alertName: "أدخل اسم اللاعب", confirmDel: "هل أنت متأكد أنك تريد حذف جميع سجلات" },
   vi: { title: "🏆 Hệ thống DKP 1854 🏆", points: "Giết T4: 2 điểm &nbsp;|&nbsp; Giết T5: 5 điểm &nbsp;|&nbsp; Lính chết: 15 điểm", dkpGoal: "Mục tiêu DKP = Sức mạnh ban đầu", phName: "Tên người chơi", phPower: "Sức mạnh ban đầu", phT4: "Giết T4", phT5: "Giết T5", phDeads: "Lính chết", btnSave: "Lưu", logTitle: "💾 Nhật ký & Tiến độ", noLogs: "Chưa có dữ liệu. Nhập ở trên!", progress: "Tiến độ:", history: "Lịch sử:", clearBtn: "🗑️ Xóa nhật ký của", alertName: "Nhập tên", confirmDel: "Bạn có chắc chắn muốn xóa nhật ký của" },
