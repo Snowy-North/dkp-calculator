@@ -10,7 +10,7 @@
 <!-- iPhone support -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="icon-192.pngPNG">
+<link rel="apple-touch-icon" href="icon-192.png">
   
 <title>1854 DKP System</title>
 
@@ -35,6 +35,7 @@ input {
   padding:12px;
   margin:6px 0;
   font-size:16px;
+  box-sizing: border-box; /* Keeps inputs inside the container bounds */
 }
 
 button {
@@ -45,24 +46,7 @@ button {
   color:white;
   border:none;
   border-radius:10px;
-}
-
-.player {
-  border-top:1px solid #eee;
-  padding:10px 0;
-}
-
-.rank {
-  font-weight:bold;
-}
-
-.gold { color:#d4af37; }
-.silver { color:#9aa0a6; }
-.bronze { color:#cd7f32; }
-
-.small {
-  font-size:13px;
-  color:#666;
+  cursor: pointer;
 }
 
 .live {
@@ -93,7 +77,6 @@ DKP: 0 | DKP %: 0%
 
 <button onclick="savePlayer()">Save Player</button>
 
-<div id="list"></div>
 </div>
 
 <script>
@@ -154,7 +137,9 @@ function savePlayer() {
   localStorage.setItem("guild", JSON.stringify(players));
 
   clearInputs();
-  render();
+  
+  // Added a small notification so you know the save worked!
+  alert(`${name} saved successfully!`);
 }
 
 function clearInputs() {
@@ -165,48 +150,6 @@ function clearInputs() {
   document.getElementById("deads").value = "";
   updateLive();
 }
-
-function tier(dkp) {
-  if (dkp >= 100000000) return "🔥 Whale";
-  if (dkp >= 50000000) return "Soldier";
-  if (dkp >= 20000000) return "Rookie";
-  return "Noob";
-}
-
-function render() {
-  let players = JSON.parse(localStorage.getItem("guild") || "[]");
-
-  players.sort((a,b) => b.dkp - a.dkp);
-
-  let html = "<h3>🏆 Leaderboard</h3>";
-
-  players.forEach((p, i) => {
-    const rank = i + 1;
-
-    const medal =
-      rank === 1 ? "🥇" :
-      rank === 2 ? "🥈" :
-      rank === 3 ? "🥉" :
-      "#" + rank;
-
-    const percent = p.startingPower > 0
-      ? (p.dkp / p.startingPower) * 100
-      : 0;
-
-    html += `
-      <div class="player">
-        <div class="rank">${medal} ${p.name} (${tier(p.dkp)})</div>
-        <div>DKP: ${p.dkp.toLocaleString()}</div>
-        <div>DKP %: ${percent.toFixed(2)}%</div>
-        <div class="small">Starting Power: ${p.startingPower}</div>
-      </div>
-    `;
-  });
-
-  document.getElementById("list").innerHTML = html;
-}
-
-render();
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
