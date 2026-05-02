@@ -14,6 +14,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
   
 <title>1854 DKP System</title>
 
@@ -26,37 +28,18 @@ body {
   margin: 0;
   padding: 20px;
   transition: background 0.4s ease, color 0.4s ease;
-  overflow-x: hidden; /* Prevent horizontal scrolling from potatoes */
+  overflow-x: hidden; /* Prevent scrolling off screen */
 }
 
-/* POTATO RAIN ANIMATION BACKGROUND */
-#potato-rain {
+/* PHYSICS CANVAS BACKGROUND */
+#potato-canvas {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  pointer-events: none; /* So you can click through them */
-  z-index: -1; /* Puts them firmly in the background */
-  overflow: hidden;
-}
-
-.falling-potato {
-  position: absolute;
-  top: -10vh;
-  user-select: none;
-  opacity: 0.4; /* Slightly faded so they aren't distracting */
-  animation: fall linear infinite;
-  filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.1));
-}
-
-@keyframes fall {
-  0% {
-    transform: translateY(-10vh) rotate(0deg);
-  }
-  100% {
-    transform: translateY(110vh) rotate(360deg);
-  }
+  z-index: -1; /* Puts the canvas firmly in the background */
+  pointer-events: none; /* So you can click right through the potatoes */
 }
 
 /* Main Container */
@@ -69,7 +52,7 @@ body {
   transition: background 0.4s ease, box-shadow 0.4s ease;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   position: relative;
-  z-index: 10; /* Keeps the container above the potato rain */
+  z-index: 10; /* Keeps the app interface above the physics canvas */
 }
 
 /* Top Controls */
@@ -357,7 +340,7 @@ body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; borde
 
 <body>
 
-<div id="potato-rain"></div>
+<canvas id="potato-canvas"></canvas>
 
 <div class="container">
   
@@ -428,28 +411,121 @@ DKP: 0 | DKP %: 0%
 </div>
 
 <script>
-// --- POTATO RAIN GENERATOR ---
-function createPotatoes() {
-  const rainContainer = document.getElementById('potato-rain');
-  const numPotatoes = 35; // Adjust this number for more or fewer potatoes
-  
-  for (let i = 0; i < numPotatoes; i++) {
-    let potato = document.createElement('div');
-    potato.innerText = '🥔';
-    potato.className = 'falling-potato';
-    
-    // Randomize position, size, and falling speed
-    potato.style.left = (Math.random() * 100) + 'vw';
-    potato.style.animationDuration = (Math.random() * 5 + 6) + 's'; // Falls between 6 and 11 seconds
-    potato.style.animationDelay = (Math.random() * 10) + 's'; // Staggers the start times
-    potato.style.fontSize = (Math.random() * 20 + 15) + 'px'; // Size between 15px and 35px
-    
-    rainContainer.appendChild(potato);
-  }
+// ==========================================
+// 🥔 POTATO PHYSICS ENGINE (Matter.js)
+// ==========================================
+const Engine = Matter.Engine,
+      Render = Matter.Render,
+      Runner = Matter.Runner,
+      Bodies = Matter.Bodies,
+      Composite = Matter.Composite,
+      Events = Matter.Events;
+
+const engine = Engine.create();
+const world = engine.world;
+const canvas = document.getElementById('potato-canvas');
+
+// Create the renderer (hidden background canvas)
+const render = Render.create({
+    canvas: canvas,
+    engine: engine,
+    options: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        background: 'transparent',
+        wireframes: false // Important so default physics circles don't draw
+    }
+});
+Render.run(render);
+
+const runner = Runner.create();
+Runner.run(runner, engine);
+
+let floor, leftWall, rightWall;
+let potatoes = [];
+
+// Build invisible walls so potatoes pile up
+function createWalls() {
+    floor = Bodies.rectangle(window.innerWidth / 2, window.innerHeight + 25, window.innerWidth * 2, 50, { isStatic: true });
+    leftWall = Bodies.rectangle(-25, window.innerHeight / 2, 50, window.innerHeight * 2, { isStatic: true });
+    rightWall = Bodies.rectangle(window.innerWidth + 25, window.innerHeight / 2, 50, window.innerHeight * 2, { isStatic: true });
+    Composite.add(world, [floor, leftWall, rightWall]);
 }
-createPotatoes(); // Start the rain when the page loads!
+createWalls();
+
+// Clear and rebuild when window resizes
+window.addEventListener('resize', () => {
+    render.canvas.width = window.innerWidth;
+    render.canvas.height = window.innerHeight;
+    render.options.width = window.innerWidth;
+    render.options.height = window.innerHeight;
+    resetPotatoes();
+});
+
+function resetPotatoes() {
+    Composite.clear(world);
+    Engine.clear(engine);
+    potatoes = [];
+    createWalls();
+}
+
+// Drops a new potato
+function dropPotato() {
+    // Check if the pile has reached the top 15% of the screen
+    let settledNearTop = 0;
+    for (let p of potatoes) {
+        if (p.body.position.y < window.innerHeight * 0.15 && p.body.speed < 0.2) {
+            settledNearTop++;
+        }
+    }
+
+    // Reset if it's hitting the top, or hard cap at 500 to save memory
+    if (settledNearTop > 3 || potatoes.length > 500) {
+        resetPotatoes();
+        return;
+    }
+
+    // Create random potato body
+    const radius = Math.random() * 8 + 14; // Size variation
+    const x = Math.random() * (window.innerWidth - 60) + 30; // Random X placement
+    
+    const body = Bodies.circle(x, -50, radius, {
+        restitution: 0.3, // Bounciness
+        friction: 0.8,    // They stick together slightly
+        density: 0.05,
+        render: { visible: false } // Hide the default geometric shape
+    });
+
+    Composite.add(world, body);
+    potatoes.push({ body: body, fontSize: radius * 2 }); // Save info for drawing
+}
+
+// Hook into the render engine to draw emojis perfectly over the invisible physics bodies
+Events.on(render, 'afterRender', function() {
+    const context = render.context;
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.globalAlpha = 0.35; // Faded so it doesn't distract from the app
+    
+    for (let i = 0; i < potatoes.length; i++) {
+        const p = potatoes[i];
+        context.font = p.fontSize + "px Arial";
+        context.save();
+        context.translate(p.body.position.x, p.body.position.y);
+        context.rotate(p.body.angle);
+        context.fillText("🥔", 0, 0);
+        context.restore();
+    }
+    context.globalAlpha = 1.0;
+});
+
+// Drop a potato every 120 milliseconds
+setInterval(dropPotato, 120); 
 
 
+// ==========================================
+// APP LOGIC & TRANSLATIONS
+// ==========================================
 const i18n = {
   en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "🗑️ Clear Logs for", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for" },
   es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: 2 pts &nbsp;|&nbsp; Muertes T5: 5 pts &nbsp;|&nbsp; Muertos: 15 pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "🗑️ Borrar registros de", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de" },
