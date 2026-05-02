@@ -91,10 +91,7 @@ body {
   transform: translateY(-1px);
 }
 
-/* ==========================================
-   THE UNIFIED PANEL DESIGN
-   Applied to headers, previews, and cards
-========================================== */
+/* UNIFIED PANEL DESIGN */
 .unified-panel {
   background: #fafafa;
   border: 2px solid #e4e6eb;
@@ -151,6 +148,27 @@ input:focus {
   background: #fff;
   box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
   outline: none;
+}
+
+/* Split/Combine Toggle Link */
+.toggle-link-container {
+  text-align: right;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  padding-right: 4px;
+}
+
+.toggle-link {
+  font-size: 12px;
+  color: #007aff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.3s;
+  user-select: none;
+}
+
+.toggle-link:hover {
+  text-decoration: underline;
 }
 
 button.main-btn {
@@ -297,7 +315,7 @@ button.main-btn:active {
 }
 
 .log-entry {
-  background: #fff; /* Adjusted to stand out slightly from the panel */
+  background: #fff; 
   padding: 12px;
   margin-bottom: 8px;
   border-radius: 10px;
@@ -330,25 +348,19 @@ body.dark-mode { background: #121212; color: #e0e0e0; }
 body.dark-mode .container { background: #1e1e1e; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
 body.dark-mode .theme-toggle, body.dark-mode .lang-select { background: #2d2d2d; color: #e0e0e0; }
 body.dark-mode .theme-toggle:hover, body.dark-mode .lang-select:hover { background: #3d3d3d; }
-
-/* Applying Dark Mode to all Unified Panels */
 body.dark-mode .unified-panel { background: #252525; border-color: #333; }
-
 body.dark-mode .header-section h2, body.dark-mode .logs-header, body.dark-mode .player-title { color: #fff; }
 body.dark-mode .point-values, body.dark-mode .small, body.dark-mode .dkp-goal { color: #aaa; }
-
+body.dark-mode .toggle-link { color: #66a3ff; }
 body.dark-mode input { background: #252525; color: #fff; border-color: #333; }
 body.dark-mode input:focus { border-color: #0d84ff; background: #2a2a2a; box-shadow: 0 0 0 4px rgba(13, 132, 255, 0.2); }
 body.dark-mode input::placeholder { color: #777; }
-
 body.dark-mode .live { color: #66a3ff; }
 body.dark-mode #savedDataContainer { border-color: #333; }
 body.dark-mode .player-card { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 body.dark-mode .progress-bg { background: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-
 body.dark-mode .log-entry { background: #2d2d2d; border-color: #444; border-left-color: #555; }
 body.dark-mode .log-entry:first-of-type { border-left-color: #0d84ff; background: #1a2639; }
-
 body.dark-mode .btn-small-danger { background: #3d1c1c; color: #ff453a; border-color: #5c2424; }
 body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; border-color: #ff453a; }
 </style>
@@ -410,8 +422,16 @@ body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; borde
 
 <input id="name" placeholder="Player name">
 <input id="startingPower" type="text" inputmode="numeric" placeholder="Starting Power">
+
+<div class="toggle-link-container">
+  <span id="toggleModeText" class="toggle-link" onclick="toggleKillMode()">Combine T4 & T5 Kills</span>
+</div>
+
 <input id="t4" type="text" inputmode="numeric" placeholder="T4 kills">
 <input id="t5" type="text" inputmode="numeric" placeholder="T5 kills">
+
+<input id="t4t5" type="text" inputmode="numeric" placeholder="T4 & T5 Kills" style="display: none;">
+
 <input id="deads" type="text" inputmode="numeric" placeholder="Deads">
 
 <div class="unified-panel live" id="live">
@@ -429,7 +449,7 @@ DKP: 0 | DKP %: 0%
 
 <script>
 // ==========================================
-// 🥔 POTATO PHYSICS ENGINE (Matter.js)
+// 🥔 POTATO PHYSICS ENGINE
 // ==========================================
 const Engine = Matter.Engine,
       Render = Matter.Render,
@@ -445,12 +465,7 @@ const canvas = document.getElementById('potato-canvas');
 const render = Render.create({
     canvas: canvas,
     engine: engine,
-    options: {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        background: 'transparent',
-        wireframes: false 
-    }
+    options: { width: window.innerWidth, height: window.innerHeight, background: 'transparent', wireframes: false }
 });
 Render.run(render);
 
@@ -474,7 +489,6 @@ window.addEventListener('resize', () => {
     render.canvas.height = window.innerHeight;
     render.options.width = window.innerWidth;
     render.options.height = window.innerHeight;
-    
     Composite.clear(world);
     Engine.clear(engine);
     potatoes = [];
@@ -482,9 +496,7 @@ window.addEventListener('resize', () => {
     createWalls();
 });
 
-
 function dropPotato() {
-    // 🧹 GARBAGE COLLECTION
     for (let i = potatoes.length - 1; i >= 0; i--) {
         if (potatoes[i].body.position.y > window.innerHeight + 300) {
             Composite.remove(world, potatoes[i].body);
@@ -492,7 +504,6 @@ function dropPotato() {
         }
     }
 
-    // 🚪 TRAP DOOR LOGIC
     if (!trapdoorOpen) {
         let settledNearQuarter = 0;
         for (let p of potatoes) {
@@ -500,11 +511,9 @@ function dropPotato() {
                 settledNearQuarter++;
             }
         }
-
         if (settledNearQuarter > 5 || potatoes.length > 300) {
             trapdoorOpen = true;
             Composite.remove(world, floor); 
-            
             setTimeout(() => {
                 Composite.add(world, floor);
                 trapdoorOpen = false;
@@ -514,14 +523,7 @@ function dropPotato() {
 
     const radius = Math.random() * 8 + 14; 
     const x = Math.random() * (window.innerWidth - 60) + 30; 
-    
-    const body = Bodies.circle(x, -50, radius, {
-        restitution: 0.3, 
-        friction: 0.8,    
-        density: 0.05,
-        render: { visible: false } 
-    });
-
+    const body = Bodies.circle(x, -50, radius, { restitution: 0.3, friction: 0.8, density: 0.05, render: { visible: false } });
     Composite.add(world, body);
     potatoes.push({ body: body, fontSize: radius * 2 }); 
 }
@@ -531,7 +533,6 @@ Events.on(render, 'afterRender', function() {
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.globalAlpha = 0.35; 
-    
     for (let i = 0; i < potatoes.length; i++) {
         const p = potatoes[i];
         context.font = p.fontSize + "px Arial";
@@ -543,30 +544,31 @@ Events.on(render, 'afterRender', function() {
     }
     context.globalAlpha = 1.0;
 });
-
 setInterval(dropPotato, 120); 
 
 
 // ==========================================
 // APP LOGIC & TRANSLATIONS
 // ==========================================
+let isCombinedMode = false; // System flag for T4/T5 input mode
+
 const i18n = {
-  en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "🗑️ Clear Logs for", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for" },
-  es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: 2 pts &nbsp;|&nbsp; Muertes T5: 5 pts &nbsp;|&nbsp; Muertos: 15 pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "🗑️ Borrar registros de", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de" },
-  fr: { title: "🏆 Système DKP 1854 🏆", points: "Tués T4: 2 pts &nbsp;|&nbsp; Tués T5: 5 pts &nbsp;|&nbsp; Morts: 15 pts", dkpGoal: "Cible DKP = Puissance initiale", phName: "Nom du joueur", phPower: "Puissance initiale", phT4: "Tués T4", phT5: "Tués T5", phDeads: "Morts", btnSave: "Enregistrer", logTitle: "💾 Journaux et Progression", noLogs: "Aucun journal. Entrez les données !", progress: "Progression Actuelle :", history: "Historique :", clearBtn: "🗑️ Effacer les journaux de", alertName: "Entrez le nom du joueur", confirmDel: "Êtes-vous sûr de vouloir supprimer les journaux de" },
-  de: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 Pkt &nbsp;|&nbsp; T5 Kills: 5 Pkt &nbsp;|&nbsp; Tote: 15 Pkt", dkpGoal: "DKP-Ziel = Startkraft", phName: "Spielername", phPower: "Startkraft", phT4: "T4 Kills", phT5: "T5 Kills", phDeads: "Tote", btnSave: "Spieler speichern", logTitle: "💾 Protokolle & Fortschritt", noLogs: "Keine Einträge. Daten oben eingeben!", progress: "Aktueller Fortschritt:", history: "Verlauf:", clearBtn: "🗑️ Protokolle löschen für", alertName: "Spielername eingeben", confirmDel: "Möchten Sie wirklich alle Protokolle löschen für" },
-  it: { title: "🏆 Sistema DKP 1854 🏆", points: "Uccisioni T4: 2 pt &nbsp;|&nbsp; Uccisioni T5: 5 pt &nbsp;|&nbsp; Morti: 15 pt", dkpGoal: "Obiettivo DKP = Potere Iniziale", phName: "Nome giocatore", phPower: "Potere Iniziale", phT4: "Uccisioni T4", phT5: "Uccisioni T5", phDeads: "Morti", btnSave: "Salva Giocatore", logTitle: "💾 Registri e Progressi", noLogs: "Nessun registro. Inserisci i dati sopra!", progress: "Progresso Attuale:", history: "Cronologia:", clearBtn: "🗑️ Cancella registri di", alertName: "Inserisci il nome del giocatore", confirmDel: "Sei sicuro di voler eliminare i registri di" },
-  pt: { title: "🏆 Sistema DKP 1854 🏆", points: "Mortes T4: 2 pts &nbsp;|&nbsp; Mortes T5: 5 pts &nbsp;|&nbsp; Mortos: 15 pts", dkpGoal: "Meta DKP = Poder Inicial", phName: "Nome do jogador", phPower: "Poder Inicial", phT4: "Mortes T4", phT5: "Mortes T5", phDeads: "Mortos", btnSave: "Salvar Jogador", logTitle: "💾 Registros e Progresso", noLogs: "Nenhum registro. Insira os dados acima!", progress: "Progresso Atual:", history: "Histórico:", clearBtn: "🗑️ Limpar registros de", alertName: "Insira o nome do jogador", confirmDel: "Tem certeza de que deseja excluir os registros de" },
-  ru: { title: "🏆 Система DKP 1854 🏆", points: "Убийства T4: 2 оч &nbsp;|&nbsp; Убийства T5: 5 оч &nbsp;|&nbsp; Мертвые: 15 оч", dkpGoal: "Цель DKP = Начальная мощь", phName: "Имя игрока", phPower: "Начальная мощь", phT4: "Убийства T4", phT5: "Убийства T5", phDeads: "Мертвые", btnSave: "Сохранить", logTitle: "💾 Журналы и прогресс", noLogs: "Нет записей. Введите данные выше!", progress: "Текущий прогресс:", history: "История:", clearBtn: "🗑️ Очистить журналы для", alertName: "Введите имя игрока", confirmDel: "Вы уверены, что хотите удалить все журналы для" },
-  tr: { title: "🏆 1854 DKP Sistemi 🏆", points: "T4 Leş: 2 Puan &nbsp;|&nbsp; T5 Leş: 5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", dkpGoal: "DKP Hedefi = Başlangıç Gücü", phName: "Oyuncu adı", phPower: "Başlangıç Gücü", phT4: "T4 Leş", phT5: "T5 Leş", phDeads: "Ölü", btnSave: "Oyuncuyu Kaydet", logTitle: "💾 Kayıtlar ve İlerleme", noLogs: "Kayıt yok. Yukarıya veri girin!", progress: "Mevcut İlerleme:", history: "Geçmiş:", clearBtn: "🗑️ Kayıtları Temizle", alertName: "Oyuncu adını girin", confirmDel: "Tüm kayıtları silmek istediğinizden emin misiniz:" },
-  zh: { title: "🏆 1854 DKP 系统 🏆", points: "T4 击杀: 2 分 &nbsp;|&nbsp; T5 击杀: 5 分 &nbsp;|&nbsp; 阵亡: 15 分", dkpGoal: "DKP 目标 = 初始战力", phName: "玩家名字", phPower: "初始战力", phT4: "T4 击杀", phT5: "T5 击杀", phDeads: "阵亡", btnSave: "保存玩家", logTitle: "💾 记录与进度", noLogs: "暂无记录。在上方输入数据！", progress: "当前进度:", history: "历史记录:", clearBtn: "🗑️ 清除记录", alertName: "请输入玩家名字", confirmDel: "您确定要删除所有记录吗" },
-  ja: { title: "🏆 1854 DKP システム 🏆", points: "T4 撃破: 2 pt &nbsp;|&nbsp; T5 撃破: 5 pt &nbsp;|&nbsp; 戦死: 15 pt", dkpGoal: "DKP 目標 = 初期戦力", phName: "プレイヤー名", phPower: "初期戦力", phT4: "T4 撃破", phT5: "T5 撃破", phDeads: "戦死", btnSave: "保存する", logTitle: "💾 ログと進行状況", noLogs: "ログがありません。データを入力してください！", progress: "現在の進行状況:", history: "履歴:", clearBtn: "🗑️ ログを消去", alertName: "プレイヤー名を入力してください", confirmDel: "本当にすべてのログを削除しますか" },
-  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "🗑️ 기록 삭제", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까" },
-  hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: 2 अंक &nbsp;|&nbsp; T5 किल्स: 5 अंक &nbsp;|&nbsp; मृत: 15 अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं। ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "🗑️ लॉग साफ़ करें", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं" },
-  ar: { title: "🏆 نظام 1854 DKP 🏆", points: "قتلى T4: 2 نقطة &nbsp;|&nbsp; قتلى T5: 5 نقاط &nbsp;|&nbsp; الموتى: 15 نقطة", dkpGoal: "هدف DKP = القوة الأولية", phName: "اسم اللاعب", phPower: "القوة الأولية", phT4: "قتلى T4", phT5: "قتلى T5", phDeads: "الموتى", btnSave: "حفظ اللاعب", logTitle: "💾 السجلات والتقدم", noLogs: "لا توجد سجلات. أدخل البيانات أعلاه!", progress: "التقدم الحالي:", history: "التاريخ:", clearBtn: "🗑️ مسح سجلات", alertName: "أدخل اسم اللاعب", confirmDel: "هل أنت متأكد أنك تريد حذف جميع سجلات" },
-  vi: { title: "🏆 Hệ thống DKP 1854 🏆", points: "Giết T4: 2 điểm &nbsp;|&nbsp; Giết T5: 5 điểm &nbsp;|&nbsp; Lính chết: 15 điểm", dkpGoal: "Mục tiêu DKP = Sức mạnh ban đầu", phName: "Tên người chơi", phPower: "Sức mạnh ban đầu", phT4: "Giết T4", phT5: "Giết T5", phDeads: "Lính chết", btnSave: "Lưu", logTitle: "💾 Nhật ký & Tiến độ", noLogs: "Chưa có dữ liệu. Nhập ở trên!", progress: "Tiến độ:", history: "Lịch sử:", clearBtn: "🗑️ Xóa nhật ký của", alertName: "Nhập tên", confirmDel: "Bạn có chắc chắn muốn xóa nhật ký của" },
-  th: { title: "🏆 ระบบ 1854 DKP 🏆", points: "คิล T4: 2 แต้ม &nbsp;|&nbsp; คิล T5: 5 แต้ม &nbsp;|&nbsp; ตาย: 15 แต้ม", dkpGoal: "เป้าหมาย DKP = พลังเริ่มต้น", phName: "ชื่อผู้เล่น", phPower: "พลังเริ่มต้น", phT4: "คิล T4", phT5: "คิล T5", phDeads: "ทหารตาย", btnSave: "บันทึก", logTitle: "💾 บันทึกและความคืบหน้า", noLogs: "ยังไม่มีบันทึก ป้อนข้อมูลด้านบน!", progress: "ความคืบหน้าปัจจุบัน:", history: "ประวัติ:", clearBtn: "🗑️ ล้างบันทึกของ", alertName: "กรุณาใส่ชื่อ", confirmDel: "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึกทั้งหมดของ" },
-  id: { title: "🏆 Sistem DKP 1854 🏆", points: "Kill T4: 2 Poin &nbsp;|&nbsp; Kill T5: 5 Poin &nbsp;|&nbsp; Mati: 15 Poin", dkpGoal: "Target DKP = Kekuatan Awal", phName: "Nama Pemain", phPower: "Kekuatan Awal", phT4: "Kill T4", phT5: "Kill T5", phDeads: "Mati", btnSave: "Simpan Pemain", logTitle: "💾 Log & Kemajuan", noLogs: "Belum ada data. Masukkan data di atas!", progress: "Kemajuan Saat Ini:", history: "Riwayat:", clearBtn: "🗑️ Hapus Log untuk", alertName: "Masukkan nama pemain", confirmDel: "Apakah Anda yakin ingin menghapus semua log untuk" }
+  en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts", pointsCombined: "T4 & T5 Kills: 3.5 pts &nbsp;|&nbsp; Deads: 15 pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phT4T5: "T4 & T5 Kills", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "🗑️ Clear Logs for", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for" },
+  es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: 2 pts &nbsp;|&nbsp; Muertes T5: 5 pts &nbsp;|&nbsp; Muertos: 15 pts", pointsCombined: "Muertes T4 y T5: 3.5 pts &nbsp;|&nbsp; Muertos: 15 pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phT4T5: "Muertes T4 y T5", btnCombine: "Combinar Muertes T4 y T5", btnSplit: "Separar Muertes T4 y T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "🗑️ Borrar registros de", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de" },
+  fr: { title: "🏆 Système DKP 1854 🏆", points: "Tués T4: 2 pts &nbsp;|&nbsp; Tués T5: 5 pts &nbsp;|&nbsp; Morts: 15 pts", pointsCombined: "Tués T4 & T5: 3.5 pts &nbsp;|&nbsp; Morts: 15 pts", dkpGoal: "Cible DKP = Puissance initiale", phName: "Nom du joueur", phPower: "Puissance initiale", phT4: "Tués T4", phT5: "Tués T5", phT4T5: "Tués T4 & T5", btnCombine: "Combiner Tués T4 & T5", btnSplit: "Séparer Tués T4 & T5", phDeads: "Morts", btnSave: "Enregistrer", logTitle: "💾 Journaux et Progression", noLogs: "Aucun journal. Entrez les données !", progress: "Progression Actuelle :", history: "Historique :", clearBtn: "🗑️ Effacer les journaux de", alertName: "Entrez le nom du joueur", confirmDel: "Êtes-vous sûr de vouloir supprimer les journaux de" },
+  de: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 Pkt &nbsp;|&nbsp; T5 Kills: 5 Pkt &nbsp;|&nbsp; Tote: 15 Pkt", pointsCombined: "T4 & T5 Kills: 3.5 Pkt &nbsp;|&nbsp; Tote: 15 Pkt", dkpGoal: "DKP-Ziel = Startkraft", phName: "Spielername", phPower: "Startkraft", phT4: "T4 Kills", phT5: "T5 Kills", phT4T5: "T4 & T5 Kills", btnCombine: "T4 & T5 Kills kombinieren", btnSplit: "T4 & T5 Kills trennen", phDeads: "Tote", btnSave: "Spieler speichern", logTitle: "💾 Protokolle & Fortschritt", noLogs: "Keine Einträge. Daten oben eingeben!", progress: "Aktueller Fortschritt:", history: "Verlauf:", clearBtn: "🗑️ Protokolle löschen für", alertName: "Spielername eingeben", confirmDel: "Möchten Sie wirklich alle Protokolle löschen für" },
+  it: { title: "🏆 Sistema DKP 1854 🏆", points: "Uccisioni T4: 2 pt &nbsp;|&nbsp; Uccisioni T5: 5 pt &nbsp;|&nbsp; Morti: 15 pt", pointsCombined: "Uccisioni T4 & T5: 3.5 pt &nbsp;|&nbsp; Morti: 15 pt", dkpGoal: "Obiettivo DKP = Potere Iniziale", phName: "Nome giocatore", phPower: "Potere Iniziale", phT4: "Uccisioni T4", phT5: "Uccisioni T5", phT4T5: "Uccisioni T4 & T5", btnCombine: "Combina Uccisioni T4 & T5", btnSplit: "Separa Uccisioni T4 & T5", phDeads: "Morti", btnSave: "Salva Giocatore", logTitle: "💾 Registri e Progressi", noLogs: "Nessun registro. Inserisci i dati sopra!", progress: "Progresso Attuale:", history: "Cronologia:", clearBtn: "🗑️ Cancella registri di", alertName: "Inserisci il nome del giocatore", confirmDel: "Sei sicuro di voler eliminare i registri di" },
+  pt: { title: "🏆 Sistema DKP 1854 🏆", points: "Mortes T4: 2 pts &nbsp;|&nbsp; Mortes T5: 5 pts &nbsp;|&nbsp; Mortos: 15 pts", pointsCombined: "Mortes T4 e T5: 3.5 pts &nbsp;|&nbsp; Mortos: 15 pts", dkpGoal: "Meta DKP = Poder Inicial", phName: "Nome do jogador", phPower: "Poder Inicial", phT4: "Mortes T4", phT5: "Mortes T5", phT4T5: "Mortes T4 e T5", btnCombine: "Combinar Mortes T4 e T5", btnSplit: "Separar Mortes T4 e T5", phDeads: "Mortos", btnSave: "Salvar Jogador", logTitle: "💾 Registros e Progresso", noLogs: "Nenhum registro. Insira os dados acima!", progress: "Progresso Atual:", history: "Histórico:", clearBtn: "🗑️ Limpar registros de", alertName: "Insira o nome do jogador", confirmDel: "Tem certeza de que deseja excluir os registros de" },
+  ru: { title: "🏆 Система DKP 1854 🏆", points: "Убийства T4: 2 оч &nbsp;|&nbsp; Убийства T5: 5 оч &nbsp;|&nbsp; Мертвые: 15 оч", pointsCombined: "Убийства T4 и T5: 3.5 оч &nbsp;|&nbsp; Мертвые: 15 оч", dkpGoal: "Цель DKP = Начальная мощь", phName: "Имя игрока", phPower: "Начальная мощь", phT4: "Убийства T4", phT5: "Убийства T5", phT4T5: "Убийства T4 и T5", btnCombine: "Объединить T4 и T5", btnSplit: "Разделить T4 и T5", phDeads: "Мертвые", btnSave: "Сохранить", logTitle: "💾 Журналы и прогресс", noLogs: "Нет записей. Введите данные выше!", progress: "Текущий прогресс:", history: "История:", clearBtn: "🗑️ Очистить журналы для", alertName: "Введите имя игрока", confirmDel: "Вы уверены, что хотите удалить все журналы для" },
+  tr: { title: "🏆 1854 DKP Sistemi 🏆", points: "T4 Leş: 2 Puan &nbsp;|&nbsp; T5 Leş: 5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", pointsCombined: "T4 & T5 Leş: 3.5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", dkpGoal: "DKP Hedefi = Başlangıç Gücü", phName: "Oyuncu adı", phPower: "Başlangıç Gücü", phT4: "T4 Leş", phT5: "T5 Leş", phT4T5: "T4 & T5 Leş", btnCombine: "T4 & T5 Leşlerini Birleştir", btnSplit: "T4 & T5 Leşlerini Ayır", phDeads: "Ölü", btnSave: "Oyuncuyu Kaydet", logTitle: "💾 Kayıtlar ve İlerleme", noLogs: "Kayıt yok. Yukarıya veri girin!", progress: "Mevcut İlerleme:", history: "Geçmiş:", clearBtn: "🗑️ Kayıtları Temizle", alertName: "Oyuncu adını girin", confirmDel: "Tüm kayıtları silmek istediğinizden emin misiniz:" },
+  zh: { title: "🏆 1854 DKP 系统 🏆", points: "T4 击杀: 2 分 &nbsp;|&nbsp; T5 击杀: 5 分 &nbsp;|&nbsp; 阵亡: 15 分", pointsCombined: "T4 & T5 击杀: 3.5 分 &nbsp;|&nbsp; 阵亡: 15 分", dkpGoal: "DKP 目标 = 初始战力", phName: "玩家名字", phPower: "初始战力", phT4: "T4 击杀", phT5: "T5 击杀", phT4T5: "T4 & T5 击杀", btnCombine: "合并 T4 & T5 击杀", btnSplit: "分开 T4 & T5 击杀", phDeads: "阵亡", btnSave: "保存玩家", logTitle: "💾 记录与进度", noLogs: "暂无记录。在上方输入数据！", progress: "当前进度:", history: "历史记录:", clearBtn: "🗑️ 清除记录", alertName: "请输入玩家名字", confirmDel: "您确定要删除所有记录吗" },
+  ja: { title: "🏆 1854 DKP システム 🏆", points: "T4 撃破: 2 pt &nbsp;|&nbsp; T5 撃破: 5 pt &nbsp;|&nbsp; 戦死: 15 pt", pointsCombined: "T4 & T5 撃破: 3.5 pt &nbsp;|&nbsp; 戦死: 15 pt", dkpGoal: "DKP 目標 = 初期戦力", phName: "プレイヤー名", phPower: "初期戦力", phT4: "T4 撃破", phT5: "T5 撃破", phT4T5: "T4 & T5 撃破", btnCombine: "T4 & T5 撃破を統合", btnSplit: "T4 & T5 撃破を分割", phDeads: "戦死", btnSave: "保存する", logTitle: "💾 ログと進行状況", noLogs: "ログがありません。データを入力してください！", progress: "現在の進行状況:", history: "履歴:", clearBtn: "🗑️ ログを消去", alertName: "プレイヤー名を入力してください", confirmDel: "本当にすべてのログを削除しますか" },
+  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", pointsCombined: "T4 & T5 킬: 3.5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phT4T5: "T4 & T5 킬", btnCombine: "T4 & T5 킬 통합", btnSplit: "T4 & T5 킬 분리", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "🗑️ 기록 삭제", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까" },
+  hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: 2 अंक &nbsp;|&nbsp; T5 किल्स: 5 अंक &nbsp;|&nbsp; मृत: 15 अंक", pointsCombined: "T4 और T5 किल्स: 3.5 अंक &nbsp;|&nbsp; मृत: 15 अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phT4T5: "T4 और T5 किल्स", btnCombine: "T4 और T5 किल्स मिलाएं", btnSplit: "T4 और T5 किल्स अलग करें", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं। ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "🗑️ लॉग साफ़ करें", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं" },
+  ar: { title: "🏆 نظام 1854 DKP 🏆", points: "قتلى T4: 2 نقطة &nbsp;|&nbsp; قتلى T5: 5 نقاط &nbsp;|&nbsp; الموتى: 15 نقطة", pointsCombined: "قتلى T4 و T5: 3.5 نقاط &nbsp;|&nbsp; الموتى: 15 نقطة", dkpGoal: "هدف DKP = القوة الأولية", phName: "اسم اللاعب", phPower: "القوة الأولية", phT4: "قتلى T4", phT5: "قتلى T5", phT4T5: "قتلى T4 و T5", btnCombine: "دمج قتلى T4 و T5", btnSplit: "فصل قتلى T4 و T5", phDeads: "الموتى", btnSave: "حفظ اللاعب", logTitle: "💾 السجلات والتقدم", noLogs: "لا توجد سجلات. أدخل البيانات أعلاه!", progress: "التقدم الحالي:", history: "التاريخ:", clearBtn: "🗑️ مسح سجلات", alertName: "أدخل اسم اللاعب", confirmDel: "هل أنت متأكد أنك تريد حذف جميع سجلات" },
+  vi: { title: "🏆 Hệ thống DKP 1854 🏆", points: "Giết T4: 2 điểm &nbsp;|&nbsp; Giết T5: 5 điểm &nbsp;|&nbsp; Lính chết: 15 điểm", pointsCombined: "Giết T4 & T5: 3.5 điểm &nbsp;|&nbsp; Lính chết: 15 điểm", dkpGoal: "Mục tiêu DKP = Sức mạnh ban đầu", phName: "Tên người chơi", phPower: "Sức mạnh ban đầu", phT4: "Giết T4", phT5: "Giết T5", phT4T5: "Giết T4 & T5", btnCombine: "Gộp Giết T4 & T5", btnSplit: "Tách Giết T4 & T5", phDeads: "Lính chết", btnSave: "Lưu", logTitle: "💾 Nhật ký & Tiến độ", noLogs: "Chưa có dữ liệu. Nhập ở trên!", progress: "Tiến độ:", history: "Lịch sử:", clearBtn: "🗑️ Xóa nhật ký của", alertName: "Nhập tên", confirmDel: "Bạn có chắc chắn muốn xóa nhật ký của" },
+  th: { title: "🏆 ระบบ 1854 DKP 🏆", points: "คิล T4: 2 แต้ม &nbsp;|&nbsp; คิล T5: 5 แต้ม &nbsp;|&nbsp; ตาย: 15 แต้ม", pointsCombined: "คิล T4 & T5: 3.5 แต้ม &nbsp;|&nbsp; ตาย: 15 แต้ม", dkpGoal: "เป้าหมาย DKP = พลังเริ่มต้น", phName: "ชื่อผู้เล่น", phPower: "พลังเริ่มต้น", phT4: "คิล T4", phT5: "คิล T5", phT4T5: "คิล T4 & T5", btnCombine: "รวมคิล T4 & T5", btnSplit: "แยกคิล T4 & T5", phDeads: "ทหารตาย", btnSave: "บันทึก", logTitle: "💾 บันทึกและความคืบหน้า", noLogs: "ยังไม่มีบันทึก ป้อนข้อมูลด้านบน!", progress: "ความคืบหน้าปัจจุบัน:", history: "ประวัติ:", clearBtn: "🗑️ ล้างบันทึกของ", alertName: "กรุณาใส่ชื่อ", confirmDel: "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึกทั้งหมดของ" },
+  id: { title: "🏆 Sistem DKP 1854 🏆", points: "Kill T4: 2 Poin &nbsp;|&nbsp; Kill T5: 5 Poin &nbsp;|&nbsp; Mati: 15 Poin", pointsCombined: "Kill T4 & T5: 3.5 Poin &nbsp;|&nbsp; Mati: 15 Poin", dkpGoal: "Target DKP = Kekuatan Awal", phName: "Nama Pemain", phPower: "Kekuatan Awal", phT4: "Kill T4", phT5: "Kill T5", phT4T5: "Kill T4 & T5", btnCombine: "Gabungkan Kill T4 & T5", btnSplit: "Pisahkan Kill T4 & T5", phDeads: "Mati", btnSave: "Simpan Pemain", logTitle: "💾 Log & Kemajuan", noLogs: "Belum ada data. Masukkan data di atas!", progress: "Kemajuan Saat Ini:", history: "Riwayat:", clearBtn: "🗑️ Hapus Log untuk", alertName: "Masukkan nama pemain", confirmDel: "Apakah Anda yakin ingin menghapus semua log untuk" }
 };
 
 let currentLang = localStorage.getItem("lang") || "en";
@@ -588,13 +590,19 @@ function applyTranslations() {
   const t = i18n[currentLang];
   
   document.getElementById("mainTitle").innerHTML = t.title;
-  document.getElementById("pointValues").innerHTML = t.points;
+  document.getElementById("pointValues").innerHTML = isCombinedMode ? t.pointsCombined : t.points;
   document.getElementById("dkpGoal").innerHTML = t.dkpGoal; 
   document.getElementById("name").placeholder = t.phName;
   document.getElementById("startingPower").placeholder = t.phPower;
+  
+  // Input Placeholders
   document.getElementById("t4").placeholder = t.phT4;
   document.getElementById("t5").placeholder = t.phT5;
+  document.getElementById("t4t5").placeholder = t.phT4T5;
   document.getElementById("deads").placeholder = t.phDeads;
+  
+  // Buttons and Titles
+  document.getElementById("toggleModeText").innerText = isCombinedMode ? t.btnSplit : t.btnCombine;
   document.getElementById("saveBtn").innerText = t.btnSave;
   document.getElementById("logsTitle").innerText = t.logTitle;
   
@@ -604,9 +612,7 @@ function applyTranslations() {
 function toggleTheme() {
   const body = document.body;
   const toggleBtn = document.getElementById("themeToggle");
-  
   body.classList.toggle("dark-mode");
-  
   if (body.classList.contains("dark-mode")) {
     localStorage.setItem("theme", "dark");
     toggleBtn.innerText = "☀️";
@@ -623,8 +629,34 @@ if (localStorage.getItem("theme") === "dark") {
   document.getElementById("themeToggle").innerText = "🌙";
 }
 
-function calcDKP(p, t4, t5, d) {
-  return (p * 0) + (t4 * 2) + (t5 * 5) + (d * 15);
+// TOGGLE SPLIT / COMBINED MODE
+function toggleKillMode() {
+  isCombinedMode = !isCombinedMode;
+  
+  const t4Input = document.getElementById("t4");
+  const t5Input = document.getElementById("t5");
+  const t4t5Input = document.getElementById("t4t5");
+
+  if (isCombinedMode) {
+    t4Input.style.display = "none";
+    t5Input.style.display = "none";
+    t4t5Input.style.display = "block";
+    t4Input.value = "";
+    t5Input.value = "";
+  } else {
+    t4Input.style.display = "block";
+    t5Input.style.display = "block";
+    t4t5Input.style.display = "none";
+    t4t5Input.value = "";
+  }
+  
+  applyTranslations(); // Updates the header and button text automatically
+  updateLive();
+}
+
+
+function calcDKP(p, t4, t5, t4t5, d) {
+  return (p * 0) + (t4 * 2) + (t5 * 5) + (t4t5 * 3.5) + (d * 15);
 }
 
 function getNum(id) {
@@ -634,18 +666,19 @@ function getNum(id) {
 
 function updateLive() {
   const p = getNum("startingPower");
-  const t4 = getNum("t4");
-  const t5 = getNum("t5");
+  const t4 = isCombinedMode ? 0 : getNum("t4");
+  const t5 = isCombinedMode ? 0 : getNum("t5");
+  const t4t5 = isCombinedMode ? getNum("t4t5") : 0;
   const d = getNum("deads");
 
-  const dkp = calcDKP(p, t4, t5, d);
+  const dkp = calcDKP(p, t4, t5, t4t5, d);
   const percent = p > 0 ? (dkp / p) * 100 : 0;
 
   document.getElementById("live").innerText =
     `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
 }
 
-["startingPower","t4","t5","deads"].forEach(id => {
+["startingPower","t4","t5","t4t5","deads"].forEach(id => {
   document.getElementById(id).addEventListener("input", function(e) {
     let rawStr = this.value.replace(/,/g, "").replace(/\D/g, "");
     if (rawStr !== "") {
@@ -682,18 +715,27 @@ function savePlayer() {
   const t = i18n[currentLang];
   const name = document.getElementById("name").value.trim();
   const p = getNum("startingPower");
-  const t4 = getNum("t4");
-  const t5 = getNum("t5");
+  const t4 = isCombinedMode ? 0 : getNum("t4");
+  const t5 = isCombinedMode ? 0 : getNum("t5");
+  const t4t5 = isCombinedMode ? getNum("t4t5") : 0;
   const d = getNum("deads");
 
   if (!name) return alert(t.alertName);
 
-  const dkp = calcDKP(p, t4, t5, d);
+  const dkp = calcDKP(p, t4, t5, t4t5, d);
   let players = getSafeData();
   const currentTime = new Date().toLocaleString();
 
   const data = {
-    name, startingPower: p, t4, t5, deads: d, dkp, timestamp: currentTime
+    name, 
+    startingPower: p, 
+    t4, 
+    t5, 
+    t4t5, // Saves the combined stat 
+    deads: d, 
+    dkp, 
+    timestamp: currentTime,
+    isCombined: isCombinedMode // Identifies which mode was used
   };
 
   players.unshift(data);
@@ -706,6 +748,7 @@ function savePlayer() {
 function clearInputs() {
   document.getElementById("t4").value = "";
   document.getElementById("t5").value = "";
+  document.getElementById("t4t5").value = "";
   document.getElementById("deads").value = "";
   updateLive(); 
 }
@@ -732,7 +775,6 @@ function displaySavedData() {
   let html = "";
   
   if (players.length === 0) {
-    // The "No edits" message is now inside the unified panel style as well
     html = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`;
     document.getElementById("savedDataList").innerHTML = html;
     return;
@@ -777,7 +819,6 @@ function displaySavedData() {
 
     const animationDelay = index * 0.05;
 
-    // Added unified-panel class to player cards to guarantee exact matching
     html += `
       <div class="unified-panel player-card" style="animation-delay: ${animationDelay}s;">
         <div class="player-title">👤 ${group.displayName}</div>
@@ -798,13 +839,19 @@ function displaySavedData() {
       const e_percent = e_sp > 0 ? ((entry.dkp / e_sp) * 100).toFixed(2) : "0.00";
       const timeString = entry.timestamp ? entry.timestamp : "Unknown";
       
+      // Select the correct history string based on how they logged their kills
+      let statsHtml = "";
+      if (entry.isCombined) {
+         statsHtml = `${t.phT4T5}: ${(entry.t4t5||0).toLocaleString()} | ${t.phDeads}: ${(entry.deads||0).toLocaleString()}`;
+      } else {
+         statsHtml = `${t.phT4}: ${(entry.t4||0).toLocaleString()} | ${t.phT5}: ${(entry.t5||0).toLocaleString()} | ${t.phDeads}: ${(entry.deads||0).toLocaleString()}`;
+      }
+      
       html += `
         <div class="log-entry">
           <span class="timestamp">${timeString}</span>
           <strong>DKP: ${(entry.dkp||0).toLocaleString()} (${e_percent}%)</strong><br>
-          <span class="small">
-            T4: ${(entry.t4||0).toLocaleString()} | T5: ${(entry.t5||0).toLocaleString()} | Deads: ${(entry.deads||0).toLocaleString()}
-          </span>
+          <span class="small">${statsHtml}</span>
         </div>
       `;
     });
