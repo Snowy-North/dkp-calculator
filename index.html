@@ -180,14 +180,15 @@ button.main-btn:hover {
   transition: color 0.3s;
 }
 
-/* Progress Bar */
+/* Progress Bar Updates for Potato Text */
 .progress-bg {
   background: #e0e0e0;
   border-radius: 8px;
-  height: 14px;
+  height: 20px;
   width: 100%;
   overflow: hidden;
   margin-bottom: 12px;
+  position: relative; /* Required for placing text perfectly in center */
   transition: background 0.3s;
 }
 
@@ -196,6 +197,22 @@ button.main-btn:hover {
   height: 100%;
   border-radius: 8px;
   transition: width 0.4s ease;
+}
+
+/* New style for the potato text */
+.progress-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  line-height: 20px;
+  pointer-events: none;
 }
 
 .log-entry {
@@ -314,7 +331,6 @@ DKP: 0 | DKP %: 0%
 </div>
 
 <script>
-// --- MASSIVE TRANSLATION DICTIONARY ---
 const i18n = {
   en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "🗑️ Clear Logs for", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for" },
   es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: 2 pts &nbsp;|&nbsp; Muertes T5: 5 pts &nbsp;|&nbsp; Muertos: 15 pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "🗑️ Borrar registros de", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de" },
@@ -335,7 +351,6 @@ const i18n = {
 };
 
 let currentLang = localStorage.getItem("lang") || "en";
-// Pre-select the dropdown correctly based on saved language
 let selectBox = document.getElementById("langSelect");
 for(let i=0; i < selectBox.options.length; i++) {
   if(selectBox.options[i].value === currentLang) {
@@ -367,7 +382,6 @@ function applyTranslations() {
   displaySavedData();
 }
 
-// --- THEME TOGGLE LOGIC ---
 function toggleTheme() {
   const body = document.body;
   const toggleBtn = document.getElementById("themeToggle");
@@ -388,7 +402,6 @@ if (localStorage.getItem("theme") === "dark") {
   document.getElementById("themeToggle").innerText = "☀️ Light";
 }
 
-// --- DKP LOGIC ---
 function calcDKP(p, t4, t5, d) {
   return (p * 0) + (t4 * 2) + (t5 * 5) + (d * 15);
 }
@@ -517,6 +530,21 @@ function displaySavedData() {
     const sp = latest.startingPower || 0;
     const percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00";
     const visualWidth = Math.min(parseFloat(percent), 100);
+    
+    // Potato Logic Evaluation
+    const pValue = parseFloat(percent);
+    let potatoText = "";
+    if (pValue < 10) {
+      potatoText = "Under performing potato";
+    } else if (pValue < 50) {
+      potatoText = "Safe but do better potato";
+    } else if (pValue < 96) {
+      potatoText = "Met potato expectations";
+    } else if (pValue < 100) {
+      potatoText = "ooooo so close potato";
+    } else {
+      potatoText = "You're an amazing potato!";
+    }
 
     html += `
       <div class="player-card">
@@ -527,6 +555,7 @@ function displaySavedData() {
         </div>
         <div class="progress-bg">
           <div class="progress-fill" style="width: ${visualWidth}%;"></div>
+          <div class="progress-text">${potatoText}</div>
         </div>
         
         <div class="small" style="margin-bottom: 6px; font-weight: bold;">${t.history}</div>
