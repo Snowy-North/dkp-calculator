@@ -26,8 +26,40 @@ body {
   margin: 0;
   padding: 20px;
   transition: background 0.4s ease, color 0.4s ease;
+  overflow-x: hidden; /* Prevent horizontal scrolling from potatoes */
 }
 
+/* POTATO RAIN ANIMATION BACKGROUND */
+#potato-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* So you can click through them */
+  z-index: -1; /* Puts them firmly in the background */
+  overflow: hidden;
+}
+
+.falling-potato {
+  position: absolute;
+  top: -10vh;
+  user-select: none;
+  opacity: 0.4; /* Slightly faded so they aren't distracting */
+  animation: fall linear infinite;
+  filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.1));
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+  }
+  100% {
+    transform: translateY(110vh) rotate(360deg);
+  }
+}
+
+/* Main Container */
 .container {
   max-width: 500px;
   margin: auto;
@@ -35,7 +67,9 @@ body {
   padding: 25px;
   border-radius: 20px;
   transition: background 0.4s ease, box-shadow 0.4s ease;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 10; /* Keeps the container above the potato rain */
 }
 
 /* Top Controls */
@@ -300,7 +334,7 @@ button.main-btn:active {
 
 /* DARK MODE OVERRIDES */
 body.dark-mode { background: #121212; color: #e0e0e0; }
-body.dark-mode .container { background: #1e1e1e; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+body.dark-mode .container { background: #1e1e1e; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
 body.dark-mode .theme-toggle, body.dark-mode .lang-select { background: #2d2d2d; color: #e0e0e0; }
 body.dark-mode .theme-toggle:hover, body.dark-mode .lang-select:hover { background: #3d3d3d; }
 body.dark-mode .header-section { border-color: #2d2d2d; }
@@ -322,6 +356,8 @@ body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; borde
 </head>
 
 <body>
+
+<div id="potato-rain"></div>
 
 <div class="container">
   
@@ -392,6 +428,28 @@ DKP: 0 | DKP %: 0%
 </div>
 
 <script>
+// --- POTATO RAIN GENERATOR ---
+function createPotatoes() {
+  const rainContainer = document.getElementById('potato-rain');
+  const numPotatoes = 35; // Adjust this number for more or fewer potatoes
+  
+  for (let i = 0; i < numPotatoes; i++) {
+    let potato = document.createElement('div');
+    potato.innerText = '🥔';
+    potato.className = 'falling-potato';
+    
+    // Randomize position, size, and falling speed
+    potato.style.left = (Math.random() * 100) + 'vw';
+    potato.style.animationDuration = (Math.random() * 5 + 6) + 's'; // Falls between 6 and 11 seconds
+    potato.style.animationDelay = (Math.random() * 10) + 's'; // Staggers the start times
+    potato.style.fontSize = (Math.random() * 20 + 15) + 'px'; // Size between 15px and 35px
+    
+    rainContainer.appendChild(potato);
+  }
+}
+createPotatoes(); // Start the rain when the page loads!
+
+
 const i18n = {
   en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "🗑️ Clear Logs for", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for" },
   es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: 2 pts &nbsp;|&nbsp; Muertes T5: 5 pts &nbsp;|&nbsp; Muertos: 15 pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "🗑️ Borrar registros de", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de" },
@@ -597,25 +655,23 @@ function displaySavedData() {
     let barColorStyle = "";
     let barClass = "progress-fill";
 
-    // Dynamic color logic based on percentage
     if (pValue < 10) {
       potatoText = "Under performing potato";
-      barColorStyle = "background: #ff3b30;"; // Red
+      barColorStyle = "background: #ff3b30;"; 
     } else if (pValue < 50) {
       potatoText = "Safe but do better potato";
-      barColorStyle = "background: #ff9500;"; // Orange
+      barColorStyle = "background: #ff9500;"; 
     } else if (pValue < 96) {
       potatoText = "Met potato expectations";
-      barColorStyle = "background: #ffcc00; color: #333; text-shadow: 0px 1px 2px rgba(255,255,255,0.8);"; // Yellow
+      barColorStyle = "background: #ffcc00; color: #333; text-shadow: 0px 1px 2px rgba(255,255,255,0.8);"; 
     } else if (pValue < 100) {
       potatoText = "ooooo so close potato";
-      barColorStyle = "background: #34c759;"; // Green
+      barColorStyle = "background: #34c759;"; 
     } else {
       potatoText = "You're an amazing potato!";
-      barClass += " gold-bar"; // Adds the animated gold gradient
+      barClass += " gold-bar"; 
     }
 
-    // Stagger animation slightly for each card
     const animationDelay = index * 0.05;
 
     html += `
