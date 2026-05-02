@@ -84,31 +84,64 @@ button:hover {
   color: #333;
 }
 
-.saved-item {
-  background: #f9f9f9;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  border-left: 4px solid #007aff;
+/* New grouped player card styles */
+.player-card {
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.saved-item strong {
-  font-size: 16px;
+.player-title {
+  font-size: 18px;
+  font-weight: bold;
   color: #000;
+  margin-bottom: 8px;
+}
+
+/* Progress bar styles */
+.progress-bg {
+  background: #e0e0e0;
+  border-radius: 8px;
+  height: 14px;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-fill {
+  background: #007aff;
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.4s ease;
+}
+
+/* Nested log entries styles */
+.log-entry {
+  background: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  border-left: 3px solid #ccc;
+  font-size: 14px;
+}
+
+/* Highlight the most recent edit */
+.log-entry:first-of-type {
+  border-left: 3px solid #007aff;
 }
 
 .timestamp {
   float: right;
   font-size: 11px;
   color: #999;
-  font-weight: normal;
 }
 
 .small {
   font-size: 13px;
   color: #666;
-  margin-top: 4px;
-  display: block;
 }
 </style>
 </head>
@@ -131,10 +164,10 @@ DKP: 0 | DKP %: 0%
 <button onclick="savePlayer()">Save Player</button>
 
 <div id="savedDataContainer">
-  <h3>💾 Edit Log</h3>
+  <h3>💾 Player Logs & Progress</h3>
   <div id="savedDataList"></div>
   
-  <button class="btn-danger" onclick="clearAllData()">🗑️ Clear Edit Log</button>
+  <button class="btn-danger" onclick="clearAllData()">🗑️ Clear All Logs</button>
 </div>
 
 </div>
@@ -145,15 +178,12 @@ function calcDKP(p, t4, t5, d) {
   return (p * 0) + (t4 * 2) + (t5 * 5) + (d * 15);
 }
 
-// NEW HELPER: Safely pull numbers out of strings with commas
 function getNum(id) {
   const rawValue = document.getElementById(id).value;
-  // Remove all commas and convert to a Number
   return Number(rawValue.replace(/,/g, '')) || 0;
 }
 
 function updateLive() {
-  // Uses the new helper to ignore commas during math
   const p = getNum("startingPower");
   const t4 = getNum("t4");
   const t5 = getNum("t5");
@@ -166,25 +196,20 @@ function updateLive() {
     `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
 }
 
-// Add commas automatically as the user types
 ["startingPower","t4","t5","deads"].forEach(id => {
   document.getElementById(id).addEventListener("input", function(e) {
-    // Strip non-numbers so the user can't accidentally type letters
     let rawStr = this.value.replace(/,/g, "").replace(/\D/g, "");
     
     if (rawStr !== "") {
-      // Add commas back in
       this.value = parseInt(rawStr, 10).toLocaleString('en-US');
     } else {
       this.value = "";
     }
     
-    // Update the live preview
     updateLive();
   });
 });
 
-// Auto-fill Starting Power if the player name is already in the log
 document.getElementById("name").addEventListener("input", function() {
   const currentName = this.value.trim().toLowerCase();
   let players = getSafeData();
@@ -192,7 +217,6 @@ document.getElementById("name").addEventListener("input", function() {
   const existingPlayer = players.find(x => x.name.toLowerCase() === currentName);
   
   if (existingPlayer) {
-    // Format the auto-filled number with commas too
     document.getElementById("startingPower").value = existingPlayer.startingPower.toLocaleString('en-US');
     updateLive();
   }
@@ -212,7 +236,6 @@ function getSafeData() {
 
 function savePlayer() {
   const name = document.getElementById("name").value.trim();
-  // Strip commas before saving to local storage
   const p = getNum("startingPower");
   const t4 = getNum("t4");
   const t5 = getNum("t5");
@@ -255,24 +278,66 @@ function displaySavedData() {
   
   if (players.length === 0) {
     html = "<span class='small'>No edits logged yet. Enter data above and click Save!</span>";
-  } else {
-    players.forEach(p => {
-      const sp = p.startingPower || 0;
-      const percent = sp > 0 ? ((p.dkp / sp) * 100).toFixed(2) : "0.00";
-      const timeString = p.timestamp ? p.timestamp : "Unknown time";
+    document.getElementById("savedDataList").innerHTML = html;
+    return;
+  }
+
+  // 1. Group the flat log entries by player name
+  const groupedPlayers = {};
+  players.forEach(p => {
+    const key = p.name.toLowerCase();
+    if (!groupedPlayers[key]) {
+      groupedPlayers[key] = {
+        displayName: p.name,
+        entries: []
+      };
+    }
+    groupedPlayers[key].entries.push(p);
+  });
+
+  // 2. Build the HTML for each player
+  Object.values(groupedPlayers).forEach(group => {
+    // The first entry is the most recent because we unshift() when saving
+    const latest = group.entries[0];
+    const sp = latest.startingPower || 0;
+    const percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00";
+    
+    // Cap visual progress bar at 100% so it doesn't overflow the container
+    const visualWidth = Math.min(parseFloat(percent), 100);
+
+    html += `
+      <div class="player-card">
+        <div class="player-title">👤 ${group.displayName}</div>
+        
+        <div class="small" style="margin-bottom: 4px;">
+          <strong>Current Progress:</strong> ${percent}%
+        </div>
+        <div class="progress-bg">
+          <div class="progress-fill" style="width: ${visualWidth}%;"></div>
+        </div>
+        
+        <div class="small" style="margin-bottom: 6px; font-weight: bold;">Edit History:</div>
+    `;
+
+    // 3. Loop through their personal edit history
+    group.entries.forEach(entry => {
+      const e_sp = entry.startingPower || 0;
+      const e_percent = e_sp > 0 ? ((entry.dkp / e_sp) * 100).toFixed(2) : "0.00";
+      const timeString = entry.timestamp ? entry.timestamp : "Unknown time";
       
       html += `
-        <div class="saved-item">
-          <strong>${p.name} <span class="timestamp">${timeString}</span></strong>
+        <div class="log-entry">
+          <span class="timestamp">${timeString}</span>
+          <strong>DKP: ${(entry.dkp||0).toLocaleString()} (${e_percent}%)</strong><br>
           <span class="small">
-            Power: ${sp.toLocaleString()} | T4: ${(p.t4||0).toLocaleString()} | T5: ${(p.t5||0).toLocaleString()} | Deads: ${(p.deads||0).toLocaleString()}
-            <br>
-            <strong>DKP: ${(p.dkp||0).toLocaleString()} (${percent}%)</strong>
+            T4: ${(entry.t4||0).toLocaleString()} | T5: ${(entry.t5||0).toLocaleString()} | Deads: ${(entry.deads||0).toLocaleString()}
           </span>
         </div>
       `;
     });
-  }
+
+    html += `</div>`; // Close player-card
+  });
   
   document.getElementById("savedDataList").innerHTML = html;
 }
