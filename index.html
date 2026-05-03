@@ -49,10 +49,11 @@ body {
   background: white;
   padding: 25px;
   border-radius: 20px;
-  transition: background 0.4s ease, box-shadow 0.4s ease;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   position: relative;
   z-index: 10; 
+  /* Transitions normally, but can be overridden by the smash animation */
+  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
 }
 
 /* Top Controls */
@@ -63,7 +64,12 @@ body {
   margin-bottom: 20px;
 }
 
-.theme-toggle, .lang-select {
+.left-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.theme-toggle, .lang-select, .hammer-btn {
   background: #e4e6eb;
   color: #333;
   border: none;
@@ -76,10 +82,20 @@ body {
   outline: none;
 }
 
-.theme-toggle { font-size: 16px; padding: 8px 12px; }
-.lang-select { font-size: 13px; max-width: 200px; }
+.theme-toggle, .hammer-btn {
+  font-size: 16px;
+  padding: 8px 12px;
+}
 
-.theme-toggle:hover, .lang-select:hover { background: #d8dadf; transform: translateY(-1px); }
+.lang-select {
+  font-size: 13px;
+  max-width: 200px;
+}
+
+.theme-toggle:hover, .lang-select:hover, .hammer-btn:hover {
+  background: #d8dadf;
+  transform: translateY(-1px);
+}
 
 /* UNIFIED PANEL DESIGN */
 .unified-panel {
@@ -102,6 +118,14 @@ body {
 
 .point-values { font-size: 13px; color: #555; font-weight: 600; transition: color 0.4s ease; }
 .dkp-goal { font-size: 12px; color: #888; margin-top: 8px; font-weight: 500; transition: color 0.4s ease; }
+
+/* Interactive Trophies for Anti-Gravity */
+.trophy {
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+.trophy:hover { transform: scale(1.3) rotate(15deg); }
 
 /* Inputs & Buttons */
 input {
@@ -175,24 +199,13 @@ button.success-btn:hover { background: #28a745; }
   font-weight: 500;
   color: #333;
 }
-.checkbox-item input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  cursor: pointer;
-}
+.checkbox-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; }
 
 /* Card Action Buttons */
 .card-actions { display: flex; gap: 10px; margin-top: 12px; }
 .btn-small-danger, .btn-small-discord {
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 13px;
-  font-family: 'Poppins', sans-serif;
-  cursor: pointer;
-  width: 100%;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: 'Poppins', sans-serif;
+  cursor: pointer; width: 100%; font-weight: 600; transition: all 0.2s ease;
 }
 .btn-small-danger { background: #ffe5e5; color: #ff3b30; border: 1px solid #ffccce; }
 .btn-small-danger:hover { background: #ff3b30; color: #f8f9fa; border-color: #ff3b30; }
@@ -201,14 +214,7 @@ button.success-btn:hover { background: #28a745; }
 
 /* Previews and Sections */
 .live { margin-top: 15px; padding: 14px; color: #007aff; text-align: center; font-weight: 700; font-size: 15px; }
-
-.section-divider {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 2px dashed #e4e6eb;
-  transition: border-color 0.4s ease;
-}
-
+.section-divider { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #e4e6eb; transition: border-color 0.4s ease; }
 .logs-header { padding: 14px; text-align: center; margin-top: 0; margin-bottom: 20px; color: #1a1a1a; font-size: 18px; font-weight: 700; transition: color 0.4s ease; }
 
 /* Cards & Progress */
@@ -216,7 +222,6 @@ button.success-btn:hover { background: #28a745; }
 
 .player-card { padding: 18px; margin-bottom: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); animation: slideUpFade 0.4s ease forwards; }
 .combined-card { border-color: #FFD700; border-width: 2px; background: #fffdf5; }
-
 .player-title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; transition: color 0.4s ease; }
 
 .progress-bg {
@@ -243,11 +248,34 @@ button.success-btn:hover { background: #28a745; }
 .small { font-size: 13px; color: #666; transition: color 0.4s ease; }
 .acc-tag { display: inline-block; background: #eef3ff; color: #007aff; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin: 2px 4px 2px 0; font-weight: 600; }
 
+/* THE HAMMER SMASH ANIMATION */
+@keyframes shakeScreen {
+  0% { transform: translate(2px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.smashed {
+  animation: shakeScreen 0.5s ease-in-out;
+  transform: translateY(200vh) rotate(25deg) !important;
+  transition: transform 1.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) 0.5s, opacity 1s ease-in 1s !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* DARK MODE OVERRIDES */
 body.dark-mode { background: #121212; color: #b0b0b0; }
 body.dark-mode .container { background: #1e1e1e; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-body.dark-mode .theme-toggle, body.dark-mode .lang-select { background: #2d2d2d; color: #b0b0b0; }
-body.dark-mode .theme-toggle:hover, body.dark-mode .lang-select:hover { background: #3d3d3d; }
+body.dark-mode .theme-toggle, body.dark-mode .lang-select, body.dark-mode .hammer-btn { background: #2d2d2d; color: #b0b0b0; }
+body.dark-mode .theme-toggle:hover, body.dark-mode .lang-select:hover, body.dark-mode .hammer-btn:hover { background: #3d3d3d; }
 body.dark-mode .unified-panel { background: #252525; border-color: #333; }
 body.dark-mode .header-section h2, body.dark-mode .panel-title, body.dark-mode .logs-header, body.dark-mode .player-title { color: #e0e0e0; }
 body.dark-mode .point-values, body.dark-mode .small, body.dark-mode .dkp-goal { color: #888; }
@@ -275,15 +303,23 @@ body.dark-mode .acc-tag { background: #1a2639; color: #66a3ff; }
 
 <canvas id="potato-canvas"></canvas>
 
-<div class="container">
+<div id="main-app" class="container">
   
   <div class="top-controls">
-    <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    <div class="left-controls">
+      <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">🌙</button>
+      <button class="hammer-btn" onclick="smashScreen()">🔨</button>
+    </div>
+    
     <select id="langSelect" class="lang-select" onchange="changeLanguage()"></select>
   </div>
 
   <div class="unified-panel header-section">
-    <h2 id="mainTitle">🏆 1854 DKP System 🏆</h2>
+    <h2 id="mainTitle">
+      <span class="trophy" onclick="toggleGravity()">🏆</span> 
+      1854 DKP System 
+      <span class="trophy" onclick="toggleGravity()">🏆</span>
+    </h2>
     <div id="pointValues" class="point-values">
       T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts
     </div>
@@ -314,16 +350,13 @@ body.dark-mode .acc-tag { background: #1a2639; color: #66a3ff; }
     <h3 id="combineHeader" class="panel-title">🧮 Combine Accounts</h3>
     <div id="combineSubText" class="small" style="margin-bottom:12px;">Select 2+ accounts to calculate total stats</div>
     <input id="combinedName" placeholder="Combined Name (e.g. John's Total)">
-    <div id="combineCheckboxes" class="checkbox-container">
-      </div>
+    <div id="combineCheckboxes" class="checkbox-container"></div>
     <button id="btnCombineCreate" class="main-btn success-btn" onclick="createCombinedCard()">Combine Selected</button>
   </div>
 
   <div id="savedDataContainer" class="section-divider">
     <h3 id="logsTitle" class="unified-panel logs-header">💾 Player Logs & Progress</h3>
-    
     <div id="combinedDataList"></div>
-
     <div id="savedDataList"></div>
   </div>
 
@@ -336,7 +369,7 @@ body.dark-mode .acc-tag { background: #1a2639; color: #66a3ff; }
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1500504658186338386/9XmK-jNtHSH-kovVsmcnJm0nf-f_xjyMeP9w1ykYeeQCf_WGZ2E8qTJZO1ErArrzYw5g";
 
 // ==========================================
-// 🥔 POTATO PHYSICS ENGINE
+// 🥔 THE ULTIMATE POTATO PHYSICS ENGINE
 // ==========================================
 const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bodies = Matter.Bodies, Composite = Matter.Composite, Events = Matter.Events;
 const engine = Engine.create(), world = engine.world;
@@ -360,40 +393,129 @@ window.addEventListener('resize', () => {
     Composite.clear(world); Engine.clear(engine); potatoes = []; trapdoorOpen = false; createWalls();
 });
 
-function dropPotato() {
-    for (let i = potatoes.length - 1; i >= 0; i--) {
-        if (potatoes[i].body.position.y > window.innerHeight + 300) { Composite.remove(world, potatoes[i].body); potatoes.splice(i, 1); }
+// QUIRK 4: Anti-Gravity Function
+function toggleGravity() {
+    // Reverses gravity (default is 1).
+    engine.gravity.y = engine.gravity.y > 0 ? -1 : 1;
+}
+
+// QUIRK 5: The Hammer Smash!
+function smashScreen() {
+    const app = document.getElementById("main-app");
+    app.classList.add("smashed");
+    
+    // Open the trapdoor right as the screen falls
+    setTimeout(() => {
+        trapdoorOpen = true; 
+        Composite.remove(world, floor); 
+    }, 500);
+
+    // Reset everything 4.5 seconds later
+    setTimeout(() => {
+        app.classList.remove("smashed");
+        app.style.transform = "translateY(0) rotate(0deg)";
+        app.style.opacity = "1";
+        Composite.add(world, floor);
+        trapdoorOpen = false;
+    }, 4500);
+}
+
+// QUIRK 1: Interactive French Fries - Click to cook!
+window.addEventListener('click', (e) => {
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    // Check if the click hit any potatoes
+    for (let p of potatoes) {
+        const dx = p.body.position.x - x;
+        const dy = p.body.position.y - y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < p.fontSize) {
+            // It's a hit! Turn it into a fry and bounce it
+            p.type = 'fry';
+            Matter.Body.setVelocity(p.body, { 
+                x: (Math.random() - 0.5) * 15, 
+                y: engine.gravity.y > 0 ? -20 : 20 
+            });
+        }
     }
-    if (!trapdoorOpen) {
+});
+
+function dropPotato(bypassLimits = false) {
+    // Garbage collection for off-screen objects
+    for (let i = potatoes.length - 1; i >= 0; i--) {
+        if (potatoes[i].body.position.y > window.innerHeight + 300 || potatoes[i].body.position.y < -300) { 
+            Composite.remove(world, potatoes[i].body); 
+            potatoes.splice(i, 1); 
+        }
+    }
+
+    if (!trapdoorOpen && !bypassLimits) {
         let settledNearQuarter = 0;
-        for (let p of potatoes) { if (p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) settledNearQuarter++; }
+        for (let p of potatoes) { 
+            // Account for inverted gravity too
+            if (engine.gravity.y > 0 && p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) settledNearQuarter++; 
+            if (engine.gravity.y < 0 && p.body.position.y > window.innerHeight * 0.25 && p.body.speed < 0.5) settledNearQuarter++; 
+        }
         if (settledNearQuarter > 5 || potatoes.length > 300) {
-            trapdoorOpen = true; Composite.remove(world, floor); 
+            trapdoorOpen = true; 
+            Composite.remove(world, floor); 
             setTimeout(() => { Composite.add(world, floor); trapdoorOpen = false; }, 3500); 
         }
     }
-    const radius = Math.random() * 8 + 14, x = Math.random() * (window.innerWidth - 60) + 30; 
-    const body = Bodies.circle(x, -50, radius, { restitution: 0.3, friction: 0.8, density: 0.05, render: { visible: false } });
-    Composite.add(world, body); potatoes.push({ body, fontSize: radius * 2 }); 
+
+    // Drop logic
+    const radius = Math.random() * 8 + 14; 
+    const x = Math.random() * (window.innerWidth - 60) + 30; 
+    
+    // Check if it drops from top or bottom depending on gravity
+    const yStart = engine.gravity.y > 0 ? -50 : window.innerHeight + 50;
+
+    const body = Bodies.circle(x, yStart, radius, { restitution: 0.3, friction: 0.8, density: 0.05, render: { visible: false } });
+    
+    // QUIRK 3: The Golden Potato (1% Chance)
+    const isGolden = Math.random() < 0.01;
+
+    Composite.add(world, body); 
+    potatoes.push({ body, fontSize: radius * 2, type: 'potato', isGolden }); 
 }
 
 Events.on(render, 'afterRender', function() {
-    const context = render.context; context.textAlign = "center"; context.textBaseline = "middle"; context.globalAlpha = 0.35; 
+    const context = render.context; 
+    context.textAlign = "center"; 
+    context.textBaseline = "middle"; 
+    
     for (let p of potatoes) {
-        context.font = p.fontSize + "px Arial"; context.save();
-        context.translate(p.body.position.x, p.body.position.y); context.rotate(p.body.angle);
-        context.fillText("🥔", 0, 0); context.restore();
+        context.save();
+        
+        // Render fries or potatoes
+        let emojiToDraw = p.type === 'fry' ? '🍟' : '🥔';
+        
+        // Handle Golden Potato Glow
+        if (p.isGolden && p.type === 'potato') {
+            context.globalAlpha = 0.9;
+            context.shadowColor = "gold";
+            context.shadowBlur = 20;
+        } else {
+            context.globalAlpha = 0.35; 
+            context.shadowBlur = 0;
+        }
+
+        context.font = p.fontSize + "px Arial"; 
+        context.translate(p.body.position.x, p.body.position.y); 
+        context.rotate(p.body.angle);
+        context.fillText(emojiToDraw, 0, 0); 
+        context.restore();
     }
-    context.globalAlpha = 1.0;
 });
-setInterval(dropPotato, 120); 
+setInterval(() => dropPotato(false), 120); 
 
 // ==========================================
 // APP LOGIC & TRANSLATIONS
 // ==========================================
 let isCombinedMode = false;
 
-// Translation Dictionary
 const i18n = {
   en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts", pointsCombined: "T4 & T5 Kills: 3.5 pts &nbsp;|&nbsp; Deads: 15 pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phT4T5: "T4 & T5 Kills", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "Clear", shareBtn: "Discord", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for", combineHeader: "🧮 Combine Accounts", combineNamePh: "Combined Name (e.g. John's Total)", btnCombineCreate: "Combine Selected", combineAlertSelect: "Please select at least 2 players!", combineAlertName: "Please enter a name for the combined card!", combinedCardTitle: "Combined Totals", delCombineConfirm: "Are you sure you want to delete this combined group?" },
   es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: 2 pts &nbsp;|&nbsp; Muertes T5: 5 pts &nbsp;|&nbsp; Muertos: 15 pts", pointsCombined: "Muertes T4 y T5: 3.5 pts &nbsp;|&nbsp; Muertos: 15 pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phT4T5: "Muertes T4 y T5", btnCombine: "Combinar Muertes T4 y T5", btnSplit: "Separar Muertes T4 y T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "Borrar", shareBtn: "Discord", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de", combineHeader: "🧮 Combinar Cuentas", combineNamePh: "Nombre Combinado (ej. Total de John)", btnCombineCreate: "Combinar Seleccionados", combineAlertSelect: "¡Selecciona al menos 2 jugadores!", combineAlertName: "¡Ingresa un nombre para la tarjeta!", combinedCardTitle: "Estadísticas Combinadas", delCombineConfirm: "¿Eliminar este grupo combinado?" },
@@ -433,7 +555,10 @@ function changeLanguage() { currentLang = langSelect.value; localStorage.setItem
 
 function applyTranslations() {
   const t = i18n[currentLang] || i18n['en'];
-  document.getElementById("mainTitle").innerHTML = t.title;
+  
+  // Re-inject the trophies into the title during translation so they remain clickable
+  document.getElementById("mainTitle").innerHTML = `<span class="trophy" onclick="toggleGravity()">🏆</span> ${t.title.replace(/🏆/g, '').trim()} <span class="trophy" onclick="toggleGravity()">🏆</span>`;
+  
   document.getElementById("pointValues").innerHTML = isCombinedMode ? t.pointsCombined : t.points;
   document.getElementById("dkpGoal").innerHTML = t.dkpGoal; 
   document.getElementById("name").placeholder = t.phName;
@@ -491,13 +616,18 @@ function updateLive() {
 
 document.getElementById("name").addEventListener("input", function() {
   const currentName = this.value.trim().toLowerCase();
+  
+  // QUIRK 2: The Easter Egg Avalanche
+  if (currentName === "king potato" || currentName === "1854") {
+      for(let i=0; i<50; i++) {
+          setTimeout(() => dropPotato(true), i * 20); // Spawns 50 potatoes rapidly
+      }
+  }
+
   const existingPlayer = getSafeData().find(x => x.name.toLowerCase() === currentName);
   if (existingPlayer) { document.getElementById("startingPower").value = existingPlayer.startingPower.toLocaleString('en-US'); updateLive(); }
 });
 
-// ==========================================
-// DATA MANAGEMENT
-// ==========================================
 function getSafeData() { try { let d = JSON.parse(localStorage.getItem("guildLog")); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
 function getCombinedData() { try { let d = JSON.parse(localStorage.getItem("guildCombinedLogs")); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
 
@@ -521,56 +651,33 @@ function clearPlayerLogs(playerName) {
   }
 }
 
-// ==========================================
-// 🧮 COMBINED ACCOUNTS / FARM LOGIC
-// ==========================================
+// 🧮 COMBINED ACCOUNTS LOGIC
 function updateCombineCheckboxes() {
   const players = getSafeData();
   const uniqueNames = [...new Set(players.map(p => p.name))];
   const combinePanel = document.getElementById("combinePanel");
   const cbContainer = document.getElementById("combineCheckboxes");
   
-  if (uniqueNames.length < 2) {
-    combinePanel.style.display = "none";
-    return;
-  }
-  
-  combinePanel.style.display = "block";
-  cbContainer.innerHTML = "";
+  if (uniqueNames.length < 2) { combinePanel.style.display = "none"; return; }
+  combinePanel.style.display = "block"; cbContainer.innerHTML = "";
   
   uniqueNames.forEach(name => {
-    cbContainer.innerHTML += `
-      <label class="checkbox-item">
-        <input type="checkbox" value="${name}" class="combine-cb">
-        ${name}
-      </label>
-    `;
+    cbContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${name}" class="combine-cb">${name}</label>`;
   });
 }
 
 function createCombinedCard() {
-  const t = i18n[currentLang] || i18n['en'];
-  const nameInput = document.getElementById("combinedName");
-  const combinedName = nameInput.value.trim();
-  
-  const checkboxes = document.querySelectorAll(".combine-cb:checked");
-  const selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
+  const t = i18n[currentLang] || i18n['en'], nameInput = document.getElementById("combinedName"), combinedName = nameInput.value.trim();
+  const checkboxes = document.querySelectorAll(".combine-cb:checked"), selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
 
   if (selectedAccounts.length < 2) return alert(t.combineAlertSelect);
   if (!combinedName) return alert(t.combineAlertName);
 
   const combinedLogs = getCombinedData();
-  combinedLogs.unshift({
-    id: Date.now(),
-    name: combinedName,
-    accounts: selectedAccounts
-  });
-  
+  combinedLogs.unshift({ id: Date.now(), name: combinedName, accounts: selectedAccounts });
   localStorage.setItem("guildCombinedLogs", JSON.stringify(combinedLogs));
   
-  nameInput.value = "";
-  checkboxes.forEach(cb => cb.checked = false);
-  
+  nameInput.value = ""; checkboxes.forEach(cb => cb.checked = false);
   renderCombinedCards();
 }
 
@@ -584,94 +691,50 @@ function deleteCombinedCard(id) {
 }
 
 function shareCombinedDiscord(id) {
-  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === "PASTE_YOUR_WEBHOOK_URL_HERE") {
-    alert("Hold up! Discord Webhook URL is missing."); return;
-  }
-
-  const combinedLogs = getCombinedData();
-  const players = getSafeData();
-  const combo = combinedLogs.find(c => c.id === id);
+  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === "PASTE_YOUR_WEBHOOK_URL_HERE") { alert("Missing Webhook URL."); return; }
+  const combinedLogs = getCombinedData(), players = getSafeData(), combo = combinedLogs.find(c => c.id === id);
   if(!combo) return;
 
   let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0;
-  
   combo.accounts.forEach(acc => {
     const latest = players.find(p => p.name.toLowerCase() === acc.toLowerCase());
-    if(latest) {
-      totalSP += latest.startingPower || 0;
-      totalDKP += latest.dkp || 0;
-      totalT4 += latest.t4 || 0;
-      totalT5 += latest.t5 || 0;
-      totalT4T5 += latest.t4t5 || 0;
-      totalDeads += latest.deads || 0;
-    }
+    if(latest) { totalSP += latest.startingPower || 0; totalDKP += latest.dkp || 0; totalT4 += latest.t4 || 0; totalT5 += latest.t5 || 0; totalT4T5 += latest.t4t5 || 0; totalDeads += latest.deads || 0; }
   });
 
-  const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00";
-  let accListString = combo.accounts.join(", ");
-
+  const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00", accListString = combo.accounts.join(", ");
   const payload = {
     embeds: [{
-      title: `🏆 ${combo.name} (Combined Total)`,
-      color: 16766720, 
-      description: `**Accounts:** ${accListString}`,
+      title: `🏆 ${combo.name} (Combined Total)`, color: 16766720, description: `**Accounts:** ${accListString}`,
       fields: [
-        { name: "💎 Total DKP", value: totalDKP.toLocaleString(), inline: true },
-        { name: "📈 Progress", value: `${percent}%`, inline: true },
-        { name: "⚡ Combined Power", value: totalSP.toLocaleString(), inline: false },
-        { name: "⚔️ Total T4 Kills", value: totalT4.toLocaleString(), inline: true },
-        { name: "⚔️ Total T5 Kills", value: totalT5.toLocaleString(), inline: true },
-        { name: "⚔️ Combined T4/T5 Mode", value: totalT4T5.toLocaleString(), inline: true },
-        { name: "💀 Total Deads", value: totalDeads.toLocaleString(), inline: true }
+        { name: "💎 Total DKP", value: totalDKP.toLocaleString(), inline: true }, { name: "📈 Progress", value: `${percent}%`, inline: true }, { name: "⚡ Combined Power", value: totalSP.toLocaleString(), inline: false },
+        { name: "⚔️ Total T4 Kills", value: totalT4.toLocaleString(), inline: true }, { name: "⚔️ Total T5 Kills", value: totalT5.toLocaleString(), inline: true },
+        { name: "⚔️ Combined T4/T5 Mode", value: totalT4T5.toLocaleString(), inline: true }, { name: "💀 Total Deads", value: totalDeads.toLocaleString(), inline: true }
       ],
-      footer: { text: "1854 DKP System • Farm Calculator" },
-      timestamp: new Date().toISOString()
+      footer: { text: "1854 DKP System • Farm Calculator" }, timestamp: new Date().toISOString()
     }]
   };
-
   fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
   .then(res => { if (res.ok) alert("✅ Combined Stats sent to Discord!"); else alert("❌ Discord Error."); })
   .catch(err => alert("❌ Network error."));
 }
 
 function renderCombinedCards() {
-  const t = i18n[currentLang] || i18n['en'];
-  const combinedLogs = getCombinedData();
-  const players = getSafeData();
-  const container = document.getElementById("combinedDataList");
+  const t = i18n[currentLang] || i18n['en'], combinedLogs = getCombinedData(), players = getSafeData(), container = document.getElementById("combinedDataList");
   let html = "";
-
-  // 1. Map and enrich the combined data with the calculated stats
   let enrichedCombos = combinedLogs.map(combo => {
-    let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0;
-    let accountTags = "";
-    
+    let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0, accountTags = "";
     combo.accounts.forEach(acc => {
       const latest = players.find(p => p.name.toLowerCase() === acc.toLowerCase());
       accountTags += `<span class="acc-tag">${acc}</span>`;
-      if(latest) {
-        totalSP += latest.startingPower || 0;
-        totalDKP += latest.dkp || 0;
-        totalT4 += latest.t4 || 0;
-        totalT5 += latest.t5 || 0;
-        totalT4T5 += latest.t4t5 || 0;
-        totalDeads += latest.deads || 0;
-      }
+      if(latest) { totalSP += latest.startingPower || 0; totalDKP += latest.dkp || 0; totalT4 += latest.t4 || 0; totalT5 += latest.t5 || 0; totalT4T5 += latest.t4t5 || 0; totalDeads += latest.deads || 0; }
     });
-
     return { combo, totalSP, totalDKP, totalT4, totalT5, totalT4T5, totalDeads, accountTags };
   });
-
-  // 2. Sort by Highest Power (Starting Power)
   enrichedCombos.sort((a, b) => b.totalSP - a.totalSP);
 
-  // 3. Render the sorted cards
   enrichedCombos.forEach((data, idx) => {
     const { combo, totalSP, totalDKP, totalT4, totalT5, totalT4T5, totalDeads, accountTags } = data;
-    const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00";
-    const pVal = parseFloat(percent);
-    const visualWidth = Math.min(pVal, 100);
-    
+    const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00", pVal = parseFloat(percent), visualWidth = Math.min(pVal, 100);
     let potato = pVal < 10 ? "Under performing potato" : pVal < 50 ? "Safe but do better potato" : pVal < 96 ? "Met potato expectations" : pVal < 100 ? "ooooo so close potato" : "You're an amazing potato!";
     let barStyle = pVal < 10 ? "background:#ff4d4d;" : pVal < 50 ? "background:#ffa31a;" : pVal < 96 ? "background:#f6e05e;" : pVal < 100 ? "background:#68d391;" : "";
 
@@ -679,37 +742,26 @@ function renderCombinedCards() {
       <div class="unified-panel player-card combined-card" style="animation-delay:${idx*0.05}s">
         <div class="player-title">🧮 ${combo.name} <span class="small" style="font-weight:normal; display:block; margin-top:4px;">${t.combinedCardTitle || 'Combined Totals'}</span></div>
         <div style="margin-bottom:12px;">${accountTags}</div>
-        
         <div class="small"><strong>${t.progress}</strong> ${percent}%</div>
         <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; ${barStyle}"></div><div class="progress-text" style="${pVal>=50&&pVal<96?'color:#1a1a1a;text-shadow:none;':''}">${potato}</div></div>
-        
         <div class="log-entry" style="background:transparent; border-color:#FFD700;">
           <strong>Total DKP: ${totalDKP.toLocaleString()}</strong><br>
-          <span class="small">
-            SP: ${totalSP.toLocaleString()} | Deads: ${totalDeads.toLocaleString()}<br>
-            T4: ${totalT4.toLocaleString()} | T5: ${totalT5.toLocaleString()} | T4&T5: ${totalT4T5.toLocaleString()}
-          </span>
+          <span class="small">SP: ${totalSP.toLocaleString()} | Deads: ${totalDeads.toLocaleString()}<br>T4: ${totalT4.toLocaleString()} | T5: ${totalT5.toLocaleString()} | T4&T5: ${totalT4T5.toLocaleString()}</span>
         </div>
-        
         <div class="card-actions">
           <button class="btn-small-discord" onclick="shareCombinedDiscord(${combo.id})">👾 Discord</button>
           <button class="btn-small-danger" onclick="deleteCombinedCard(${combo.id})">🗑️ ${t.clearBtn}</button>
         </div>
-      </div>
-    `;
+      </div>`;
   });
-
   container.innerHTML = html;
 }
 
-// ==========================================
-// STANDARD PLAYER RENDER LOGIC
-// ==========================================
+// STANDARD PLAYER RENDERS
 function sendToDiscord(playerName) {
   if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === "PASTE_YOUR_WEBHOOK_URL_HERE") { alert("Missing Webhook URL."); return; }
   const t = i18n[currentLang] || i18n['en'], players = getSafeData(), playerEntries = players.filter(p => p.name.toLowerCase() === playerName.toLowerCase());
   if(playerEntries.length === 0) return;
-  
   const latest = playerEntries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00";
   let statFields = [];
   if (latest.isCombined) statFields.push({ name: "⚔️ T4 & T5 Kills", value: (latest.t4t5||0).toLocaleString(), inline: true });
@@ -725,19 +777,8 @@ function displaySavedData() {
   const t = i18n[currentLang] || i18n['en']; let players = getSafeData(), html = "";
   if (players.length === 0) { document.getElementById("savedDataList").innerHTML = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`; return; }
   
-  const groups = {}; 
-  players.forEach(p => { 
-    const k = p.name.toLowerCase(); 
-    if (!groups[k]) groups[k] = { name: p.name, entries: [] }; 
-    groups[k].entries.push(p); 
-  });
-  
-  // Convert groups into an array and sort by Highest Power (startingPower of their latest entry)
-  const sortedGroups = Object.values(groups).sort((a, b) => {
-    const spA = a.entries[0].startingPower || 0;
-    const spB = b.entries[0].startingPower || 0;
-    return spB - spA;
-  });
+  const groups = {}; players.forEach(p => { const k = p.name.toLowerCase(); if (!groups[k]) groups[k] = { name: p.name, entries: [] }; groups[k].entries.push(p); });
+  const sortedGroups = Object.values(groups).sort((a, b) => { const spA = a.entries[0].startingPower || 0; const spB = b.entries[0].startingPower || 0; return spB - spA; });
   
   sortedGroups.forEach((g, idx) => {
     const latest = g.entries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00", visualWidth = Math.min(parseFloat(percent), 100);
@@ -775,8 +816,6 @@ renderCombinedCards();
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
-  
 </script>
-
 </body>
 </html>
