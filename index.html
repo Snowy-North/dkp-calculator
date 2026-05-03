@@ -247,7 +247,7 @@ body.dark-mode .close-btn:hover { color: #fff; }
 
 <script>
 // ==========================================
-// 1. FIREBASE CONFIGURATION (Wired Up)
+// 1. FIREBASE CONFIGURATION
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyAIPs8b6aSVEx3ApDP1TupSOfIEesVoIbM",
@@ -274,7 +274,7 @@ let unsubscribeCombined = null;
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1500504658186338386/9XmK-jNtHSH-kovVsmcnJm0nf-f_xjyMeP9w1ykYeeQCf_WGZ2E8qTJZO1ErArrzYw5g";
 
 // ==========================================
-// 2. AUTHENTICATION & BOUNCER LOGIC
+// 2. AUTHENTICATION (FIXED FOR FIREBASE UPDATE)
 // ==========================================
 function processAuth() {
     const email = document.getElementById('authEmail').value.trim();
@@ -282,30 +282,41 @@ function processAuth() {
     const errDiv = document.getElementById('authError');
 
     if(!email || !pass) { errDiv.innerText = "Please enter an email and password."; return; }
+    errDiv.innerText = "Connecting...";
 
+    // 1. First, attempt to log in normally
     auth.signInWithEmailAndPassword(email, pass).catch(err => {
-        if(err.code === 'auth/user-not-found') {
-            auth.createUserWithEmailAndPassword(email, pass).catch(e => { errDiv.innerText = e.message; });
+        
+        // 2. Firebase now returns 'invalid-credential' for BOTH wrong passwords and missing accounts
+        if(err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
+            
+            // 3. Since login failed, attempt to create the account instead
+            auth.createUserWithEmailAndPassword(email, pass).catch(createErr => {
+                
+                // 4. If account creation fails because it already exists, they just mistyped their password!
+                if(createErr.code === 'auth/email-already-in-use') {
+                    errDiv.innerText = "Incorrect password for this account.";
+                } else {
+                    errDiv.innerText = createErr.message;
+                }
+            });
+            
         } else {
+            // Some other error happened (like badly formatted email)
             errDiv.innerText = err.message;
         }
     });
 }
 
-function logoutUser() {
-    auth.signOut();
-}
+function logoutUser() { auth.signOut(); }
 
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUserId = user.uid;
         document.getElementById('authModal').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
-        
-        // Auto-fill their name based on the email (everything before the @)
         document.getElementById('name').value = user.email.split('@')[0];
 
-        // Is this the Admin?
         if(user.email.toLowerCase() === 'snowy_north001@kingdom.com') {
             isAdmin = true;
             document.getElementById('settingsGear').style.display = 'inline-block';
@@ -324,6 +335,7 @@ auth.onAuthStateChanged(user => {
         currentUserId = null;
         if(unsubscribeLogs) unsubscribeLogs();
         if(unsubscribeCombined) unsubscribeCombined();
+        document.getElementById('authError').innerText = "";
     }
 });
 
@@ -336,20 +348,17 @@ db.collection("settings").doc("dkpPoints").onSnapshot(doc => {
 
 function startPlayerListeners(uid) {
     if(unsubscribeLogs) unsubscribeLogs();
-    // Only pull this specific player's logs!
     unsubscribeLogs = db.collection("guildLog").where("userId", "==", uid).onSnapshot(snap => {
         cloudPlayers = [];
         snap.forEach(doc => { let data = doc.data(); data.id = doc.id; cloudPlayers.push(data); });
-        // Sort manually by time since we can't orderBy without making Firebase Indexes
         cloudPlayers.sort((a,b) => b.timestampMs - a.timestampMs);
         displaySavedData();
-        renderCombinedCards(); // Usually empty for normal players
+        renderCombinedCards();
     });
 }
 
 function startAdminListeners() {
     if(unsubscribeLogs) unsubscribeLogs();
-    // Admin pulls EVERYONE's logs!
     unsubscribeLogs = db.collection("guildLog").onSnapshot(snap => {
         cloudPlayers = [];
         snap.forEach(doc => { let data = doc.data(); data.id = doc.id; cloudPlayers.push(data); });
@@ -411,7 +420,6 @@ createWalls();
 window.addEventListener('resize', () => { render.canvas.width = window.innerWidth; render.canvas.height = window.innerHeight; render.options.width = window.innerWidth; render.options.height = window.innerHeight; Composite.clear(world); Engine.clear(engine); potatoes = []; trapdoorOpen = false; createWalls(); });
 
 function toggleGravity() { engine.gravity.y = engine.gravity.y > 0 ? -1 : 1; }
-
 function smashScreen() {
     const app = document.getElementById("main-app"), hammer = document.getElementById("giant-hammer"), impact = document.getElementById("impact-effect");
     hammer.classList.add("swinging");
@@ -427,15 +435,10 @@ window.addEventListener('click', (e) => {
 });
 
 function dropPotato(bypassLimits = false) {
-    for (let i = potatoes.length - 1; i >= 0; i--) {
-        if (potatoes[i].body.position.y > window.innerHeight + 300 || potatoes[i].body.position.y < -300) { Composite.remove(world, potatoes[i].body); potatoes.splice(i, 1); }
-    }
+    for (let i = potatoes.length - 1; i >= 0; i--) { if (potatoes[i].body.position.y > window.innerHeight + 300 || potatoes[i].body.position.y < -300) { Composite.remove(world, potatoes[i].body); potatoes.splice(i, 1); } }
     if (!trapdoorOpen && !bypassLimits) {
         let settledNearQuarter = 0;
-        for (let p of potatoes) { 
-            if (engine.gravity.y > 0 && p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) settledNearQuarter++; 
-            if (engine.gravity.y < 0 && p.body.position.y > window.innerHeight * 0.25 && p.body.speed < 0.5) settledNearQuarter++; 
-        }
+        for (let p of potatoes) { if (engine.gravity.y > 0 && p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) settledNearQuarter++; if (engine.gravity.y < 0 && p.body.position.y > window.innerHeight * 0.25 && p.body.speed < 0.5) settledNearQuarter++; }
         if (settledNearQuarter > 5 || potatoes.length > 300) { trapdoorOpen = true; Composite.remove(world, floor); setTimeout(() => { Composite.add(world, floor); trapdoorOpen = false; }, 3500); }
     }
     const radius = Math.random() * 8 + 14, x = Math.random() * (window.innerWidth - 60) + 30, yStart = engine.gravity.y > 0 ? -50 : window.innerHeight + 50;
@@ -443,7 +446,6 @@ function dropPotato(bypassLimits = false) {
     const isGolden = Math.random() < 0.01;
     Composite.add(world, body); potatoes.push({ body, fontSize: radius * 2, type: 'potato', isGolden }); 
 }
-
 Events.on(render, 'afterRender', function() {
     const context = render.context; context.textAlign = "center"; context.textBaseline = "middle"; 
     for (let p of potatoes) {
@@ -490,7 +492,6 @@ Object.entries(continents).forEach(([name, countries]) => {
 
 let currentLang = localStorage.getItem("lang") || "en";
 langSelect.value = currentLang;
-
 function changeLanguage() { currentLang = langSelect.value; localStorage.setItem("lang", currentLang); applyTranslations(); }
 
 function applyTranslations() {
@@ -579,9 +580,7 @@ function savePlayer() {
 function clearPlayerLogs(playerName) {
   const t = i18n[currentLang] || i18n['en'];
   if (confirm(`${t.confirmDel} ${playerName}?`)) {
-    cloudPlayers.filter(p => p.name.toLowerCase() === playerName.toLowerCase()).forEach(p => {
-        db.collection("guildLog").doc(p.id).delete();
-    });
+    cloudPlayers.filter(p => p.name.toLowerCase() === playerName.toLowerCase()).forEach(p => { db.collection("guildLog").doc(p.id).delete(); });
   }
 }
 
@@ -688,8 +687,7 @@ function displaySavedData() {
     
     g.entries.forEach(e => {
       let stats = e.isCombined ? `Combined: ${(e.t4t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}` : `T4: ${(e.t4||0).toLocaleString()} | T5: ${(e.t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}`;
-      let displayTime = e.timestampString || "Recently";
-      html += `<div class="log-entry"><span class="timestamp">${displayTime}</span><strong>DKP: ${e.dkp.toLocaleString()}</strong><br><span class="small">${stats}</span></div>`;
+      html += `<div class="log-entry"><span class="timestamp">${e.timestampString}</span><strong>DKP: ${e.dkp.toLocaleString()}</strong><br><span class="small">${stats}</span></div>`;
     });
     
     const safeName = g.name.replace(/'/g,"\\'");
@@ -709,7 +707,6 @@ function displaySavedData() {
 
 applyTranslations();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
-
 </script>
 </body>
 </html>
