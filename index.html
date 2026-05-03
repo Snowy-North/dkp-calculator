@@ -315,12 +315,10 @@ auth.onAuthStateChanged(user => {
             isAdmin = true;
             document.getElementById('settingsGear').style.display = 'inline-block';
             document.getElementById('dkpGoal').innerHTML = "👑 Admin God Mode Active";
-            document.getElementById('combinePanel').style.display = 'block';
             startAdminListeners();
         } else {
             isAdmin = false;
             document.getElementById('settingsGear').style.display = 'none';
-            document.getElementById('combinePanel').style.display = 'block';
             document.getElementById('dkpGoal').innerHTML = "🔒 Private Vault Active";
             startPlayerListeners(user.uid);
         }
@@ -482,6 +480,7 @@ setInterval(() => dropPotato(false), 120);
 // ==========================================
 const i18n = {
   en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: {t4} pts &nbsp;|&nbsp; T5 Kills: {t5} pts &nbsp;|&nbsp; Deads: {deads} pts", pointsCombined: "T4 & T5 Kills: {t4t5} pts &nbsp;|&nbsp; Deads: {deads} pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phT4T5: "T4 & T5 Kills", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "Clear", shareBtn: "Discord", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for", combineHeader: "🧮 Combine Accounts", combineNamePh: "Combined Name (e.g. John's Total)", btnCombineCreate: "Combine Selected", combineAlertSelect: "Please select at least 2 players!", combineAlertName: "Please enter a name for the combined card!", combinedCardTitle: "Combined Totals", delCombineConfirm: "Are you sure you want to delete this combined group?" },
+  us: { title: "🏆 1854 DKP Dashboard 🏆", points: "T4: {t4} pts &nbsp;|&nbsp; T5: {t5} pts &nbsp;|&nbsp; Deads: {deads} pts", pointsCombined: "Combined: {t4t5} pts &nbsp;|&nbsp; Deads: {deads} pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Power Level", phT4: "T4 Kills", phT5: "T5 Kills", phT4T5: "T4/T5 Total", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Dead Troops", btnSave: "Submit Data", logTitle: "💾 Account History", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "Delete", shareBtn: "Sync Discord", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for", combineHeader: "🧮 Combine Accounts", combineNamePh: "Combined Name (e.g. John's Total)", btnCombineCreate: "Combine Selected", combineAlertSelect: "Please select at least 2 players!", combineAlertName: "Please enter a name for the combined card!", combinedCardTitle: "Combined Totals", delCombineConfirm: "Are you sure you want to delete this combined group?" },
   es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: {t4} pts &nbsp;|&nbsp; Muertes T5: {t5} pts &nbsp;|&nbsp; Muertos: {deads} pts", pointsCombined: "Muertes T4 y T5: {t4t5} pts &nbsp;|&nbsp; Muertos: {deads} pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phT4T5: "Muertes T4 y T5", btnCombine: "Combinar Muertes T4 y T5", btnSplit: "Separar Muertes T4 y T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "Borrar", shareBtn: "Discord", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de", combineHeader: "🧮 Combinar Cuentas", combineNamePh: "Nombre Combinado (ej. Total de John)", btnCombineCreate: "Combinar Seleccionados", combineAlertSelect: "¡Selecciona al menos 2 jugadores!", combineAlertName: "¡Ingresa un nombre para la tarjeta!", combinedCardTitle: "Estadísticas Combinadas", delCombineConfirm: "¿Eliminar este grupo combinado?" },
   fr: { title: "🏆 Système DKP 1854 🏆", points: "Tués T4: {t4} pts &nbsp;|&nbsp; Tués T5: {t5} pts &nbsp;|&nbsp; Morts: {deads} pts", pointsCombined: "Tués T4 & T5: {t4t5} pts &nbsp;|&nbsp; Morts: {deads} pts", dkpGoal: "Cible DKP = Puissance initiale", phName: "Nom du joueur", phPower: "Puissance initiale", phT4: "Tués T4", phT5: "Tués T5", phT4T5: "Tués T4 & T5", btnCombine: "Combiner Tués T4 & T5", btnSplit: "Séparer Tués T4 & T5", phDeads: "Morts", btnSave: "Enregistrer", logTitle: "💾 Journaux et Progression", noLogs: "Aucun journal. Entrez les données !", progress: "Progression Actuelle :", history: "Historique :", clearBtn: "Effacer", shareBtn: "Discord", alertName: "Entrez le nom du joueur", confirmDel: "Êtes-vous sûr de vouloir supprimer les journaux de", combineHeader: "🧮 Combiner Comptes", combineNamePh: "Nom combiné (ex: Total de John)", btnCombineCreate: "Combiner", combineAlertSelect: "Sélectionnez au moins 2 joueurs !", combineAlertName: "Entrez un nom pour la carte !", combinedCardTitle: "Statistiques combinées", delCombineConfirm: "Supprimer ce groupe combiné ?" },
   de: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: {t4} Pkt &nbsp;|&nbsp; T5 Kills: {t5} Pkt &nbsp;|&nbsp; Tote: {deads} Pkt", pointsCombined: "T4 & T5 Kills: {t4t5} Pkt &nbsp;|&nbsp; Tote: {deads} Pkt", dkpGoal: "DKP-Ziel = Startkraft", phName: "Spielername", phPower: "Startkraft", phT4: "T4 Kills", phT5: "T5 Kills", phT4T5: "T4 & T5 Kills", btnCombine: "T4 & T5 Kills kombinieren", btnSplit: "T4 & T5 Kills trennen", phDeads: "Tote", btnSave: "Spieler speichern", logTitle: "💾 Protokolle & Fortschritt", noLogs: "Keine Einträge. Daten oben eingeben!", progress: "Aktueller Fortschritt:", history: "Verlauf:", clearBtn: "Löschen", shareBtn: "Discord", alertName: "Spielername eingeben", confirmDel: "Möchten Sie wirklich alle Protokolle löschen für", combineHeader: "🧮 Konten Kombinieren", combineNamePh: "Kombinierter Name", btnCombineCreate: "Ausgewählte Kombinieren", combineAlertSelect: "Wähle mind. 2 Spieler!", combineAlertName: "Namen eingeben!", combinedCardTitle: "Kombinierte Statistiken", delCombineConfirm: "Diese kombinierte Gruppe löschen?" },
@@ -501,7 +500,7 @@ const i18n = {
 
 const langSelect = document.getElementById("langSelect");
 const continents = {
-  Europe: [ {v:"en", n:"🇬🇧 UK"}, {v:"fr", n:"🇫🇷 France"}, {v:"de", n:"🇩🇪 Germany"}, {v:"it", n:"🇮🇹 Italy"}, {v:"es", n:"🇪🇸 Spain"}, {v:"pt", n:"🇵🇹 Portugal"}, {v:"ru", n:"🇷🇺 Russia"}, {v:"tr", n:"🇹🇷 Turkey"} ],
+  Europe: [ {v:"en", n:"🇬🇧 UK"}, {v:"us", n:"🇺🇸 US"}, {v:"fr", n:"🇫🇷 France"}, {v:"de", n:"🇩🇪 Germany"}, {v:"it", n:"🇮🇹 Italy"}, {v:"es", n:"🇪🇸 Spain"}, {v:"pt", n:"🇵🇹 Portugal"}, {v:"ru", n:"🇷🇺 Russia"}, {v:"tr", n:"🇹🇷 Turkey"} ],
   "South America": [ {v:"es", n:"🇦🇷 Argentina"}, {v:"es", n:"🇧🇴 Bolivia"}, {v:"pt", n:"🇧🇷 Brazil"}, {v:"es", n:"🇨🇱 Chile"}, {v:"es", n:"🇨🇴 Colombia"}, {v:"es", n:"🇪🇨 Ecuador"}, {v:"es", n:"🇵🇪 Peru"}, {v:"es", n:"🇺🇾 Uruguay"}, {v:"es", n:"🇻🇪 Venezuela"} ],
   Asia: [ {v:"zh", n:"🇨🇳 China"}, {v:"ja", n:"🇯🇵 Japan"}, {v:"ko", n:"🇰🇷 South Korea"}, {v:"hi", n:"🇮🇳 India"}, {v:"ar", n:"🇸🇦 Saudi Arabia"}, {v:"vi", n:"🇻🇳 Vietnam"}, {v:"th", n:"🇹🇭 Thailand"}, {v:"id", n:"🇮🇩 Indonesia"} ] 
 };
@@ -609,8 +608,15 @@ function clearPlayerLogs(playerName) {
 function updateCombineCheckboxes() {
   const uniqueNames = [...new Set(cloudPlayers.map(p => p.name))];
   const combinePanel = document.getElementById("combinePanel"), cbContainer = document.getElementById("combineCheckboxes");
-  if (uniqueNames.length < 2) { combinePanel.style.display = "none"; return; }
-  combinePanel.style.display = "block"; cbContainer.innerHTML = "";
+  
+  // Panel dynamically hides unless you have 2+ accounts saved
+  if (uniqueNames.length < 2) { 
+      combinePanel.style.display = "none"; 
+      return; 
+  }
+  
+  combinePanel.style.display = "block"; 
+  cbContainer.innerHTML = "";
   uniqueNames.forEach(name => { cbContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${name}" class="combine-cb">${name}</label>`; });
 }
 
@@ -619,7 +625,10 @@ function createCombinedCard() {
   const checkboxes = document.querySelectorAll(".combine-cb:checked"), selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
   if (selectedAccounts.length < 2) return alert(t.combineAlertSelect);
   if (!combinedName) return alert(t.combineAlertName);
+  
+  // Stamped with userId so players can fetch their own cards
   db.collection("guildCombinedLogs").add({ userId: currentUserId, name: combinedName, accounts: selectedAccounts, createdAt: Date.now() });
+  
   nameInput.value = ""; checkboxes.forEach(cb => cb.checked = false);
 }
 
@@ -708,7 +717,8 @@ function displaySavedData() {
     
     g.entries.forEach(e => {
       let stats = e.isCombined ? `Combined: ${(e.t4t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}` : `T4: ${(e.t4||0).toLocaleString()} | T5: ${(e.t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}`;
-      html += `<div class="log-entry"><span class="timestamp">${e.timestampString}</span><strong>DKP: ${e.dkp.toLocaleString()}</strong><br><span class="small">${stats}</span></div>`;
+      let displayTime = e.timestampString || "Recently";
+      html += `<div class="log-entry"><span class="timestamp">${displayTime}</span><strong>DKP: ${e.dkp.toLocaleString()}</strong><br><span class="small">${stats}</span></div>`;
     });
     
     const safeName = g.name.replace(/'/g,"\\'");
