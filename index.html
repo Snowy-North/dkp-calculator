@@ -311,15 +311,16 @@ auth.onAuthStateChanged(user => {
         
         startSettingsListener();
 
-        if(user.email.toLowerCase() === 'snowy_north001@kingdom.com') {
+        if(user.email.toLowerCase() === 'snowy_north001@kingdom.com' || user.email.toLowerCase() === 'snowy_north001@1854.com') {
             isAdmin = true;
             document.getElementById('settingsGear').style.display = 'inline-block';
             document.getElementById('dkpGoal').innerHTML = "👑 Admin God Mode Active";
+            document.getElementById('combinePanel').style.display = 'block';
             startAdminListeners();
         } else {
             isAdmin = false;
             document.getElementById('settingsGear').style.display = 'none';
-            document.getElementById('combinePanel').style.display = 'none';
+            document.getElementById('combinePanel').style.display = 'block';
             document.getElementById('dkpGoal').innerHTML = "🔒 Private Vault Active";
             startPlayerListeners(user.uid);
         }
@@ -356,6 +357,14 @@ function startPlayerListeners(uid) {
         snap.forEach(doc => { let data = doc.data(); data.id = doc.id; cloudPlayers.push(data); });
         cloudPlayers.sort((a,b) => b.timestampMs - a.timestampMs);
         displaySavedData();
+        updateCombineCheckboxes();
+        renderCombinedCards();
+    });
+
+    if(unsubscribeCombined) unsubscribeCombined();
+    unsubscribeCombined = db.collection("guildCombinedLogs").where("userId", "==", uid).onSnapshot(snap => {
+        cloudCombined = [];
+        snap.forEach(doc => { let data = doc.data(); data.id = doc.id; cloudCombined.push(data); });
         renderCombinedCards();
     });
 }
@@ -600,7 +609,7 @@ function clearPlayerLogs(playerName) {
 function updateCombineCheckboxes() {
   const uniqueNames = [...new Set(cloudPlayers.map(p => p.name))];
   const combinePanel = document.getElementById("combinePanel"), cbContainer = document.getElementById("combineCheckboxes");
-  if (uniqueNames.length < 2 || !isAdmin) { combinePanel.style.display = "none"; return; }
+  if (uniqueNames.length < 2) { combinePanel.style.display = "none"; return; }
   combinePanel.style.display = "block"; cbContainer.innerHTML = "";
   uniqueNames.forEach(name => { cbContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${name}" class="combine-cb">${name}</label>`; });
 }
@@ -610,7 +619,7 @@ function createCombinedCard() {
   const checkboxes = document.querySelectorAll(".combine-cb:checked"), selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
   if (selectedAccounts.length < 2) return alert(t.combineAlertSelect);
   if (!combinedName) return alert(t.combineAlertName);
-  db.collection("guildCombinedLogs").add({ name: combinedName, accounts: selectedAccounts, createdAt: Date.now() });
+  db.collection("guildCombinedLogs").add({ userId: currentUserId, name: combinedName, accounts: selectedAccounts, createdAt: Date.now() });
   nameInput.value = ""; checkboxes.forEach(cb => cb.checked = false);
 }
 
@@ -632,7 +641,6 @@ function shareCombinedDiscord(id) {
 }
 
 function renderCombinedCards() {
-  if(!isAdmin) return; 
   const t = i18n[currentLang] || i18n['en'], container = document.getElementById("combinedDataList");
   let html = "", enrichedCombos = cloudCombined.map(combo => {
     let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0, accountTags = "";
@@ -705,7 +713,6 @@ function displaySavedData() {
     
     const safeName = g.name.replace(/'/g,"\\'");
     
-    // Buttons are now visible to everyone for their own cards!
     html += `
         <div class="card-actions">
           <button class="btn-small-discord" onclick="sendToDiscord('${safeName}')">👾 Discord</button>
