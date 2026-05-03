@@ -270,7 +270,7 @@ let currentUserId = null;
 let dkpPoints = { t4: 2, t5: 5, t4t5: 3.5, deads: 15 };
 let unsubscribeLogs = null;
 let unsubscribeCombined = null;
-let unsubscribeSettings = null; // We added this to stop the premature checking!
+let unsubscribeSettings = null; 
 
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1500504658186338386/9XmK-jNtHSH-kovVsmcnJm0nf-f_xjyMeP9w1ykYeeQCf_WGZ2E8qTJZO1ErArrzYw5g";
 
@@ -309,7 +309,6 @@ auth.onAuthStateChanged(user => {
         document.getElementById('main-app').style.display = 'block';
         document.getElementById('name').value = user.email.split('@')[0];
         
-        // NOW we sync settings since the user is officially logged in!
         startSettingsListener();
 
         if(user.email.toLowerCase() === 'snowy_north001@kingdom.com') {
@@ -329,7 +328,6 @@ auth.onAuthStateChanged(user => {
         document.getElementById('main-app').style.display = 'none';
         currentUserId = null;
         
-        // Sever all cloud connections when logged out
         if(unsubscribeLogs) unsubscribeLogs();
         if(unsubscribeCombined) unsubscribeCombined();
         if(unsubscribeSettings) unsubscribeSettings();
@@ -382,7 +380,7 @@ function startAdminListeners() {
 }
 
 // ==========================================
-// 4. ADMIN POINTS EDITOR (WITH ERROR HANDLING)
+// 4. ADMIN POINTS EDITOR
 // ==========================================
 function openAdmin() {
     document.getElementById('adminModal').style.display = 'flex';
@@ -401,8 +399,6 @@ function saveAdminSettings() {
         t4t5: parseFloat(document.getElementById('editT4T5').value) || 0,
         deads: parseFloat(document.getElementById('editDeads').value) || 0
     };
-    
-    // Added proper success/fail feedback
     db.collection("settings").doc("dkpPoints").set(newPoints)
       .then(() => {
           alert("✅ Admin Settings Saved!");
@@ -709,15 +705,13 @@ function displaySavedData() {
     
     const safeName = g.name.replace(/'/g,"\\'");
     
-    if (isAdmin) {
-        html += `
-            <div class="card-actions">
-              <button class="btn-small-discord" onclick="sendToDiscord('${safeName}')">👾 Discord</button>
-              <button class="btn-small-danger" onclick="clearPlayerLogs('${safeName}')">🗑️ ${t.clearBtn}</button>
-            </div>`;
-    }
-    
-    html += `</div>`;
+    // Buttons are now visible to everyone for their own cards!
+    html += `
+        <div class="card-actions">
+          <button class="btn-small-discord" onclick="sendToDiscord('${safeName}')">👾 Discord</button>
+          <button class="btn-small-danger" onclick="clearPlayerLogs('${safeName}')">🗑️ ${t.clearBtn}</button>
+        </div>
+      </div>`;
   });
   document.getElementById("savedDataList").innerHTML = html;
 }
