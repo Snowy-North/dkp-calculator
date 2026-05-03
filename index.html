@@ -247,7 +247,7 @@ body.dark-mode .close-btn:hover { color: #fff; }
 
 <script>
 // ==========================================
-// 1. FIREBASE CONFIGURATION
+// 1. FIREBASE CONFIGURATION (Wired Up)
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyAIPs8b6aSVEx3ApDP1TupSOfIEesVoIbM",
@@ -270,11 +270,12 @@ let currentUserId = null;
 let dkpPoints = { t4: 2, t5: 5, t4t5: 3.5, deads: 15 };
 let unsubscribeLogs = null;
 let unsubscribeCombined = null;
+let unsubscribeSettings = null; // We added this to stop the premature checking!
 
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1500504658186338386/9XmK-jNtHSH-kovVsmcnJm0nf-f_xjyMeP9w1ykYeeQCf_WGZ2E8qTJZO1ErArrzYw5g";
 
 // ==========================================
-// 2. AUTHENTICATION (FIXED FOR FIREBASE UPDATE)
+// 2. AUTHENTICATION & BOUNCER LOGIC
 // ==========================================
 function processAuth() {
     const email = document.getElementById('authEmail').value.trim();
@@ -284,25 +285,16 @@ function processAuth() {
     if(!email || !pass) { errDiv.innerText = "Please enter an email and password."; return; }
     errDiv.innerText = "Connecting...";
 
-    // 1. First, attempt to log in normally
     auth.signInWithEmailAndPassword(email, pass).catch(err => {
-        
-        // 2. Firebase now returns 'invalid-credential' for BOTH wrong passwords and missing accounts
         if(err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
-            
-            // 3. Since login failed, attempt to create the account instead
             auth.createUserWithEmailAndPassword(email, pass).catch(createErr => {
-                
-                // 4. If account creation fails because it already exists, they just mistyped their password!
                 if(createErr.code === 'auth/email-already-in-use') {
                     errDiv.innerText = "Incorrect password for this account.";
                 } else {
                     errDiv.innerText = createErr.message;
                 }
             });
-            
         } else {
-            // Some other error happened (like badly formatted email)
             errDiv.innerText = err.message;
         }
     });
@@ -316,6 +308,9 @@ auth.onAuthStateChanged(user => {
         document.getElementById('authModal').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
         document.getElementById('name').value = user.email.split('@')[0];
+        
+        // NOW we sync settings since the user is officially logged in!
+        startSettingsListener();
 
         if(user.email.toLowerCase() === 'snowy_north001@kingdom.com') {
             isAdmin = true;
@@ -333,8 +328,11 @@ auth.onAuthStateChanged(user => {
         document.getElementById('authModal').style.display = 'flex';
         document.getElementById('main-app').style.display = 'none';
         currentUserId = null;
+        
+        // Sever all cloud connections when logged out
         if(unsubscribeLogs) unsubscribeLogs();
         if(unsubscribeCombined) unsubscribeCombined();
+        if(unsubscribeSettings) unsubscribeSettings();
         document.getElementById('authError').innerText = "";
     }
 });
@@ -342,9 +340,16 @@ auth.onAuthStateChanged(user => {
 // ==========================================
 // 3. CLOUD SYNC LISTENERS
 // ==========================================
-db.collection("settings").doc("dkpPoints").onSnapshot(doc => {
-    if(doc.exists) { dkpPoints = doc.data(); applyTranslations(); updateLive(); }
-});
+function startSettingsListener() {
+    if(unsubscribeSettings) unsubscribeSettings();
+    unsubscribeSettings = db.collection("settings").doc("dkpPoints").onSnapshot(doc => {
+        if(doc.exists) { 
+            dkpPoints = doc.data(); 
+            applyTranslations(); 
+            updateLive(); 
+        }
+    });
+}
 
 function startPlayerListeners(uid) {
     if(unsubscribeLogs) unsubscribeLogs();
@@ -377,7 +382,7 @@ function startAdminListeners() {
 }
 
 // ==========================================
-// 4. ADMIN POINTS EDITOR
+// 4. ADMIN POINTS EDITOR (WITH ERROR HANDLING)
 // ==========================================
 function openAdmin() {
     document.getElementById('adminModal').style.display = 'flex';
@@ -386,7 +391,9 @@ function openAdmin() {
     document.getElementById('editT4T5').value = dkpPoints.t4t5;
     document.getElementById('editDeads').value = dkpPoints.deads;
 }
+
 function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+
 function saveAdminSettings() {
     const newPoints = {
         t4: parseFloat(document.getElementById('editT4').value) || 0,
@@ -394,9 +401,18 @@ function saveAdminSettings() {
         t4t5: parseFloat(document.getElementById('editT4T5').value) || 0,
         deads: parseFloat(document.getElementById('editDeads').value) || 0
     };
-    db.collection("settings").doc("dkpPoints").set(newPoints);
-    closeAdmin();
+    
+    // Added proper success/fail feedback
+    db.collection("settings").doc("dkpPoints").set(newPoints)
+      .then(() => {
+          alert("✅ Admin Settings Saved!");
+          closeAdmin();
+      })
+      .catch((error) => {
+          alert("❌ Cloud Error: " + error.message + "\n\n(Make sure your Firebase Rules are updated!)");
+      });
 }
+
 function calcDKP(p, t4, t5, t4t5, d) { return (t4 * dkpPoints.t4) + (t5 * dkpPoints.t5) + (t4t5 * dkpPoints.t4t5) + (d * dkpPoints.deads); }
 
 // ==========================================
@@ -492,6 +508,7 @@ Object.entries(continents).forEach(([name, countries]) => {
 
 let currentLang = localStorage.getItem("lang") || "en";
 langSelect.value = currentLang;
+
 function changeLanguage() { currentLang = langSelect.value; localStorage.setItem("lang", currentLang); applyTranslations(); }
 
 function applyTranslations() {
