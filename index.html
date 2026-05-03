@@ -6,9 +6,7 @@
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#007aff">
-
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="icon-192.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,18 +23,17 @@
 
 <style>
 /* Light Mode (Default) Variables & Base Styles */
-body { font-family: 'Poppins', -apple-system, Arial, sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 20px; transition: background 0.4s ease, color 0.4s ease; overflow-x: hidden; }
+body { font-family: 'Poppins', sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 20px; transition: background 0.4s ease, color 0.4s ease; overflow-x: hidden; }
 #potato-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
-.container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); position: relative; z-index: 10; transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease; }
+.container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); position: relative; z-index: 10; transition: all 0.4s ease; }
 
-/* MODALS (Login & Admin) */
+/* MODALS */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-.modal-content { width: 90%; max-width: 350px; padding: 25px; position: relative; text-align: left; }
+.modal-content { width: 90%; max-width: 350px; padding: 25px; position: relative; text-align: left; background: #fff; border-radius: 20px; }
 .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; line-height: 1; }
 .close-btn:hover { color: #333; }
 .modal-content h3 { margin-top: 0; margin-bottom: 5px; color: #1a1a1a; text-align: center; font-weight: 700; }
 .modal-content p { text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }
-.modal-content label { font-size: 13px; font-weight: 600; color: #555; margin-left: 4px; }
 
 /* Top Controls */
 .top-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -45,8 +42,6 @@ body { font-family: 'Poppins', -apple-system, Arial, sans-serif; background: #f0
 .theme-toggle, .hammer-btn { font-size: 16px; padding: 8px 12px; }
 .lang-select { font-size: 13px; max-width: 200px; }
 .logout-btn { background: #ffe5e5; color: #ff3b30; }
-.theme-toggle:hover, .lang-select:hover, .hammer-btn:hover { background: #d8dadf; transform: translateY(-1px); }
-.logout-btn:hover { background: #ff3b30; color: white; transform: translateY(-1px); }
 
 /* UNIFIED PANEL DESIGN */
 .unified-panel { background: #fafafa; border: 2px solid #e4e6eb; border-radius: 12px; box-sizing: border-box; transition: all 0.3s ease; }
@@ -57,7 +52,6 @@ body { font-family: 'Poppins', -apple-system, Arial, sans-serif; background: #f0
 
 .admin-btn { position: absolute; bottom: 8px; right: 12px; font-size: 14px; cursor: pointer; opacity: 0.3; transition: opacity 0.3s ease; display: none; }
 .admin-btn:hover { opacity: 1; }
-
 .trophy { cursor: pointer; display: inline-block; transition: transform 0.3s ease; }
 .trophy:hover { transform: scale(1.3) rotate(15deg); }
 
@@ -69,7 +63,7 @@ input:focus { border-color: #007aff; background: #fff; box-shadow: 0 0 0 4px rgb
 .toggle-link { font-size: 12px; color: #007aff; cursor: pointer; font-weight: 600; transition: all 0.3s; user-select: none; background: #eef3ff; padding: 4px 12px; border-radius: 20px; }
 .toggle-link:hover { background: #d1e0ff; }
 
-button.main-btn { width: 100%; padding: 14px; margin-top: 12px; background: #007aff; color: #f8f9fa; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-family: 'Poppins', sans-serif; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); transition: all 0.3s ease; }
+button.main-btn { width: 100%; padding: 14px; margin-top: 12px; background: #007aff; color: #f8f9fa; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); transition: all 0.3s ease; }
 button.main-btn:hover { background: #005bb5; transform: translateY(-2px); }
 button.main-btn:active { transform: translateY(0); }
 button.success-btn { background: #34c759; box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3); }
@@ -92,8 +86,7 @@ button.success-btn:hover { background: #28a745; }
 .section-divider { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #e4e6eb; transition: border-color 0.4s ease; }
 .logs-header { padding: 14px; text-align: center; margin-top: 0; margin-bottom: 20px; color: #1a1a1a; font-size: 18px; font-weight: 700; transition: color 0.4s ease; }
 
-@keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-.player-card { padding: 18px; margin-bottom: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); animation: slideUpFade 0.4s ease forwards; }
+.player-card { padding: 18px; margin-bottom: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
 .combined-card { border-color: #FFD700; border-width: 2px; background: #fffdf5; }
 .player-title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; transition: color 0.4s ease; }
 
@@ -101,8 +94,7 @@ button.success-btn:hover { background: #28a745; }
 .progress-fill { height: 100%; border-radius: 10px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s ease; }
 .progress-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-align: center; font-size: 11px; font-weight: 800; color: #1a1a1a; line-height: 24px; pointer-events: none; letter-spacing: 0.3px; text-shadow: none; }
 
-@keyframes shimmer { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
-.gold-bar { background: linear-gradient(90deg, #FFD700 0%, #FFB900 50%, #FFD700 100%); background-size: 200% auto; animation: shimmer 3s linear infinite; }
+.gold-bar { background: linear-gradient(90deg, #FFD700 0%, #FFB900 50%, #FFD700 100%); background-size: 200% auto; }
 
 .log-entry { background: #fff; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #e4e6eb; border-left: 4px solid #ccc; font-size: 13px; transition: all 0.4s ease; }
 .log-entry:first-of-type { border-left: 4px solid #007aff; background: #f0f7ff; }
@@ -110,13 +102,15 @@ button.success-btn:hover { background: #28a745; }
 .small { font-size: 13px; color: #666; transition: color 0.4s ease; }
 .acc-tag { display: inline-block; background: #eef3ff; color: #007aff; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin: 2px 4px 2px 0; font-weight: 600; }
 
-/* HAMMER SMASH ANIMATION */
-#giant-hammer { position: fixed; top: -10vh; left: 50vw; font-size: 180px; z-index: 9999; opacity: 0; pointer-events: none; transform-origin: bottom left; transform: rotate(60deg); }
+/* HAMMER SMASH ANIMATION (Centered!) */
+#giant-hammer { position: fixed; top: 15vh; left: 55vw; font-size: 200px; z-index: 9999; opacity: 0; pointer-events: none; transform-origin: bottom left; transform: rotate(60deg); }
 @keyframes swingHammer { 0% { opacity: 1; transform: rotate(60deg); } 60% { opacity: 1; transform: rotate(-25deg); } 100% { opacity: 0; transform: rotate(-25deg); } }
 .swinging { animation: swingHammer 0.6s ease-in forwards; }
-#impact-effect { position: fixed; top: 30vh; left: 45vw; transform: translate(-50%, -50%) scale(0); font-size: 160px; z-index: 9998; opacity: 0; pointer-events: none; }
+
+#impact-effect { position: fixed; top: 50vh; left: 50vw; transform: translate(-50%, -50%) scale(0); font-size: 200px; z-index: 9998; opacity: 0; pointer-events: none; }
 @keyframes powEffect { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.3) rotate(-15deg); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.3) rotate(5deg); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.6) rotate(10deg); } }
 .pow-active { animation: powEffect 0.5s ease-out forwards; }
+
 @keyframes shakeScreen {
   0% { transform: translate(4px, 2px) rotate(0deg); } 10% { transform: translate(-2px, -4px) rotate(-1deg); } 20% { transform: translate(-6px, 0px) rotate(2deg); }
   30% { transform: translate(6px, 4px) rotate(0deg); } 40% { transform: translate(2px, -2px) rotate(1deg); } 50% { transform: translate(-2px, 4px) rotate(-2deg); }
@@ -131,19 +125,17 @@ body.dark-mode .container { background: #1e1e1e; box-shadow: 0 10px 40px rgba(0,
 body.dark-mode .theme-toggle, body.dark-mode .lang-select, body.dark-mode .hammer-btn, body.dark-mode .logout-btn { background: #2d2d2d; color: #b0b0b0; }
 body.dark-mode .theme-toggle:hover, body.dark-mode .lang-select:hover, body.dark-mode .hammer-btn:hover { background: #3d3d3d; }
 body.dark-mode .logout-btn:hover { background: #ff3b30; color: white; }
-body.dark-mode .unified-panel { background: #252525; border-color: #333; }
+body.dark-mode .unified-panel, body.dark-mode .modal-content { background: #252525; border-color: #333; }
 body.dark-mode .header-section h2, body.dark-mode .panel-title, body.dark-mode .logs-header, body.dark-mode .player-title, body.dark-mode .modal-content h3 { color: #e0e0e0; }
 body.dark-mode .point-values, body.dark-mode .small, body.dark-mode .dkp-goal, body.dark-mode .modal-content p, body.dark-mode .modal-content label { color: #888; }
 body.dark-mode .toggle-link { background: #1a2639; color: #66a3ff; }
 body.dark-mode .toggle-link:hover { background: #233554; }
 body.dark-mode input { background: #252525; color: #e0e0e0; border-color: #333; }
 body.dark-mode input:focus { border-color: #0d84ff; background: #2a2a2a; box-shadow: 0 0 0 4px rgba(13, 132, 255, 0.2); }
-body.dark-mode input::placeholder { color: #777; }
 body.dark-mode .checkbox-container { background: #2a2a2a; border-color: #444; }
 body.dark-mode .checkbox-item { color: #e0e0e0; }
 body.dark-mode .live { color: #66a3ff; }
 body.dark-mode .section-divider { border-color: #333; }
-body.dark-mode .player-card { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 body.dark-mode .combined-card { border-color: #a68a00; background: #2a281e; }
 body.dark-mode .progress-bg { background: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
 body.dark-mode .log-entry { background: #2d2d2d; border-color: #444; border-left-color: #555; }
@@ -151,7 +143,6 @@ body.dark-mode .log-entry:first-of-type { border-left-color: #0d84ff; background
 body.dark-mode .btn-small-danger { background: #3d1c1c; color: #ff453a; border-color: #5c2424; }
 body.dark-mode .btn-small-danger:hover { background: #ff453a; color: #fff; border-color: #ff453a; }
 body.dark-mode .acc-tag { background: #1a2639; color: #66a3ff; }
-body.dark-mode .close-btn:hover { color: #fff; }
 </style>
 </head>
 
@@ -159,8 +150,8 @@ body.dark-mode .close-btn:hover { color: #fff; }
 
 <div id="authModal" class="modal-overlay">
     <div class="unified-panel modal-content">
-        <h3 style="text-align:center;">1854 Kingdom Vault</h3>
-        <p style="text-align:center; color:#666; font-size:13px; margin-bottom:20px;">Enter your Rise of Kingdoms name and a password.</p>
+        <h3>1854 Kingdom Vault</h3>
+        <p>Log in or create an account to access your private dashboard.</p>
         <input type="text" id="authUsername" placeholder="Enter Rise of Kingdoms Name">
         <input type="password" id="authPassword" placeholder="Password">
         <button class="main-btn" onclick="processAuth()">Enter Vault</button>
@@ -207,11 +198,10 @@ body.dark-mode .close-btn:hover { color: #fff; }
     </h2>
     <div id="pointValues" class="point-values"></div>
     <div id="dkpGoal" class="dkp-goal">🔒 Private Vault Active</div>
-    
     <span class="admin-btn" id="settingsGear" onclick="openAdmin()" title="Admin Settings">⚙️</span>
   </div>
 
-  <input id="name" placeholder="Player name">
+  <input id="name" placeholder="Rise of Kingdoms Name" readonly>
   <input id="startingPower" type="text" inputmode="numeric" placeholder="Starting Power">
 
   <div class="toggle-link-container">
@@ -223,10 +213,7 @@ body.dark-mode .close-btn:hover { color: #fff; }
   <input id="t4t5" type="text" inputmode="numeric" placeholder="T4 & T5 Kills" style="display: none;">
   <input id="deads" type="text" inputmode="numeric" placeholder="Deads">
 
-  <div class="unified-panel live" id="live">
-  DKP: 0 | DKP %: 0%
-  </div>
-
+  <div class="unified-panel live" id="live">DKP: 0 | DKP %: 0%</div>
   <button id="saveBtn" class="main-btn" onclick="savePlayer()">Save Player</button>
 
   <div id="combinePanel" class="unified-panel header-section section-divider" style="display: none; margin-top: 30px;">
@@ -247,7 +234,7 @@ body.dark-mode .close-btn:hover { color: #fff; }
 
 <script>
 // ==========================================
-// 1. FIREBASE CONFIGURATION (Wired Up)
+// 1. FIREBASE CONFIGURATION
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyAIPs8b6aSVEx3ApDP1TupSOfIEesVoIbM",
@@ -271,12 +258,113 @@ let dkpPoints = { t4: 2, t5: 5, t4t5: 3.5, deads: 15 };
 let unsubscribeLogs = null;
 let unsubscribeCombined = null;
 let unsubscribeSettings = null; 
-
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1500504658186338386/9XmK-jNtHSH-kovVsmcnJm0nf-f_xjyMeP9w1ykYeeQCf_WGZ2E8qTJZO1ErArrzYw5g";
 
 // ==========================================
-// 2. AUTHENTICATION & BOUNCER LOGIC
+// 2. TRANSLATIONS & LANGUAGES
 // ==========================================
+const i18n = {
+  en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: {t4} pts &nbsp;|&nbsp; T5 Kills: {t5} pts &nbsp;|&nbsp; Deads: {deads} pts", pointsCombined: "T4 & T5 Kills: {t4t5} pts &nbsp;|&nbsp; Deads: {deads} pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phT4T5: "T4 & T5 Kills", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "Clear", shareBtn: "Discord", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for", combineHeader: "🧮 Combine Accounts", combineNamePh: "Combined Name (e.g. John's Total)", btnCombineCreate: "Combine Selected", combineAlertSelect: "Please select at least 2 players!", combineAlertName: "Please enter a name for the combined card!", combinedCardTitle: "Combined Totals", delCombineConfirm: "Are you sure you want to delete this combined group?" },
+  us: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: {t4} pts &nbsp;|&nbsp; T5 Kills: {t5} pts &nbsp;|&nbsp; Deads: {deads} pts", pointsCombined: "T4 & T5 Kills: {t4t5} pts &nbsp;|&nbsp; Deads: {deads} pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 Kills", phT5: "T5 Kills", phT4T5: "T4 & T5 Kills", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Dead Troops", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "Delete", shareBtn: "Discord", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for", combineHeader: "🧮 Combine Accounts", combineNamePh: "Combined Name (e.g. John's Total)", btnCombineCreate: "Combine Selected", combineAlertSelect: "Please select at least 2 players!", combineAlertName: "Please enter a name for the combined card!", combinedCardTitle: "Combined Totals", delCombineConfirm: "Are you sure you want to delete this combined group?" },
+  es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: {t4} pts &nbsp;|&nbsp; Muertes T5: {t5} pts &nbsp;|&nbsp; Muertos: {deads} pts", pointsCombined: "Muertes T4 y T5: {t4t5} pts &nbsp;|&nbsp; Muertos: {deads} pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phT4T5: "Muertes T4 y T5", btnCombine: "Combinar Muertes T4 y T5", btnSplit: "Separar Muertes T4 y T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "Borrar", shareBtn: "Discord", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de", combineHeader: "🧮 Combinar Cuentas", combineNamePh: "Nombre Combinado (ej. Total de John)", btnCombineCreate: "Combinar Seleccionados", combineAlertSelect: "¡Selecciona al menos 2 jugadores!", combineAlertName: "¡Ingresa un nombre para la tarjeta!", combinedCardTitle: "Estadísticas Combinadas", delCombineConfirm: "¿Eliminar este grupo combinado?" },
+  fr: { title: "🏆 Système DKP 1854 🏆", points: "Tués T4: {t4} pts &nbsp;|&nbsp; Tués T5: {t5} pts &nbsp;|&nbsp; Morts: {deads} pts", pointsCombined: "Tués T4 & T5: {t4t5} pts &nbsp;|&nbsp; Morts: {deads} pts", dkpGoal: "Cible DKP = Puissance initiale", phName: "Nom du joueur", phPower: "Puissance initiale", phT4: "Tués T4", phT5: "Tués T5", phT4T5: "Tués T4 & T5", btnCombine: "Combiner Tués T4 & T5", btnSplit: "Séparer Tués T4 & T5", phDeads: "Morts", btnSave: "Enregistrer", logTitle: "💾 Journaux et Progression", noLogs: "Aucun journal. Entrez les données !", progress: "Progression Actuelle :", history: "Historique :", clearBtn: "Effacer", shareBtn: "Discord", alertName: "Entrez le nom du joueur", confirmDel: "Êtes-vous sûr de vouloir supprimer les journaux de", combineHeader: "🧮 Combiner Comptes", combineNamePh: "Nom combiné (ex: Total de John)", btnCombineCreate: "Combiner", combineAlertSelect: "Sélectionnez au moins 2 joueurs !", combineAlertName: "Entrez un nom pour la carte !", combinedCardTitle: "Statistiques combinées", delCombineConfirm: "Supprimer ce groupe combiné ?" },
+  de: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: {t4} Pkt &nbsp;|&nbsp; T5 Kills: {t5} Pkt &nbsp;|&nbsp; Tote: {deads} Pkt", pointsCombined: "T4 & T5 Kills: {t4t5} Pkt &nbsp;|&nbsp; Tote: {deads} Pkt", dkpGoal: "DKP-Ziel = Startkraft", phName: "Spielername", phPower: "Startkraft", phT4: "T4 Kills", phT5: "T5 Kills", phT4T5: "T4 & T5 Kills", btnCombine: "T4 & T5 Kills kombinieren", btnSplit: "T4 & T5 Kills trennen", phDeads: "Tote", btnSave: "Spieler speichern", logTitle: "💾 Protokolle & Fortschritt", noLogs: "Keine Einträge. Daten oben eingeben!", progress: "Aktueller Fortschritt:", history: "Verlauf:", clearBtn: "Löschen", shareBtn: "Discord", alertName: "Spielername eingeben", confirmDel: "Möchten Sie wirklich alle Protokolle löschen für", combineHeader: "🧮 Konten Kombinieren", combineNamePh: "Kombinierter Name", btnCombineCreate: "Ausgewählte Kombinieren", combineAlertSelect: "Wähle mind. 2 Spieler!", combineAlertName: "Namen eingeben!", combinedCardTitle: "Kombinierte Statistiken", delCombineConfirm: "Diese kombinierte Gruppe löschen?" },
+  it: { title: "🏆 Sistema DKP 1854 🏆", points: "Uccisioni T4: {t4} pt &nbsp;|&nbsp; Uccisioni T5: {t5} pt &nbsp;|&nbsp; Morti: {deads} pt", pointsCombined: "Uccisioni T4 & T5: {t4t5} pt &nbsp;|&nbsp; Morti: {deads} pt", dkpGoal: "Obiettivo DKP = Potere Iniziale", phName: "Nome giocatore", phPower: "Potere Iniziale", phT4: "Uccisioni T4", phT5: "Uccisioni T5", phT4T5: "Uccisioni T4 & T5", btnCombine: "Combina Uccisioni T4 & T5", btnSplit: "Separa Uccisioni T4 & T5", phDeads: "Morti", btnSave: "Salva Giocatore", logTitle: "💾 Registri e Progressi", noLogs: "Nessun registro. Inserisci i dati sopra!", progress: "Progresso Attuale:", history: "Cronologia:", clearBtn: "Cancella", shareBtn: "Discord", alertName: "Inserisci il nome del giocatore", confirmDel: "Sei sicuro di voler eliminare i registri di", combineHeader: "🧮 Combina Account", combineNamePh: "Nome Combinato", btnCombineCreate: "Combina Selezionati", combineAlertSelect: "Seleziona almeno 2 giocatori!", combineAlertName: "Inserisci un nome!", combinedCardTitle: "Statistiche Combinate", delCombineConfirm: "Eliminare questo gruppo combinato?" },
+  pt: { title: "🏆 Sistema DKP 1854 🏆", points: "Mortes T4: {t4} pts &nbsp;|&nbsp; Mortes T5: {t5} pts &nbsp;|&nbsp; Mortos: {deads} pts", pointsCombined: "Mortes T4 e T5: {t4t5} pts &nbsp;|&nbsp; Mortos: {deads} pts", dkpGoal: "Meta DKP = Poder Inicial", phName: "Nome do jogador", phPower: "Poder Inicial", phT4: "Mortes T4", phT5: "Mortes T5", phT4T5: "Mortes T4 e T5", btnCombine: "Combinar Mortes T4 e T5", btnSplit: "Separar Mortes T4 e T5", phDeads: "Mortos", btnSave: "Salvar Jogador", logTitle: "💾 Registros e Progresso", noLogs: "Nenhum registro. Insira os dados acima!", progress: "Progresso Atual:", history: "Histórico:", clearBtn: "Limpar", shareBtn: "Discord", alertName: "Insira o nome do jogador", confirmDel: "Tem certeza de que deseja excluir os registros de", combineHeader: "🧮 Combinar Contas", combineNamePh: "Nome Combinado", btnCombineCreate: "Combinar Selecionados", combineAlertSelect: "Selecione pelo menos 2 jogadores!", combineAlertName: "Insira um nome!", combinedCardTitle: "Totais Combinados", delCombineConfirm: "Excluir este grupo combinado?" },
+  ru: { title: "🏆 Система DKP 1854 🏆", points: "Убийства T4: {t4} оч &nbsp;|&nbsp; Убийства T5: {t5} оч &nbsp;|&nbsp; Мертвые: {deads} оч", pointsCombined: "Убийства T4 и T5: {t4t5} оч &nbsp;|&nbsp; Мертвые: {deads} оч", dkpGoal: "Цель DKP = Начальная мощь", phName: "Имя игрока", phPower: "Начальная мощь", phT4: "Убийства T4", phT5: "Убийства T5", phT4T5: "Убийства T4 и T5", btnCombine: "Объединить T4 и T5", btnSplit: "Разделить T4 и T5", phDeads: "Мертвые", btnSave: "Сохранить", logTitle: "💾 Журналы и прогресс", noLogs: "Нет записей. Введите данные выше!", progress: "Текущий прогресс:", history: "История:", clearBtn: "Очистить", shareBtn: "Discord", alertName: "Введите имя игрока", confirmDel: "Вы уверены, что хотите удалить все журналы для", combineHeader: "🧮 Объединить Аккаунты", combineNamePh: "Общее имя (напр. Total)", btnCombineCreate: "Объединить", combineAlertSelect: "Выберите минимум 2 игроков!", combineAlertName: "Введите имя карточки!", combinedCardTitle: "Общая Статистика", delCombineConfirm: "Удалить эту группу?" },
+  tr: { title: "🏆 1854 DKP Sistemi 🏆", points: "T4 Leş: {t4} Puan &nbsp;|&nbsp; T5 Leş: {t5} Puan &nbsp;|&nbsp; Ölü: {deads} Puan", pointsCombined: "T4 & T5 Leş: {t4t5} Puan &nbsp;|&nbsp; Ölü: {deads} Puan", dkpGoal: "DKP Hedefi = Başlangıç Gücü", phName: "Oyuncu adı", phPower: "Başlangıç Gücü", phT4: "T4 Leş", phT5: "T5 Leş", phT4T5: "T4 & T5 Leş", btnCombine: "T4 & T5 Leşlerini Birleştir", btnSplit: "T4 & T5 Leşlerini Ayır", phDeads: "Ölü", btnSave: "Oyuncuyu Kaydet", logTitle: "💾 Kayıtlar", noLogs: "Kayıt yok. Yukarıya veri girin!", progress: "İlerleme:", history: "Geçmiş:", clearBtn: "Temizle", shareBtn: "Discord", alertName: "Oyuncu adını girin", confirmDel: "Kayıtları silmek istediğinizden emin misiniz:", combineHeader: "🧮 Hesapları Birleştir", combineNamePh: "Birleştirilmiş İsim", btnCombineCreate: "Seçilenleri Birleştir", combineAlertSelect: "En az 2 oyuncu seçin!", combineAlertName: "Bir isim girin!", combinedCardTitle: "Birleştirilmiş Toplamlar", delCombineConfirm: "Bu birleşik grubu sil?" },
+  zh: { title: "🏆 1854 DKP 系统 🏆", points: "T4 击杀: {t4} 分 &nbsp;|&nbsp; T5 击杀: {t5} 分 &nbsp;|&nbsp; 阵亡: {deads} 分", pointsCombined: "T4 & T5 击杀: {t4t5} 分 &nbsp;|&nbsp; 阵亡: {deads} 分", dkpGoal: "DKP 目标 = 初始战力", phName: "玩家名字", phPower: "初始战力", phT4: "T4 击杀", phT5: "T5 击杀", phT4T5: "T4 & T5 击杀", btnCombine: "合并 T4 & T5 击杀", btnSplit: "分开 T4 & T5 击杀", phDeads: "阵亡", btnSave: "保存玩家", logTitle: "💾 记录与进度", noLogs: "暂无记录。在上方输入数据！", progress: "当前进度:", history: "历史记录:", clearBtn: "清除", shareBtn: "Discord", alertName: "请输入玩家名字", confirmDel: "确定要删除记录吗", combineHeader: "🧮 合并账号", combineNamePh: "合并名称", btnCombineCreate: "合并选中", combineAlertSelect: "请至少选择2个玩家！", combineAlertName: "请输入合并名称！", combinedCardTitle: "合并统计", delCombineConfirm: "确定要删除此组吗？" },
+  ja: { title: "🏆 1854 DKP システム 🏆", points: "T4 撃破: {t4} pt &nbsp;|&nbsp; T5 撃破: {t5} pt &nbsp;|&nbsp; 戦死: {deads} pt", pointsCombined: "T4 & T5 撃破: {t4t5} pt &nbsp;|&nbsp; 戦死: {deads} pt", dkpGoal: "DKP 目標 = 初期戦力", phName: "プレイヤー名", phPower: "初期戦力", phT4: "T4 撃破", phT5: "T5 撃破", phT4T5: "T4 & T5 撃破", btnCombine: "T4 & T5 撃破を統合", btnSplit: "T4 & T5 撃破を分割", phDeads: "戦死", btnSave: "保存", logTitle: "💾 ログ", noLogs: "ログがありません", progress: "進行状況:", history: "履歴:", clearBtn: "消去", shareBtn: "Discord", alertName: "名前を入力", confirmDel: "ログを削除しますか", combineHeader: "🧮 アカウント統合", combineNamePh: "統合名", btnCombineCreate: "選択して統合", combineAlertSelect: "2人以上選択！", combineAlertName: "名前を入力！", combinedCardTitle: "統合統計", delCombineConfirm: "このグループを削除しますか？" },
+  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: {t4} 점 &nbsp;|&nbsp; T5 킬: {t5} 점 &nbsp;|&nbsp; 전사: {deads} 점", pointsCombined: "T4 & T5 킬: {t4t5} 점 &nbsp;|&nbsp; 전사: {deads} 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phT4T5: "T4 & T5 킬", btnCombine: "T4 & T5 킬 통합", btnSplit: "T4 & T5 킬 분리", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "삭제", shareBtn: "Discord", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까", combineHeader: "🧮 계정 통합", combineNamePh: "통합 이름", btnCombineCreate: "선택 통합", combineAlertSelect: "최소 2명을 선택하세요!", combineAlertName: "이름을 입력하세요!", combinedCardTitle: "통합 통계", delCombineConfirm: "이 통합 그룹을 삭제하시겠습니까?" },
+  hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: {t4} अंक &nbsp;|&nbsp; T5 किल्स: {t5} अंक &nbsp;|&nbsp; मृत: {deads} अंक", pointsCombined: "T4 और T5 किल्स: {t4t5} अंक &nbsp;|&nbsp; मृत: {deads} अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phT4T5: "T4 और T5 किल्स", btnCombine: "T4 और T5 किल्स मिलाएं", btnSplit: "T4 और T5 किल्स अलग करें", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं। ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "साफ़ करें", shareBtn: "Discord", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं", combineHeader: "🧮 खाते मिलाएं", combineNamePh: "संयुक्त नाम", btnCombineCreate: "चयनित मिलाएं", combineAlertSelect: "कम से कम 2 खिलाड़ी चुनें!", combineAlertName: "एक नाम दर्ज करें!", combinedCardTitle: "संयुक्त आँकड़े", delCombineConfirm: "क्या आप इस समूह को हटाना चाहते हैं?" },
+  ar: { title: "🏆 نظام 1854 DKP 🏆", points: "قتلى T4: {t4} نقطة &nbsp;|&nbsp; قتلى T5: {t5} نقاط &nbsp;|&nbsp; الموتى: {deads} نقطة", pointsCombined: "قتلى T4 و T5: {t4t5} نقاط &nbsp;|&nbsp; الموتى: {deads} نقطة", dkpGoal: "هدف DKP = القوة الأولية", phName: "اسم اللاعب", phPower: "القوة الأولية", phT4: "قتلى T4", phT5: "قتلى T5", phT4T5: "قتلى T4 و T5", btnCombine: "دمج قتلى T4 و T5", btnSplit: "فصل قتلى T4 و T5", phDeads: "الموتى", btnSave: "حفظ اللاعب", logTitle: "💾 السجلات والتقدم", noLogs: "لا توجد سجلات. أدخل البيانات أعلاه!", progress: "التقدم الحالي:", history: "التاريخ:", clearBtn: "مسح", shareBtn: "Discord", alertName: "أدخل اسم اللاعب", confirmDel: "هل أنت متأكد أنك تريد حذف جميع سجلات", combineHeader: "🧮 دمج الحسابات", combineNamePh: "الاسم المدمج", btnCombineCreate: "دمج المحدد", combineAlertSelect: "الرجاء تحديد لاعبين على الأقل!", combineAlertName: "أدخل اسماً للبطاقة!", combinedCardTitle: "الإحصائيات المدمجة", delCombineConfirm: "حذف هذه المجموعة المدمجة؟" },
+  vi: { title: "🏆 Hệ thống DKP 1854 🏆", points: "Giết T4: {t4} điểm &nbsp;|&nbsp; Giết T5: {t5} điểm &nbsp;|&nbsp; Lính chết: {deads} điểm", pointsCombined: "Giết T4 & T5: {t4t5} điểm &nbsp;|&nbsp; Lính chết: {deads} điểm", dkpGoal: "Mục tiêu DKP = Sức mạnh ban đầu", phName: "Tên người chơi", phPower: "Sức mạnh ban đầu", phT4: "Giết T4", phT5: "Giết T5", phT4T5: "Giết T4 & T5", btnCombine: "Gộp Giết T4 & T5", btnSplit: "Tách Giết T4 & T5", phDeads: "Lính chết", btnSave: "Lưu", logTitle: "💾 Nhật ký & Tiến độ", noLogs: "Chưa có dữ liệu. Nhập ở trên!", progress: "Tiến độ:", history: "Lịch sử:", clearBtn: "Xóa", shareBtn: "Discord", alertName: "Nhập tên", confirmDel: "Bạn có chắc chắn muốn xóa nhật ký của", combineHeader: "🧮 Gộp Tài Khoản", combineNamePh: "Tên Gộp", btnCombineCreate: "Gộp Đã Chọn", combineAlertSelect: "Vui lòng chọn ít nhất 2 người chơi!", combineAlertName: "Vui lòng nhập tên!", combinedCardTitle: "Thống Kê Gộp", delCombineConfirm: "Xóa nhóm gộp này?" },
+  th: { title: "🏆 ระบบ 1854 DKP 🏆", points: "คิล T4: {t4} แต้ม &nbsp;|&nbsp; คิล T5: {t5} แต้ม &nbsp;|&nbsp; ตาย: {deads} แต้ม", pointsCombined: "คิล T4 & T5: {t4t5} แต้ม &nbsp;|&nbsp; ตาย: {deads} แต้ม", dkpGoal: "เป้าหมาย DKP = พลังเริ่มต้น", phName: "ชื่อผู้เล่น", phPower: "พลังเริ่มต้น", phT4: "คิล T4", phT5: "คิล T5", phT4T5: "คิล T4 & T5", btnCombine: "รวมคิล T4 & T5", btnSplit: "แยกคิล T4 & T5", phDeads: "ทหารตาย", btnSave: "บันทึก", logTitle: "💾 บันทึกและความคืบหน้า", noLogs: "ยังไม่มีบันทึก ป้อนข้อมูลด้านบน!", progress: "ความคืบหน้าปัจจุบัน:", history: "ประวัติ:", clearBtn: "ล้าง", shareBtn: "Discord", alertName: "กรุณาใส่ชื่อ", confirmDel: "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึกทั้งหมดของ", combineHeader: "🧮 รวมบัญชี", combineNamePh: "ชื่อที่รวม", btnCombineCreate: "รวมที่เลือก", combineAlertSelect: "โปรดเลือกอย่างน้อย 2 ผู้เล่น!", combineAlertName: "โปรดใส่ชื่อ!", combinedCardTitle: "สถิติรวม", delCombineConfirm: "ลบกลุ่มนี้หรือไม่?" },
+  id: { title: "🏆 Sistem DKP 1854 🏆", points: "Kill T4: {t4} Poin &nbsp;|&nbsp; Kill T5: {t5} Poin &nbsp;|&nbsp; Mati: {deads} Poin", pointsCombined: "Kill T4 & T5: {t4t5} Poin &nbsp;|&nbsp; Mati: {deads} Poin", dkpGoal: "Target DKP = Kekuatan Awal", phName: "Nama Pemain", phPower: "Kekuatan Awal", phT4: "Kill T4", phT5: "Kill T5", phT4T5: "Kill T4 & T5", btnCombine: "Gabungkan Kill T4 & T5", btnSplit: "Pisahkan Kill T4 & T5", phDeads: "Mati", btnSave: "Simpan Pemain", logTitle: "💾 Log & Kemajuan", noLogs: "Belum ada data. Masukkan data di atas!", progress: "Kemajuan Saat Ini:", history: "Riwayat:", clearBtn: "Hapus", shareBtn: "Discord", alertName: "Masukkan nama pemain", confirmDel: "Apakah Anda yakin ingin menghapus semua log untuk", combineHeader: "🧮 Gabungkan Akun", combineNamePh: "Nama Gabungan", btnCombineCreate: "Gabungkan Pilihan", combineAlertSelect: "Pilih setidaknya 2 pemain!", combineAlertName: "Masukkan nama!", combinedCardTitle: "Statistik Gabungan", delCombineConfirm: "Hapus grup gabungan ini?" }
+};
+
+const langSelect = document.getElementById("langSelect");
+const continents = {
+  Europe: [ {v:"en", n:"🇬🇧 UK"}, {v:"us", n:"🇺🇸 US"}, {v:"fr", n:"🇫🇷 France"}, {v:"de", n:"🇩🇪 Germany"}, {v:"it", n:"🇮🇹 Italy"}, {v:"es", n:"🇪🇸 Spain"}, {v:"pt", n:"🇵🇹 Portugal"}, {v:"ru", n:"🇷🇺 Russia"}, {v:"tr", n:"🇹🇷 Turkey"} ],
+  "South America": [ {v:"es", n:"🇦🇷 Argentina"}, {v:"es", n:"🇧🇴 Bolivia"}, {v:"pt", n:"🇧🇷 Brazil"}, {v:"es", n:"🇨🇱 Chile"}, {v:"es", n:"🇨🇴 Colombia"}, {v:"es", n:"🇪🇨 Ecuador"}, {v:"es", n:"🇵🇪 Peru"}, {v:"es", n:"🇺🇾 Uruguay"}, {v:"es", n:"🇻🇪 Venezuela"} ],
+  Asia: [ {v:"zh", n:"🇨🇳 China"}, {v:"ja", n:"🇯🇵 Japan"}, {v:"ko", n:"🇰🇷 South Korea"}, {v:"hi", n:"🇮🇳 India"}, {v:"ar", n:"🇸🇦 Saudi Arabia"}, {v:"vi", n:"🇻🇳 Vietnam"}, {v:"th", n:"🇹🇭 Thailand"}, {v:"id", n:"🇮🇩 Indonesia"} ] 
+};
+Object.entries(continents).forEach(([name, countries]) => {
+  const group = document.createElement("optgroup"); group.label = name;
+  countries.forEach(c => { const opt = document.createElement("option"); opt.value = c.v; opt.innerText = c.n; group.appendChild(opt); });
+  langSelect.appendChild(group);
+});
+
+let currentLang = localStorage.getItem("lang") || "en";
+langSelect.value = currentLang;
+
+function changeLanguage() { currentLang = langSelect.value; localStorage.setItem("lang", currentLang); applyTranslations(); }
+
+function applyTranslations() {
+  const t = i18n[currentLang] || i18n['en'];
+  document.getElementById("mainTitle").innerHTML = `<span class="trophy" onclick="toggleGravity()">🏆</span> ${t.title.replace(/🏆/g, '').trim()} <span class="trophy" onclick="toggleGravity()">🏆</span>`;
+  let pointsStr = isCombinedMode ? t.pointsCombined : t.points;
+  pointsStr = pointsStr.replace('{t4}', dkpPoints.t4).replace('{t5}', dkpPoints.t5).replace('{t4t5}', dkpPoints.t4t5).replace('{deads}', dkpPoints.deads);
+  document.getElementById("pointValues").innerHTML = pointsStr;
+  document.getElementById("name").placeholder = t.phName;
+  document.getElementById("startingPower").placeholder = t.phPower;
+  document.getElementById("t4").placeholder = t.phT4;
+  document.getElementById("t5").placeholder = t.phT5;
+  document.getElementById("t4t5").placeholder = t.phT4T5;
+  document.getElementById("deads").placeholder = t.phDeads;
+  document.getElementById("toggleModeText").innerText = isCombinedMode ? t.btnSplit : t.btnCombine;
+  document.getElementById("saveBtn").innerText = t.btnSave;
+  document.getElementById("logsTitle").innerText = t.logTitle;
+  if(document.getElementById("combineHeader")) document.getElementById("combineHeader").innerText = t.combineHeader;
+  if(document.getElementById("combinedName")) document.getElementById("combinedName").placeholder = t.combineNamePh;
+  if(document.getElementById("btnCombineCreate")) document.getElementById("btnCombineCreate").innerText = t.btnCombineCreate;
+  displaySavedData();
+  renderCombinedCards();
+}
+
+// ==========================================
+// 3. UI CONTROLS & AUTH LOGIC
+// ==========================================
+function toggleTheme() {
+  document.body.classList.toggle("dark-mode");
+  const isDark = document.body.classList.contains("dark-mode");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  document.getElementById("themeToggle").innerText = isDark ? "☀️" : "🌙";
+}
+if (localStorage.getItem("theme") === "dark") { document.body.classList.add("dark-mode"); document.getElementById("themeToggle").innerText = "☀️"; }
+
+function toggleKillMode() {
+  isCombinedMode = !isCombinedMode;
+  document.getElementById("t4").style.display = isCombinedMode ? "none" : "block";
+  document.getElementById("t5").style.display = isCombinedMode ? "none" : "block";
+  document.getElementById("t4t5").style.display = isCombinedMode ? "block" : "none";
+  document.getElementById("t4").value = ""; document.getElementById("t5").value = ""; document.getElementById("t4t5").value = "";
+  applyTranslations(); updateLive();
+}
+
+function getNum(id) { return Number(document.getElementById(id).value.replace(/,/g, '')) || 0; }
+function updateLive() {
+  const p = getNum("startingPower"), t4 = isCombinedMode ? 0 : getNum("t4"), t5 = isCombinedMode ? 0 : getNum("t5"), t4t5 = isCombinedMode ? getNum("t4t5") : 0, d = getNum("deads");
+  const dkp = calcDKP(p, t4, t5, t4t5, d);
+  const percent = p > 0 ? (dkp / p) * 100 : 0;
+  document.getElementById("live").innerText = `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
+}
+
+["startingPower","t4","t5","t4t5","deads"].forEach(id => {
+  document.getElementById(id).addEventListener("input", function() {
+    let rawStr = this.value.replace(/,/g, "").replace(/\D/g, "");
+    this.value = rawStr !== "" ? parseInt(rawStr, 10).toLocaleString('en-US') : "";
+    updateLive();
+  });
+});
+
+document.getElementById("name").addEventListener("input", function() {
+  const currentName = this.value.trim().toLowerCase();
+  if (currentName === "king potato" || currentName === "1854") { for(let i=0; i<50; i++) setTimeout(() => dropPotato(true), i * 20); }
+  const existingPlayer = cloudPlayers.find(x => x.name.toLowerCase() === currentName);
+  if (existingPlayer) { document.getElementById("startingPower").value = existingPlayer.startingPower.toLocaleString('en-US'); updateLive(); }
+});
+
 function processAuth() {
     const username = document.getElementById('authUsername').value.trim();
     const pass = document.getElementById('authPassword').value;
@@ -285,7 +373,6 @@ function processAuth() {
     if(!username || !pass) { errDiv.innerText = "Please enter a username and password."; return; }
     errDiv.innerText = "Connecting...";
 
-    // Convert username to a hidden email for Firebase
     const email = username.toLowerCase().replace(/\s/g, '') + "@kingdom.com";
 
     auth.signInWithEmailAndPassword(email, pass).catch(err => {
@@ -338,7 +425,7 @@ auth.onAuthStateChanged(user => {
 });
 
 // ==========================================
-// 3. CLOUD SYNC LISTENERS
+// 4. CLOUD SYNC & DATA MANAGEMENT
 // ==========================================
 function startSettingsListener() {
     if(unsubscribeSettings) unsubscribeSettings();
@@ -389,9 +476,6 @@ function startAdminListeners() {
     });
 }
 
-// ==========================================
-// 4. ADMIN POINTS EDITOR
-// ==========================================
 function openAdmin() {
     document.getElementById('adminModal').style.display = 'flex';
     document.getElementById('editT4').value = dkpPoints.t4;
@@ -410,16 +494,162 @@ function saveAdminSettings() {
         deads: parseFloat(document.getElementById('editDeads').value) || 0
     };
     db.collection("settings").doc("dkpPoints").set(newPoints)
-      .then(() => {
-          alert("✅ Admin Settings Saved!");
-          closeAdmin();
-      })
-      .catch((error) => {
-          alert("❌ Cloud Error: " + error.message + "\n\n(Make sure your Firebase Rules are updated!)");
-      });
+      .then(() => { alert("✅ Admin Settings Saved!"); closeAdmin(); })
+      .catch((error) => { alert("❌ Cloud Error: " + error.message); });
 }
 
 function calcDKP(p, t4, t5, t4t5, d) { return (t4 * dkpPoints.t4) + (t5 * dkpPoints.t5) + (t4t5 * dkpPoints.t4t5) + (d * dkpPoints.deads); }
+
+function savePlayer() {
+  const name = document.getElementById("name").value.trim(), p = getNum("startingPower"), t4 = isCombinedMode ? 0 : getNum("t4"), t5 = isCombinedMode ? 0 : getNum("t5"), t4t5 = isCombinedMode ? getNum("t4t5") : 0, d = getNum("deads");
+  const t = i18n[currentLang] || i18n['en'];
+  if (!name) return alert(t.alertName);
+  
+  db.collection("guildLog").add({
+      userId: currentUserId,
+      name: name,
+      startingPower: p, t4: t4, t5: t5, t4t5: t4t5, deads: d,
+      dkp: calcDKP(p, t4, t5, t4t5, d),
+      timestampString: new Date().toLocaleString(),
+      timestampMs: Date.now(),
+      isCombined: isCombinedMode
+  });
+  ["t4","t5","t4t5","deads"].forEach(id => document.getElementById(id).value = "");
+  updateLive(); 
+}
+
+function clearPlayerLogs(playerName) {
+  const t = i18n[currentLang] || i18n['en'];
+  if (confirm(`${t.confirmDel} ${playerName}?`)) {
+    cloudPlayers.filter(p => p.name.toLowerCase() === playerName.toLowerCase()).forEach(p => { db.collection("guildLog").doc(p.id).delete(); });
+  }
+}
+
+function updateCombineCheckboxes() {
+  const uniqueNames = [...new Set(cloudPlayers.map(p => p.name))];
+  const combinePanel = document.getElementById("combinePanel"), cbContainer = document.getElementById("combineCheckboxes");
+  
+  if (uniqueNames.length < 2) { 
+      combinePanel.style.display = "none"; 
+      return; 
+  }
+  
+  combinePanel.style.display = "block"; 
+  cbContainer.innerHTML = "";
+  uniqueNames.forEach(name => { cbContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${name}" class="combine-cb">${name}</label>`; });
+}
+
+function createCombinedCard() {
+  const t = i18n[currentLang] || i18n['en'], nameInput = document.getElementById("combinedName"), combinedName = nameInput.value.trim();
+  const checkboxes = document.querySelectorAll(".combine-cb:checked"), selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
+  if (selectedAccounts.length < 2) return alert(t.combineAlertSelect);
+  if (!combinedName) return alert(t.combineAlertName);
+  
+  db.collection("guildCombinedLogs").add({ userId: currentUserId, name: combinedName, accounts: selectedAccounts, createdAt: Date.now() });
+  
+  nameInput.value = ""; checkboxes.forEach(cb => cb.checked = false);
+}
+
+function deleteCombinedCard(id) { if (confirm(i18n[currentLang].delCombineConfirm || "Delete?")) db.collection("guildCombinedLogs").doc(id).delete(); }
+
+function displaySavedData() {
+  const t = i18n[currentLang] || i18n['en']; let html = "";
+  if (cloudPlayers.length === 0) { document.getElementById("savedDataList").innerHTML = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`; return; }
+  
+  const groups = {}; cloudPlayers.forEach(p => { const k = p.name.toLowerCase(); if (!groups[k]) groups[k] = { name: p.name, entries: [] }; groups[k].entries.push(p); });
+  const sortedGroups = Object.values(groups).sort((a, b) => { const spA = a.entries[0].startingPower || 0; const spB = b.entries[0].startingPower || 0; return spB - spA; });
+  
+  sortedGroups.forEach((g, idx) => {
+    const latest = g.entries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00", visualWidth = Math.min(parseFloat(percent), 100);
+    const pVal = parseFloat(percent);
+    let barStyle = pVal < 10 ? "background:#ff4d4d;" : pVal < 50 ? "background:#ffa31a;" : pVal < 96 ? "background:#f6e05e;" : pVal < 100 ? "background:#68d391;" : "";
+    
+    html += `<div class="unified-panel player-card" style="animation-delay:${idx*0.05}s">
+        <div class="player-title">👤 ${g.name}</div>
+        <div class="small"><strong>${t.progress}</strong> ${percent}%</div>
+        <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; ${barStyle}"></div><div class="progress-text">${pVal}%</div></div>
+        <div class="small" style="font-weight:bold">${t.history}</div>`;
+    
+    g.entries.forEach(e => {
+      let stats = e.isCombined ? `Combined: ${(e.t4t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}` : `T4: ${(e.t4||0).toLocaleString()} | T5: ${(e.t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}`;
+      let displayTime = e.timestampString || "Recently";
+      html += `<div class="log-entry"><span class="timestamp">${displayTime}</span><strong>DKP: ${e.dkp.toLocaleString()}</strong><br><span class="small">${stats}</span></div>`;
+    });
+    
+    const safeName = g.name.replace(/'/g,"\\'");
+    
+    html += `
+        <div class="card-actions">
+          <button class="btn-small-discord" onclick="sendToDiscord('${safeName}')">👾 Discord</button>
+          <button class="btn-small-danger" onclick="clearPlayerLogs('${safeName}')">🗑️ ${t.clearBtn}</button>
+        </div>
+      </div>`;
+  });
+  document.getElementById("savedDataList").innerHTML = html;
+}
+
+function renderCombinedCards() {
+  const t = i18n[currentLang] || i18n['en'], container = document.getElementById("combinedDataList");
+  let html = "", enrichedCombos = cloudCombined.map(combo => {
+    let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0, accountTags = "";
+    combo.accounts.forEach(acc => {
+      const latest = cloudPlayers.find(p => p.name.toLowerCase() === acc.toLowerCase());
+      accountTags += `<span class="acc-tag">${acc}</span>`;
+      if(latest) { totalSP += latest.startingPower || 0; totalDKP += latest.dkp || 0; totalT4 += latest.t4 || 0; totalT5 += latest.t5 || 0; totalT4T5 += latest.t4t5 || 0; totalDeads += latest.deads || 0; }
+    });
+    return { combo, totalSP, totalDKP, totalT4, totalT5, totalT4T5, totalDeads, accountTags };
+  });
+  enrichedCombos.sort((a, b) => b.totalSP - a.totalSP);
+  enrichedCombos.forEach((data, idx) => {
+    const percent = data.totalSP > 0 ? ((data.totalDKP / data.totalSP) * 100).toFixed(2) : "0.00", pVal = parseFloat(percent), visualWidth = Math.min(pVal, 100);
+    html += `
+      <div class="unified-panel player-card combined-card" style="animation-delay:${idx*0.05}s">
+        <div class="player-title">🧮 ${data.combo.name} <span class="small" style="font-weight:normal; display:block; margin-top:4px;">${t.combinedCardTitle || 'Combined Totals'}</span></div>
+        <div style="margin-bottom:12px;">${data.accountTags}</div>
+        <div class="small"><strong>${t.progress}</strong> ${percent}%</div>
+        <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; background:#ffd700;"></div><div class="progress-text">${pVal}%</div></div>
+        <div class="log-entry" style="background:transparent; border-color:#FFD700;">
+          <strong>Total DKP: ${data.totalDKP.toLocaleString()}</strong><br>
+          <span class="small">SP: ${data.totalSP.toLocaleString()} | Deads: ${data.totalDeads.toLocaleString()}</span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-small-discord" onclick="shareCombinedDiscord('${data.combo.id}')">👾 Discord</button>
+          <button class="btn-small-danger" onclick="deleteCombinedCard('${data.combo.id}')">🗑️ ${t.clearBtn}</button>
+        </div>
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function sendToDiscord(playerName) {
+  if (!DISCORD_WEBHOOK_URL) return alert("Missing Webhook URL."); 
+  const playerEntries = cloudPlayers.filter(p => p.name.toLowerCase() === playerName.toLowerCase());
+  if(playerEntries.length === 0) return;
+  const latest = playerEntries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00";
+  let statFields = [];
+  if (latest.isCombined) statFields.push({ name: "⚔️ T4 & T5 Kills", value: (latest.t4t5||0).toLocaleString(), inline: true });
+  else { statFields.push({ name: "⚔️ T4 Kills", value: (latest.t4||0).toLocaleString(), inline: true }); statFields.push({ name: "⚔️ T5 Kills", value: (latest.t5||0).toLocaleString(), inline: true }); }
+  statFields.push({ name: "💀 Deads", value: (latest.deads||0).toLocaleString(), inline: true });
+
+  fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+    embeds: [{ title: `🏆 ${latest.name} DKP Update`, color: 5814783, fields: [ { name: "💎 Total DKP", value: latest.dkp.toLocaleString(), inline: true }, { name: "📈 Progress", value: `${percent}%`, inline: true }, { name: "⚡ Starting Power", value: sp.toLocaleString(), inline: false }, ...statFields ], footer: { text: "1854 DKP System" }, timestamp: new Date().toISOString() }]
+  })}).then(res => { if(res.ok) alert("✅ Sent!"); else alert("❌ Error."); });
+}
+
+function shareCombinedDiscord(id) {
+  if (!DISCORD_WEBHOOK_URL) return alert("Missing Webhook URL.");
+  const combo = cloudCombined.find(c => c.id === id);
+  if(!combo) return;
+  let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0;
+  combo.accounts.forEach(acc => {
+    const latest = cloudPlayers.find(p => p.name.toLowerCase() === acc.toLowerCase());
+    if(latest) { totalSP += latest.startingPower || 0; totalDKP += latest.dkp || 0; totalT4 += latest.t4 || 0; totalT5 += latest.t5 || 0; totalT4T5 += latest.t4t5 || 0; totalDeads += latest.deads || 0; }
+  });
+  const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00";
+  fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+    embeds: [{ title: `🏆 ${combo.name} (Combined Total)`, color: 16766720, description: `**Accounts:** ${combo.accounts.join(", ")}`, fields: [ { name: "💎 Total DKP", value: totalDKP.toLocaleString(), inline: true }, { name: "📈 Progress", value: `${percent}%`, inline: true }, { name: "⚡ Combined Power", value: totalSP.toLocaleString(), inline: false }, { name: "⚔️ Total T4 Kills", value: totalT4.toLocaleString(), inline: true }, { name: "⚔️ Total T5 Kills", value: totalT5.toLocaleString(), inline: true }, { name: "⚔️ Combined T4/T5 Mode", value: totalT4T5.toLocaleString(), inline: true }, { name: "💀 Total Deads", value: totalDeads.toLocaleString(), inline: true } ], footer: { text: "1854 DKP System • Farm Calculator" }, timestamp: new Date().toISOString() }]
+  })}).then(res => { if(res.ok) alert("✅ Sent!"); else alert("❌ Error."); }).catch(() => alert("❌ Network error."));
+}
 
 // ==========================================
 // 5. POTATO PHYSICS ENGINE
@@ -477,252 +707,6 @@ Events.on(render, 'afterRender', function() {
     }
 });
 setInterval(() => dropPotato(false), 120); 
-
-// ==========================================
-// 6. UI & TRANSLATIONS
-// ==========================================
-const i18n = {
-  en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: {t4} pts &nbsp;|&nbsp; T5 Kills: {t5} pts &nbsp;|&nbsp; Deads: {deads} pts", pointsCombined: "T4 & T5 Kills: {t4t5} pts &nbsp;|&nbsp; Deads: {deads} pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phT4T5: "T4 & T5 Kills", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "Clear", shareBtn: "Discord", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for", combineHeader: "🧮 Combine Accounts", combineNamePh: "Combined Name (e.g. John's Total)", btnCombineCreate: "Combine Selected", combineAlertSelect: "Please select at least 2 players!", combineAlertName: "Please enter a name for the combined card!", combinedCardTitle: "Combined Totals", delCombineConfirm: "Are you sure you want to delete this combined group?" },
-  es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: {t4} pts &nbsp;|&nbsp; Muertes T5: {t5} pts &nbsp;|&nbsp; Muertos: {deads} pts", pointsCombined: "Muertes T4 y T5: {t4t5} pts &nbsp;|&nbsp; Muertos: {deads} pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phT4T5: "Muertes T4 y T5", btnCombine: "Combinar Muertes T4 y T5", btnSplit: "Separar Muertes T4 y T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "Borrar", shareBtn: "Discord", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de", combineHeader: "🧮 Combinar Cuentas", combineNamePh: "Nombre Combinado (ej. Total de John)", btnCombineCreate: "Combinar Seleccionados", combineAlertSelect: "¡Selecciona al menos 2 jugadores!", combineAlertName: "¡Ingresa un nombre para la tarjeta!", combinedCardTitle: "Estadísticas Combinadas", delCombineConfirm: "¿Eliminar este grupo combinado?" },
-  fr: { title: "🏆 Système DKP 1854 🏆", points: "Tués T4: {t4} pts &nbsp;|&nbsp; Tués T5: {t5} pts &nbsp;|&nbsp; Morts: {deads} pts", pointsCombined: "Tués T4 & T5: {t4t5} pts &nbsp;|&nbsp; Morts: {deads} pts", dkpGoal: "Cible DKP = Puissance initiale", phName: "Nom du joueur", phPower: "Puissance initiale", phT4: "Tués T4", phT5: "Tués T5", phT4T5: "Tués T4 & T5", btnCombine: "Combiner Tués T4 & T5", btnSplit: "Séparer Tués T4 & T5", phDeads: "Morts", btnSave: "Enregistrer", logTitle: "💾 Journaux et Progression", noLogs: "Aucun journal. Entrez les données !", progress: "Progression Actuelle :", history: "Historique :", clearBtn: "Effacer", shareBtn: "Discord", alertName: "Entrez le nom du joueur", confirmDel: "Êtes-vous sûr de vouloir supprimer les journaux de", combineHeader: "🧮 Combiner Comptes", combineNamePh: "Nom combiné (ex: Total de John)", btnCombineCreate: "Combiner", combineAlertSelect: "Sélectionnez au moins 2 joueurs !", combineAlertName: "Entrez un nom pour la carte !", combinedCardTitle: "Statistiques combinées", delCombineConfirm: "Supprimer ce groupe combiné ?" },
-  de: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: {t4} Pkt &nbsp;|&nbsp; T5 Kills: {t5} Pkt &nbsp;|&nbsp; Tote: {deads} Pkt", pointsCombined: "T4 & T5 Kills: {t4t5} Pkt &nbsp;|&nbsp; Tote: {deads} Pkt", dkpGoal: "DKP-Ziel = Startkraft", phName: "Spielername", phPower: "Startkraft", phT4: "T4 Kills", phT5: "T5 Kills", phT4T5: "T4 & T5 Kills", btnCombine: "T4 & T5 Kills kombinieren", btnSplit: "T4 & T5 Kills trennen", phDeads: "Tote", btnSave: "Spieler speichern", logTitle: "💾 Protokolle & Fortschritt", noLogs: "Keine Einträge. Daten oben eingeben!", progress: "Aktueller Fortschritt:", history: "Verlauf:", clearBtn: "Löschen", shareBtn: "Discord", alertName: "Spielername eingeben", confirmDel: "Möchten Sie wirklich alle Protokolle löschen für", combineHeader: "🧮 Konten Kombinieren", combineNamePh: "Kombinierter Name", btnCombineCreate: "Ausgewählte Kombinieren", combineAlertSelect: "Wähle mind. 2 Spieler!", combineAlertName: "Namen eingeben!", combinedCardTitle: "Kombinierte Statistiken", delCombineConfirm: "Diese kombinierte Gruppe löschen?" },
-  it: { title: "🏆 Sistema DKP 1854 🏆", points: "Uccisioni T4: {t4} pt &nbsp;|&nbsp; Uccisioni T5: {t5} pt &nbsp;|&nbsp; Morti: {deads} pt", pointsCombined: "Uccisioni T4 & T5: {t4t5} pt &nbsp;|&nbsp; Morti: {deads} pt", dkpGoal: "Obiettivo DKP = Potere Iniziale", phName: "Nome giocatore", phPower: "Potere Iniziale", phT4: "Uccisioni T4", phT5: "Uccisioni T5", phT4T5: "Uccisioni T4 & T5", btnCombine: "Combina Uccisioni T4 & T5", btnSplit: "Separa Uccisioni T4 & T5", phDeads: "Morti", btnSave: "Salva Giocatore", logTitle: "💾 Registri e Progressi", noLogs: "Nessun registro. Inserisci i dati sopra!", progress: "Progresso Attuale:", history: "Cronologia:", clearBtn: "Cancella", shareBtn: "Discord", alertName: "Inserisci il nome del giocatore", confirmDel: "Sei sicuro di voler eliminare i registri di", combineHeader: "🧮 Combina Account", combineNamePh: "Nome Combinato", btnCombineCreate: "Combina Selezionati", combineAlertSelect: "Seleziona almeno 2 giocatori!", combineAlertName: "Inserisci un nome!", combinedCardTitle: "Statistiche Combinate", delCombineConfirm: "Eliminare questo gruppo combinato?" },
-  pt: { title: "🏆 Sistema DKP 1854 🏆", points: "Mortes T4: {t4} pts &nbsp;|&nbsp; Mortes T5: {t5} pts &nbsp;|&nbsp; Mortos: {deads} pts", pointsCombined: "Mortes T4 e T5: {t4t5} pts &nbsp;|&nbsp; Mortos: {deads} pts", dkpGoal: "Meta DKP = Poder Inicial", phName: "Nome do jogador", phPower: "Poder Inicial", phT4: "Mortes T4", phT5: "Mortes T5", phT4T5: "Mortes T4 e T5", btnCombine: "Combinar Mortes T4 e T5", btnSplit: "Separar Mortes T4 e T5", phDeads: "Mortos", btnSave: "Salvar Jogador", logTitle: "💾 Registros e Progresso", noLogs: "Nenhum registro. Insira os dados acima!", progress: "Progresso Atual:", history: "Histórico:", clearBtn: "Limpar", shareBtn: "Discord", alertName: "Insira o nome do jogador", confirmDel: "Tem certeza de que deseja excluir os registros de", combineHeader: "🧮 Combinar Contas", combineNamePh: "Nome Combinado", btnCombineCreate: "Combinar Selecionados", combineAlertSelect: "Selecione pelo menos 2 jogadores!", combineAlertName: "Insira um nome!", combinedCardTitle: "Totais Combinados", delCombineConfirm: "Excluir este grupo combinado?" },
-  ru: { title: "🏆 Система DKP 1854 🏆", points: "Убийства T4: {t4} оч &nbsp;|&nbsp; Убийства T5: {t5} оч &nbsp;|&nbsp; Мертвые: {deads} оч", pointsCombined: "Убийства T4 и T5: {t4t5} оч &nbsp;|&nbsp; Мертвые: {deads} оч", dkpGoal: "Цель DKP = Начальная мощь", phName: "Имя игрока", phPower: "Начальная мощь", phT4: "Убийства T4", phT5: "Убийства T5", phT4T5: "Убийства T4 и T5", btnCombine: "Объединить T4 и T5", btnSplit: "Разделить T4 и T5", phDeads: "Мертвые", btnSave: "Сохранить", logTitle: "💾 Журналы и прогресс", noLogs: "Нет записей. Введите данные выше!", progress: "Текущий прогресс:", history: "История:", clearBtn: "Очистить", shareBtn: "Discord", alertName: "Введите имя игрока", confirmDel: "Вы уверены, что хотите удалить все журналы для", combineHeader: "🧮 Объединить Аккаунты", combineNamePh: "Общее имя (напр. Total)", btnCombineCreate: "Объединить", combineAlertSelect: "Выберите минимум 2 игроков!", combineAlertName: "Введите имя карточки!", combinedCardTitle: "Общая Статистика", delCombineConfirm: "Удалить эту группу?" },
-  tr: { title: "🏆 1854 DKP Sistemi 🏆", points: "T4 Leş: {t4} Puan &nbsp;|&nbsp; T5 Leş: {t5} Puan &nbsp;|&nbsp; Ölü: {deads} Puan", pointsCombined: "T4 & T5 Leş: {t4t5} Puan &nbsp;|&nbsp; Ölü: {deads} Puan", dkpGoal: "DKP Hedefi = Başlangıç Gücü", phName: "Oyuncu adı", phPower: "Başlangıç Gücü", phT4: "T4 Leş", phT5: "T5 Leş", phT4T5: "T4 & T5 Leş", btnCombine: "T4 & T5 Leşlerini Birleştir", btnSplit: "T4 & T5 Leşlerini Ayır", phDeads: "Ölü", btnSave: "Oyuncuyu Kaydet", logTitle: "💾 Kayıtlar", noLogs: "Kayıt yok. Yukarıya veri girin!", progress: "İlerleme:", history: "Geçmiş:", clearBtn: "Temizle", shareBtn: "Discord", alertName: "Oyuncu adını girin", confirmDel: "Kayıtları silmek istediğinizden emin misiniz:", combineHeader: "🧮 Hesapları Birleştir", combineNamePh: "Birleştirilmiş İsim", btnCombineCreate: "Seçilenleri Birleştir", combineAlertSelect: "En az 2 oyuncu seçin!", combineAlertName: "Bir isim girin!", combinedCardTitle: "Birleştirilmiş Toplamlar", delCombineConfirm: "Bu birleşik grubu sil?" },
-  zh: { title: "🏆 1854 DKP 系统 🏆", points: "T4 击杀: {t4} 分 &nbsp;|&nbsp; T5 击杀: {t5} 分 &nbsp;|&nbsp; 阵亡: {deads} 分", pointsCombined: "T4 & T5 击杀: {t4t5} 分 &nbsp;|&nbsp; 阵亡: {deads} 分", dkpGoal: "DKP 目标 = 初始战力", phName: "玩家名字", phPower: "初始战力", phT4: "T4 击杀", phT5: "T5 击杀", phT4T5: "T4 & T5 击杀", btnCombine: "合并 T4 & T5 击杀", btnSplit: "分开 T4 & T5 击杀", phDeads: "阵亡", btnSave: "保存玩家", logTitle: "💾 记录与进度", noLogs: "暂无记录。在上方输入数据！", progress: "当前进度:", history: "历史记录:", clearBtn: "清除", shareBtn: "Discord", alertName: "请输入玩家名字", confirmDel: "确定要删除记录吗", combineHeader: "🧮 合并账号", combineNamePh: "合并名称", btnCombineCreate: "合并选中", combineAlertSelect: "请至少选择2个玩家！", combineAlertName: "请输入合并名称！", combinedCardTitle: "合并统计", delCombineConfirm: "确定要删除此组吗？" },
-  ja: { title: "🏆 1854 DKP システム 🏆", points: "T4 撃破: {t4} pt &nbsp;|&nbsp; T5 撃破: {t5} pt &nbsp;|&nbsp; 戦死: {deads} pt", pointsCombined: "T4 & T5 撃破: {t4t5} pt &nbsp;|&nbsp; 戦死: {deads} pt", dkpGoal: "DKP 目標 = 初期戦力", phName: "プレイヤー名", phPower: "初期戦力", phT4: "T4 撃破", phT5: "T5 撃破", phT4T5: "T4 & T5 撃破", btnCombine: "T4 & T5 撃破を統合", btnSplit: "T4 & T5 撃破を分割", phDeads: "戦死", btnSave: "保存", logTitle: "💾 ログ", noLogs: "ログがありません", progress: "進行状況:", history: "履歴:", clearBtn: "消去", shareBtn: "Discord", alertName: "名前を入力", confirmDel: "ログを削除しますか", combineHeader: "🧮 アカウント統合", combineNamePh: "統合名", btnCombineCreate: "選択して統合", combineAlertSelect: "2人以上選択！", combineAlertName: "名前を入力！", combinedCardTitle: "統合統計", delCombineConfirm: "このグループを削除しますか？" },
-  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: {t4} 점 &nbsp;|&nbsp; T5 킬: {t5} 점 &nbsp;|&nbsp; 전사: {deads} 점", pointsCombined: "T4 & T5 킬: {t4t5} 점 &nbsp;|&nbsp; 전사: {deads} 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phT4T5: "T4 & T5 킬", btnCombine: "T4 & T5 킬 통합", btnSplit: "T4 & T5 킬 분리", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "삭제", shareBtn: "Discord", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까", combineHeader: "🧮 계정 통합", combineNamePh: "통합 이름", btnCombineCreate: "선택 통합", combineAlertSelect: "최소 2명을 선택하세요!", combineAlertName: "이름을 입력하세요!", combinedCardTitle: "통합 통계", delCombineConfirm: "이 통합 그룹을 삭제하시겠습니까?" },
-  hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: {t4} अंक &nbsp;|&nbsp; T5 किल्स: {t5} अंक &nbsp;|&nbsp; मृत: {deads} अंक", pointsCombined: "T4 और T5 किल्स: {t4t5} अंक &nbsp;|&nbsp; मृत: {deads} अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phT4T5: "T4 और T5 किल्स", btnCombine: "T4 और T5 किल्स मिलाएं", btnSplit: "T4 और T5 किल्स अलग करें", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं। ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "साफ़ करें", shareBtn: "Discord", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं", combineHeader: "🧮 खाते मिलाएं", combineNamePh: "संयुक्त नाम", btnCombineCreate: "चयनित मिलाएं", combineAlertSelect: "कम से कम 2 खिलाड़ी चुनें!", combineAlertName: "एक नाम दर्ज करें!", combinedCardTitle: "संयुक्त आँकड़े", delCombineConfirm: "क्या आप इस समूह को हटाना चाहते हैं?" },
-  ar: { title: "🏆 نظام 1854 DKP 🏆", points: "قتلى T4: {t4} نقطة &nbsp;|&nbsp; قتلى T5: {t5} نقاط &nbsp;|&nbsp; الموتى: {deads} نقطة", pointsCombined: "قتلى T4 و T5: {t4t5} نقاط &nbsp;|&nbsp; الموتى: {deads} نقطة", dkpGoal: "هدف DKP = القوة الأولية", phName: "اسم اللاعب", phPower: "القوة الأولية", phT4: "قتلى T4", phT5: "قتلى T5", phT4T5: "قتلى T4 و T5", btnCombine: "دمج قتلى T4 و T5", btnSplit: "فصل قتلى T4 و T5", phDeads: "الموتى", btnSave: "حفظ اللاعب", logTitle: "💾 السجلات والتقدم", noLogs: "لا توجد سجلات. أدخل البيانات أعلاه!", progress: "التقدم الحالي:", history: "التاريخ:", clearBtn: "مسح", shareBtn: "Discord", alertName: "أدخل اسم اللاعب", confirmDel: "هل أنت متأكد أنك تريد حذف جميع سجلات", combineHeader: "🧮 دمج الحسابات", combineNamePh: "الاسم المدمج", btnCombineCreate: "دمج المحدد", combineAlertSelect: "الرجاء تحديد لاعبين على الأقل!", combineAlertName: "أدخل اسماً للبطاقة!", combinedCardTitle: "الإحصائيات المدمجة", delCombineConfirm: "حذف هذه المجموعة المدمجة؟" },
-  vi: { title: "🏆 Hệ thống DKP 1854 🏆", points: "Giết T4: {t4} điểm &nbsp;|&nbsp; Giết T5: {t5} điểm &nbsp;|&nbsp; Lính chết: {deads} điểm", pointsCombined: "Giết T4 & T5: {t4t5} điểm &nbsp;|&nbsp; Lính chết: {deads} điểm", dkpGoal: "Mục tiêu DKP = Sức mạnh ban đầu", phName: "Tên người chơi", phPower: "Sức mạnh ban đầu", phT4: "Giết T4", phT5: "Giết T5", phT4T5: "Giết T4 & T5", btnCombine: "Gộp Giết T4 & T5", btnSplit: "Tách Giết T4 & T5", phDeads: "Lính chết", btnSave: "Lưu", logTitle: "💾 Nhật ký & Tiến độ", noLogs: "Chưa có dữ liệu. Nhập ở trên!", progress: "Tiến độ:", history: "Lịch sử:", clearBtn: "Xóa", shareBtn: "Discord", alertName: "Nhập tên", confirmDel: "Bạn có chắc chắn muốn xóa nhật ký của", combineHeader: "🧮 Gộp Tài Khoản", combineNamePh: "Tên Gộp", btnCombineCreate: "Gộp Đã Chọn", combineAlertSelect: "Vui lòng chọn ít nhất 2 người chơi!", combineAlertName: "Vui lòng nhập tên!", combinedCardTitle: "Thống Kê Gộp", delCombineConfirm: "Xóa nhóm gộp này?" },
-  th: { title: "🏆 ระบบ 1854 DKP 🏆", points: "คิล T4: {t4} แต้ม &nbsp;|&nbsp; คิล T5: {t5} แต้ม &nbsp;|&nbsp; ตาย: {deads} แต้ม", pointsCombined: "คิล T4 & T5: {t4t5} แต้ม &nbsp;|&nbsp; ตาย: {deads} แต้ม", dkpGoal: "เป้าหมาย DKP = พลังเริ่มต้น", phName: "ชื่อผู้เล่น", phPower: "พลังเริ่มต้น", phT4: "คิล T4", phT5: "คิล T5", phT4T5: "คิล T4 & T5", btnCombine: "รวมคิล T4 & T5", btnSplit: "แยกคิล T4 & T5", phDeads: "ทหารตาย", btnSave: "บันทึก", logTitle: "💾 บันทึกและความคืบหน้า", noLogs: "ยังไม่มีบันทึก ป้อนข้อมูลด้านบน!", progress: "ความคืบหน้าปัจจุบัน:", history: "ประวัติ:", clearBtn: "ล้าง", shareBtn: "Discord", alertName: "กรุณาใส่ชื่อ", confirmDel: "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึกทั้งหมดของ", combineHeader: "🧮 รวมบัญชี", combineNamePh: "ชื่อที่รวม", btnCombineCreate: "รวมที่เลือก", combineAlertSelect: "โปรดเลือกอย่างน้อย 2 ผู้เล่น!", combineAlertName: "โปรดใส่ชื่อ!", combinedCardTitle: "สถิติรวม", delCombineConfirm: "ลบกลุ่มนี้หรือไม่?" },
-  id: { title: "🏆 Sistem DKP 1854 🏆", points: "Kill T4: {t4} Poin &nbsp;|&nbsp; Kill T5: {t5} Poin &nbsp;|&nbsp; Mati: {deads} Poin", pointsCombined: "Kill T4 & T5: {t4t5} Poin &nbsp;|&nbsp; Mati: {deads} Poin", dkpGoal: "Target DKP = Kekuatan Awal", phName: "Nama Pemain", phPower: "Kekuatan Awal", phT4: "Kill T4", phT5: "Kill T5", phT4T5: "Kill T4 & T5", btnCombine: "Gabungkan Kill T4 & T5", btnSplit: "Pisahkan Kill T4 & T5", phDeads: "Mati", btnSave: "Simpan Pemain", logTitle: "💾 Log & Kemajuan", noLogs: "Belum ada data. Masukkan data di atas!", progress: "Kemajuan Saat Ini:", history: "Riwayat:", clearBtn: "Hapus", shareBtn: "Discord", alertName: "Masukkan nama pemain", confirmDel: "Apakah Anda yakin ingin menghapus semua log untuk", combineHeader: "🧮 Gabungkan Akun", combineNamePh: "Nama Gabungan", btnCombineCreate: "Gabungkan Pilihan", combineAlertSelect: "Pilih setidaknya 2 pemain!", combineAlertName: "Masukkan nama!", combinedCardTitle: "Statistik Gabungan", delCombineConfirm: "Hapus grup gabungan ini?" }
-};
-
-const langSelect = document.getElementById("langSelect");
-const continents = {
-  Europe: [ {v:"en", n:"🇬🇧 UK"}, {v:"fr", n:"🇫🇷 France"}, {v:"de", n:"🇩🇪 Germany"}, {v:"it", n:"🇮🇹 Italy"}, {v:"es", n:"🇪🇸 Spain"}, {v:"pt", n:"🇵🇹 Portugal"}, {v:"ru", n:"🇷🇺 Russia"}, {v:"tr", n:"🇹🇷 Turkey"} ],
-  "South America": [ {v:"es", n:"🇦🇷 Argentina"}, {v:"es", n:"🇧🇴 Bolivia"}, {v:"pt", n:"🇧🇷 Brazil"}, {v:"es", n:"🇨🇱 Chile"}, {v:"es", n:"🇨🇴 Colombia"}, {v:"es", n:"🇪🇨 Ecuador"}, {v:"es", n:"🇵🇪 Peru"}, {v:"es", n:"🇺🇾 Uruguay"}, {v:"es", n:"🇻🇪 Venezuela"} ],
-  Asia: [ {v:"zh", n:"🇨🇳 China"}, {v:"ja", n:"🇯🇵 Japan"}, {v:"ko", n:"🇰🇷 South Korea"}, {v:"hi", n:"🇮🇳 India"}, {v:"ar", n:"🇸🇦 Saudi Arabia"}, {v:"vi", n:"🇻🇳 Vietnam"}, {v:"th", n:"🇹🇭 Thailand"}, {v:"id", n:"🇮🇩 Indonesia"} ] 
-};
-Object.entries(continents).forEach(([name, countries]) => {
-  const group = document.createElement("optgroup"); group.label = name;
-  countries.forEach(c => { const opt = document.createElement("option"); opt.value = c.v; opt.innerText = c.n; group.appendChild(opt); });
-  langSelect.appendChild(group);
-});
-
-let currentLang = localStorage.getItem("lang") || "en";
-langSelect.value = currentLang;
-
-function changeLanguage() { currentLang = langSelect.value; localStorage.setItem("lang", currentLang); applyTranslations(); }
-
-function applyTranslations() {
-  const t = i18n[currentLang] || i18n['en'];
-  document.getElementById("mainTitle").innerHTML = `<span class="trophy" onclick="toggleGravity()">🏆</span> ${t.title.replace(/🏆/g, '').trim()} <span class="trophy" onclick="toggleGravity()">🏆</span>`;
-  let pointsStr = isCombinedMode ? t.pointsCombined : t.points;
-  pointsStr = pointsStr.replace('{t4}', dkpPoints.t4).replace('{t5}', dkpPoints.t5).replace('{t4t5}', dkpPoints.t4t5).replace('{deads}', dkpPoints.deads);
-  document.getElementById("pointValues").innerHTML = pointsStr;
-  document.getElementById("name").placeholder = t.phName;
-  document.getElementById("startingPower").placeholder = t.phPower;
-  document.getElementById("t4").placeholder = t.phT4;
-  document.getElementById("t5").placeholder = t.phT5;
-  document.getElementById("t4t5").placeholder = t.phT4T5;
-  document.getElementById("deads").placeholder = t.phDeads;
-  document.getElementById("toggleModeText").innerText = isCombinedMode ? t.btnSplit : t.btnCombine;
-  document.getElementById("saveBtn").innerText = t.btnSave;
-  document.getElementById("logsTitle").innerText = t.logTitle;
-  if(document.getElementById("combineHeader")) document.getElementById("combineHeader").innerText = t.combineHeader;
-  if(document.getElementById("combinedName")) document.getElementById("combinedName").placeholder = t.combineNamePh;
-  if(document.getElementById("btnCombineCreate")) document.getElementById("btnCombineCreate").innerText = t.btnCombineCreate;
-  displaySavedData();
-  renderCombinedCards();
-}
-
-function toggleTheme() {
-  document.body.classList.toggle("dark-mode");
-  const isDark = document.body.classList.contains("dark-mode");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  document.getElementById("themeToggle").innerText = isDark ? "☀️" : "🌙";
-}
-if (localStorage.getItem("theme") === "dark") { document.body.classList.add("dark-mode"); document.getElementById("themeToggle").innerText = "☀️"; }
-
-function toggleKillMode() {
-  isCombinedMode = !isCombinedMode;
-  document.getElementById("t4").style.display = isCombinedMode ? "none" : "block";
-  document.getElementById("t5").style.display = isCombinedMode ? "none" : "block";
-  document.getElementById("t4t5").style.display = isCombinedMode ? "block" : "none";
-  document.getElementById("t4").value = ""; document.getElementById("t5").value = ""; document.getElementById("t4t5").value = "";
-  applyTranslations(); updateLive();
-}
-
-function getNum(id) { return Number(document.getElementById(id).value.replace(/,/g, '')) || 0; }
-function updateLive() {
-  const p = getNum("startingPower"), t4 = isCombinedMode ? 0 : getNum("t4"), t5 = isCombinedMode ? 0 : getNum("t5"), t4t5 = isCombinedMode ? getNum("t4t5") : 0, d = getNum("deads");
-  const dkp = calcDKP(p, t4, t5, t4t5, d);
-  const percent = p > 0 ? (dkp / p) * 100 : 0;
-  document.getElementById("live").innerText = `DKP: ${dkp.toLocaleString()} | DKP %: ${percent.toFixed(2)}%`;
-}
-
-["startingPower","t4","t5","t4t5","deads"].forEach(id => {
-  document.getElementById(id).addEventListener("input", function() {
-    let rawStr = this.value.replace(/,/g, "").replace(/\D/g, "");
-    this.value = rawStr !== "" ? parseInt(rawStr, 10).toLocaleString('en-US') : "";
-    updateLive();
-  });
-});
-
-document.getElementById("name").addEventListener("input", function() {
-  const currentName = this.value.trim().toLowerCase();
-  if (currentName === "king potato" || currentName === "1854") { for(let i=0; i<50; i++) setTimeout(() => dropPotato(true), i * 20); }
-  const existingPlayer = cloudPlayers.find(x => x.name.toLowerCase() === currentName);
-  if (existingPlayer) { document.getElementById("startingPower").value = existingPlayer.startingPower.toLocaleString('en-US'); updateLive(); }
-});
-
-// ==========================================
-// 7. DATA WRITING & RENDERING
-// ==========================================
-function savePlayer() {
-  const name = document.getElementById("name").value.trim(), p = getNum("startingPower"), t4 = isCombinedMode ? 0 : getNum("t4"), t5 = isCombinedMode ? 0 : getNum("t5"), t4t5 = isCombinedMode ? getNum("t4t5") : 0, d = getNum("deads");
-  const t = i18n[currentLang] || i18n['en'];
-  if (!name) return alert(t.alertName);
-  
-  db.collection("guildLog").add({
-      userId: currentUserId,
-      name: name,
-      startingPower: p, t4: t4, t5: t5, t4t5: t4t5, deads: d,
-      dkp: calcDKP(p, t4, t5, t4t5, d),
-      timestampString: new Date().toLocaleString(),
-      timestampMs: Date.now(),
-      isCombined: isCombinedMode
-  });
-  ["t4","t5","t4t5","deads"].forEach(id => document.getElementById(id).value = "");
-  updateLive(); 
-}
-
-function clearPlayerLogs(playerName) {
-  const t = i18n[currentLang] || i18n['en'];
-  if (confirm(`${t.confirmDel} ${playerName}?`)) {
-    cloudPlayers.filter(p => p.name.toLowerCase() === playerName.toLowerCase()).forEach(p => { db.collection("guildLog").doc(p.id).delete(); });
-  }
-}
-
-function updateCombineCheckboxes() {
-  const uniqueNames = [...new Set(cloudPlayers.map(p => p.name))];
-  const combinePanel = document.getElementById("combinePanel"), cbContainer = document.getElementById("combineCheckboxes");
-  if (uniqueNames.length < 2) { combinePanel.style.display = "none"; return; }
-  combinePanel.style.display = "block"; cbContainer.innerHTML = "";
-  uniqueNames.forEach(name => { cbContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${name}" class="combine-cb">${name}</label>`; });
-}
-
-function createCombinedCard() {
-  const t = i18n[currentLang] || i18n['en'], nameInput = document.getElementById("combinedName"), combinedName = nameInput.value.trim();
-  const checkboxes = document.querySelectorAll(".combine-cb:checked"), selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
-  if (selectedAccounts.length < 2) return alert(t.combineAlertSelect);
-  if (!combinedName) return alert(t.combineAlertName);
-  db.collection("guildCombinedLogs").add({ userId: currentUserId, name: combinedName, accounts: selectedAccounts, createdAt: Date.now() });
-  nameInput.value = ""; checkboxes.forEach(cb => cb.checked = false);
-}
-
-function deleteCombinedCard(id) { if (confirm(i18n[currentLang].delCombineConfirm || "Delete?")) db.collection("guildCombinedLogs").doc(id).delete(); }
-
-function shareCombinedDiscord(id) {
-  if (!DISCORD_WEBHOOK_URL) return alert("Missing Webhook URL.");
-  const combo = cloudCombined.find(c => c.id === id);
-  if(!combo) return;
-  let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0;
-  combo.accounts.forEach(acc => {
-    const latest = cloudPlayers.find(p => p.name.toLowerCase() === acc.toLowerCase());
-    if(latest) { totalSP += latest.startingPower || 0; totalDKP += latest.dkp || 0; totalT4 += latest.t4 || 0; totalT5 += latest.t5 || 0; totalT4T5 += latest.t4t5 || 0; totalDeads += latest.deads || 0; }
-  });
-  const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00";
-  fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-    embeds: [{ title: `🏆 ${combo.name} (Combined Total)`, color: 16766720, description: `**Accounts:** ${combo.accounts.join(", ")}`, fields: [ { name: "💎 Total DKP", value: totalDKP.toLocaleString(), inline: true }, { name: "📈 Progress", value: `${percent}%`, inline: true }, { name: "⚡ Combined Power", value: totalSP.toLocaleString(), inline: false }, { name: "⚔️ Total T4 Kills", value: totalT4.toLocaleString(), inline: true }, { name: "⚔️ Total T5 Kills", value: totalT5.toLocaleString(), inline: true }, { name: "⚔️ Combined T4/T5 Mode", value: totalT4T5.toLocaleString(), inline: true }, { name: "💀 Total Deads", value: totalDeads.toLocaleString(), inline: true } ], footer: { text: "1854 DKP System • Farm Calculator" }, timestamp: new Date().toISOString() }]
-  })}).then(res => { if(res.ok) alert("✅ Sent!"); else alert("❌ Error."); }).catch(() => alert("❌ Network error."));
-}
-
-function renderCombinedCards() {
-  const t = i18n[currentLang] || i18n['en'], container = document.getElementById("combinedDataList");
-  let html = "", enrichedCombos = cloudCombined.map(combo => {
-    let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0, accountTags = "";
-    combo.accounts.forEach(acc => {
-      const latest = cloudPlayers.find(p => p.name.toLowerCase() === acc.toLowerCase());
-      accountTags += `<span class="acc-tag">${acc}</span>`;
-      if(latest) { totalSP += latest.startingPower || 0; totalDKP += latest.dkp || 0; totalT4 += latest.t4 || 0; totalT5 += latest.t5 || 0; totalT4T5 += latest.t4t5 || 0; totalDeads += latest.deads || 0; }
-    });
-    return { combo, totalSP, totalDKP, totalT4, totalT5, totalT4T5, totalDeads, accountTags };
-  });
-  enrichedCombos.sort((a, b) => b.totalSP - a.totalSP);
-  enrichedCombos.forEach((data, idx) => {
-    const percent = data.totalSP > 0 ? ((data.totalDKP / data.totalSP) * 100).toFixed(2) : "0.00", pVal = parseFloat(percent), visualWidth = Math.min(pVal, 100);
-    html += `
-      <div class="unified-panel player-card combined-card" style="animation-delay:${idx*0.05}s">
-        <div class="player-title">🧮 ${data.combo.name} <span class="small" style="font-weight:normal; display:block; margin-top:4px;">${t.combinedCardTitle || 'Combined Totals'}</span></div>
-        <div style="margin-bottom:12px;">${data.accountTags}</div>
-        <div class="small"><strong>${t.progress}</strong> ${percent}%</div>
-        <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; background:#ffd700;"></div><div class="progress-text">${pVal}%</div></div>
-        <div class="log-entry" style="background:transparent; border-color:#FFD700;">
-          <strong>Total DKP: ${data.totalDKP.toLocaleString()}</strong><br>
-          <span class="small">SP: ${data.totalSP.toLocaleString()} | Deads: ${data.totalDeads.toLocaleString()}</span>
-        </div>
-        <div class="card-actions">
-          <button class="btn-small-discord" onclick="shareCombinedDiscord('${data.combo.id}')">👾 Discord</button>
-          <button class="btn-small-danger" onclick="deleteCombinedCard('${data.combo.id}')">🗑️ ${t.clearBtn}</button>
-        </div>
-      </div>`;
-  });
-  container.innerHTML = html;
-}
-
-function sendToDiscord(playerName) {
-  if (!DISCORD_WEBHOOK_URL) return alert("Missing Webhook URL."); 
-  const playerEntries = cloudPlayers.filter(p => p.name.toLowerCase() === playerName.toLowerCase());
-  if(playerEntries.length === 0) return;
-  const latest = playerEntries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00";
-  let statFields = [];
-  if (latest.isCombined) statFields.push({ name: "⚔️ T4 & T5 Kills", value: (latest.t4t5||0).toLocaleString(), inline: true });
-  else { statFields.push({ name: "⚔️ T4 Kills", value: (latest.t4||0).toLocaleString(), inline: true }); statFields.push({ name: "⚔️ T5 Kills", value: (latest.t5||0).toLocaleString(), inline: true }); }
-  statFields.push({ name: "💀 Deads", value: (latest.deads||0).toLocaleString(), inline: true });
-
-  fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-    embeds: [{ title: `🏆 ${latest.name} DKP Update`, color: 5814783, fields: [ { name: "💎 Total DKP", value: latest.dkp.toLocaleString(), inline: true }, { name: "📈 Progress", value: `${percent}%`, inline: true }, { name: "⚡ Starting Power", value: sp.toLocaleString(), inline: false }, ...statFields ], footer: { text: "1854 DKP System" }, timestamp: new Date().toISOString() }]
-  })}).then(res => { if(res.ok) alert("✅ Sent!"); else alert("❌ Error."); });
-}
-
-function displaySavedData() {
-  const t = i18n[currentLang] || i18n['en']; let html = "";
-  if (cloudPlayers.length === 0) { document.getElementById("savedDataList").innerHTML = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`; return; }
-  
-  const groups = {}; cloudPlayers.forEach(p => { const k = p.name.toLowerCase(); if (!groups[k]) groups[k] = { name: p.name, entries: [] }; groups[k].entries.push(p); });
-  const sortedGroups = Object.values(groups).sort((a, b) => { const spA = a.entries[0].startingPower || 0; const spB = b.entries[0].startingPower || 0; return spB - spA; });
-  
-  sortedGroups.forEach((g, idx) => {
-    const latest = g.entries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00", visualWidth = Math.min(parseFloat(percent), 100);
-    const pVal = parseFloat(percent);
-    let barStyle = pVal < 10 ? "background:#ff4d4d;" : pVal < 50 ? "background:#ffa31a;" : pVal < 96 ? "background:#f6e05e;" : pVal < 100 ? "background:#68d391;" : "";
-    
-    html += `<div class="unified-panel player-card" style="animation-delay:${idx*0.05}s">
-        <div class="player-title">👤 ${g.name}</div>
-        <div class="small"><strong>${t.progress}</strong> ${percent}%</div>
-        <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; ${barStyle}"></div><div class="progress-text">${pVal}%</div></div>
-        <div class="small" style="font-weight:bold">${t.history}</div>`;
-    
-    g.entries.forEach(e => {
-      let stats = e.isCombined ? `Combined: ${(e.t4t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}` : `T4: ${(e.t4||0).toLocaleString()} | T5: ${(e.t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}`;
-      html += `<div class="log-entry"><span class="timestamp">${e.timestampString}</span><strong>DKP: ${e.dkp.toLocaleString()}</strong><br><span class="small">${stats}</span></div>`;
-    });
-    
-    const safeName = g.name.replace(/'/g,"\\'");
-    
-    html += `
-        <div class="card-actions">
-          <button class="btn-small-discord" onclick="sendToDiscord('${safeName}')">👾 Discord</button>
-          <button class="btn-small-danger" onclick="clearPlayerLogs('${safeName}')">🗑️ ${t.clearBtn}</button>
-        </div>
-      </div>`;
-  });
-  document.getElementById("savedDataList").innerHTML = html;
-}
 
 applyTranslations();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
