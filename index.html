@@ -393,7 +393,7 @@ setInterval(dropPotato, 120);
 // ==========================================
 let isCombinedMode = false;
 
-// Expanded Translation Dictionary with the new Farm Combination text
+// Translation Dictionary
 const i18n = {
   en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: 2 pts &nbsp;|&nbsp; T5 Kills: 5 pts &nbsp;|&nbsp; Deads: 15 pts", pointsCombined: "T4 & T5 Kills: 3.5 pts &nbsp;|&nbsp; Deads: 15 pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phT4T5: "T4 & T5 Kills", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "Clear", shareBtn: "Discord", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for", combineHeader: "🧮 Combine Accounts", combineNamePh: "Combined Name (e.g. John's Total)", btnCombineCreate: "Combine Selected", combineAlertSelect: "Please select at least 2 players!", combineAlertName: "Please enter a name for the combined card!", combinedCardTitle: "Combined Totals", delCombineConfirm: "Are you sure you want to delete this combined group?" },
   es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: 2 pts &nbsp;|&nbsp; Muertes T5: 5 pts &nbsp;|&nbsp; Muertos: 15 pts", pointsCombined: "Muertes T4 y T5: 3.5 pts &nbsp;|&nbsp; Muertos: 15 pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phT4T5: "Muertes T4 y T5", btnCombine: "Combinar Muertes T4 y T5", btnSplit: "Separar Muertes T4 y T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "Borrar", shareBtn: "Discord", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de", combineHeader: "🧮 Combinar Cuentas", combineNamePh: "Nombre Combinado (ej. Total de John)", btnCombineCreate: "Combinar Seleccionados", combineAlertSelect: "¡Selecciona al menos 2 jugadores!", combineAlertName: "¡Ingresa un nombre para la tarjeta!", combinedCardTitle: "Estadísticas Combinadas", delCombineConfirm: "¿Eliminar este grupo combinado?" },
@@ -417,7 +417,6 @@ const langSelect = document.getElementById("langSelect");
 const continents = {
   Europe: [ {v:"en", n:"🇬🇧 UK"}, {v:"fr", n:"🇫🇷 France"}, {v:"de", n:"🇩🇪 Germany"}, {v:"it", n:"🇮🇹 Italy"}, {v:"es", n:"🇪🇸 Spain"}, {v:"pt", n:"🇵🇹 Portugal"}, {v:"ru", n:"🇷🇺 Russia"}, {v:"tr", n:"🇹🇷 Turkey"} ],
   "South America": [ {v:"es", n:"🇦🇷 Argentina"}, {v:"es", n:"🇧🇴 Bolivia"}, {v:"pt", n:"🇧🇷 Brazil"}, {v:"es", n:"🇨🇱 Chile"}, {v:"es", n:"🇨🇴 Colombia"}, {v:"es", n:"🇪🇨 Ecuador"}, {v:"es", n:"🇵🇪 Peru"}, {v:"es", n:"🇺🇾 Uruguay"}, {v:"es", n:"🇻🇪 Venezuela"} ],
-  // All Asian languages fully restored!
   Asia: [ {v:"zh", n:"🇨🇳 China"}, {v:"ja", n:"🇯🇵 Japan"}, {v:"ko", n:"🇰🇷 South Korea"}, {v:"hi", n:"🇮🇳 India"}, {v:"ar", n:"🇸🇦 Saudi Arabia"}, {v:"vi", n:"🇻🇳 Vietnam"}, {v:"th", n:"🇹🇭 Thailand"}, {v:"id", n:"🇮🇩 Indonesia"} ] 
 };
 
@@ -447,7 +446,6 @@ function applyTranslations() {
   document.getElementById("saveBtn").innerText = t.btnSave;
   document.getElementById("logsTitle").innerText = t.logTitle;
   
-  // Combine Panel Texts
   if(document.getElementById("combineHeader")) document.getElementById("combineHeader").innerText = t.combineHeader;
   if(document.getElementById("combinedName")) document.getElementById("combinedName").placeholder = t.combineNamePh;
   if(document.getElementById("btnCombineCreate")) document.getElementById("btnCombineCreate").innerText = t.btnCombineCreate;
@@ -526,8 +524,6 @@ function clearPlayerLogs(playerName) {
 // ==========================================
 // 🧮 COMBINED ACCOUNTS / FARM LOGIC
 // ==========================================
-
-// 1. Populates the list of checkboxes based on unique players
 function updateCombineCheckboxes() {
   const players = getSafeData();
   const uniqueNames = [...new Set(players.map(p => p.name))];
@@ -552,7 +548,6 @@ function updateCombineCheckboxes() {
   });
 }
 
-// 2. Creates the new combination group
 function createCombinedCard() {
   const t = i18n[currentLang] || i18n['en'];
   const nameInput = document.getElementById("combinedName");
@@ -573,14 +568,12 @@ function createCombinedCard() {
   
   localStorage.setItem("guildCombinedLogs", JSON.stringify(combinedLogs));
   
-  // Reset form
   nameInput.value = "";
   checkboxes.forEach(cb => cb.checked = false);
   
   renderCombinedCards();
 }
 
-// 3. Deletes a combined group
 function deleteCombinedCard(id) {
   const t = i18n[currentLang] || i18n['en'];
   if (confirm(t.delCombineConfirm)) {
@@ -590,7 +583,6 @@ function deleteCombinedCard(id) {
   }
 }
 
-// 4. Send Combined Stats to Discord
 function shareCombinedDiscord(id) {
   if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === "PASTE_YOUR_WEBHOOK_URL_HERE") {
     alert("Hold up! Discord Webhook URL is missing."); return;
@@ -621,7 +613,7 @@ function shareCombinedDiscord(id) {
   const payload = {
     embeds: [{
       title: `🏆 ${combo.name} (Combined Total)`,
-      color: 16766720, // Gold color for combined cards
+      color: 16766720, 
       description: `**Accounts:** ${accListString}`,
       fields: [
         { name: "💎 Total DKP", value: totalDKP.toLocaleString(), inline: true },
@@ -642,7 +634,6 @@ function shareCombinedDiscord(id) {
   .catch(err => alert("❌ Network error."));
 }
 
-// 5. Render the Combined Cards above normal player cards
 function renderCombinedCards() {
   const t = i18n[currentLang] || i18n['en'];
   const combinedLogs = getCombinedData();
@@ -650,11 +641,11 @@ function renderCombinedCards() {
   const container = document.getElementById("combinedDataList");
   let html = "";
 
-  combinedLogs.forEach((combo, idx) => {
+  // 1. Map and enrich the combined data with the calculated stats
+  let enrichedCombos = combinedLogs.map(combo => {
     let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0;
     let accountTags = "";
     
-    // Aggregate the LATEST stats for each requested account
     combo.accounts.forEach(acc => {
       const latest = players.find(p => p.name.toLowerCase() === acc.toLowerCase());
       accountTags += `<span class="acc-tag">${acc}</span>`;
@@ -668,6 +659,15 @@ function renderCombinedCards() {
       }
     });
 
+    return { combo, totalSP, totalDKP, totalT4, totalT5, totalT4T5, totalDeads, accountTags };
+  });
+
+  // 2. Sort by Highest Power (Starting Power)
+  enrichedCombos.sort((a, b) => b.totalSP - a.totalSP);
+
+  // 3. Render the sorted cards
+  enrichedCombos.forEach((data, idx) => {
+    const { combo, totalSP, totalDKP, totalT4, totalT5, totalT4T5, totalDeads, accountTags } = data;
     const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00";
     const pVal = parseFloat(percent);
     const visualWidth = Math.min(pVal, 100);
@@ -702,7 +702,6 @@ function renderCombinedCards() {
   container.innerHTML = html;
 }
 
-
 // ==========================================
 // STANDARD PLAYER RENDER LOGIC
 // ==========================================
@@ -726,9 +725,21 @@ function displaySavedData() {
   const t = i18n[currentLang] || i18n['en']; let players = getSafeData(), html = "";
   if (players.length === 0) { document.getElementById("savedDataList").innerHTML = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`; return; }
   
-  const groups = {}; players.forEach(p => { const k = p.name.toLowerCase(); if (!groups[k]) groups[k] = { name: p.name, entries: [] }; groups[k].entries.push(p); });
+  const groups = {}; 
+  players.forEach(p => { 
+    const k = p.name.toLowerCase(); 
+    if (!groups[k]) groups[k] = { name: p.name, entries: [] }; 
+    groups[k].entries.push(p); 
+  });
   
-  Object.values(groups).forEach((g, idx) => {
+  // Convert groups into an array and sort by Highest Power (startingPower of their latest entry)
+  const sortedGroups = Object.values(groups).sort((a, b) => {
+    const spA = a.entries[0].startingPower || 0;
+    const spB = b.entries[0].startingPower || 0;
+    return spB - spA;
+  });
+  
+  sortedGroups.forEach((g, idx) => {
     const latest = g.entries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00", visualWidth = Math.min(parseFloat(percent), 100);
     const pVal = parseFloat(percent);
     let potato = pVal < 10 ? "Under performing potato" : pVal < 50 ? "Safe but do better potato" : pVal < 96 ? "Met potato expectations" : pVal < 100 ? "ooooo so close potato" : "You're an amazing potato!";
