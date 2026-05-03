@@ -16,137 +16,70 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   
 <title>1854 DKP System</title>
 
 <style>
 /* Light Mode (Default) Variables & Base Styles */
-body {
-  font-family: 'Poppins', -apple-system, Arial, sans-serif;
-  background: #f0f2f5;
-  color: #333;
-  margin: 0;
-  padding: 20px;
-  transition: background 0.4s ease, color 0.4s ease;
-  overflow-x: hidden; 
-}
+body { font-family: 'Poppins', -apple-system, Arial, sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 20px; transition: background 0.4s ease, color 0.4s ease; overflow-x: hidden; }
+#potato-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+.container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); position: relative; z-index: 10; transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease; }
 
-/* PHYSICS CANVAS BACKGROUND */
-#potato-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1; 
-  pointer-events: none; 
-}
-
-/* Main Container */
-.container {
-  max-width: 500px;
-  margin: auto;
-  background: white;
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  position: relative;
-  z-index: 10; 
-  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
-}
-
-/* ADMIN MODAL */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.6);
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(4px);
-}
-.modal-content {
-  width: 90%;
-  max-width: 350px;
-  padding: 25px;
-  position: relative;
-  text-align: left;
-}
-.close-btn {
-  position: absolute;
-  top: 15px; right: 20px;
-  font-size: 24px; color: #888;
-  cursor: pointer;
-  line-height: 1;
-}
+/* MODALS (Login & Admin) */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+.modal-content { width: 90%; max-width: 350px; padding: 25px; position: relative; text-align: left; }
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; line-height: 1; }
 .close-btn:hover { color: #333; }
-.modal-content h3 { margin-top: 0; margin-bottom: 15px; color: #1a1a1a; text-align: center; }
+.modal-content h3 { margin-top: 0; margin-bottom: 5px; color: #1a1a1a; text-align: center; font-weight: 700; }
+.modal-content p { text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }
 .modal-content label { font-size: 13px; font-weight: 600; color: #555; margin-left: 4px; }
 
 /* Top Controls */
 .top-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .left-controls { display: flex; gap: 8px; }
-
-.theme-toggle, .lang-select, .hammer-btn {
-  background: #e4e6eb; color: #333; border: none; border-radius: 20px;
-  padding: 8px 14px; font-family: 'Poppins', sans-serif; font-weight: 600;
-  cursor: pointer; transition: all 0.2s ease; outline: none;
-}
+.theme-toggle, .lang-select, .hammer-btn, .logout-btn { background: #e4e6eb; color: #333; border: none; border-radius: 20px; padding: 8px 14px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.2s ease; outline: none; }
 .theme-toggle, .hammer-btn { font-size: 16px; padding: 8px 12px; }
 .lang-select { font-size: 13px; max-width: 200px; }
+.logout-btn { background: #ffe5e5; color: #ff3b30; }
 .theme-toggle:hover, .lang-select:hover, .hammer-btn:hover { background: #d8dadf; transform: translateY(-1px); }
+.logout-btn:hover { background: #ff3b30; color: white; transform: translateY(-1px); }
 
 /* UNIFIED PANEL DESIGN */
-.unified-panel {
-  background: #fafafa; border: 2px solid #e4e6eb; border-radius: 12px;
-  box-sizing: border-box; transition: all 0.3s ease;
-}
+.unified-panel { background: #fafafa; border: 2px solid #e4e6eb; border-radius: 12px; box-sizing: border-box; transition: all 0.3s ease; }
 .header-section { text-align: center; margin-bottom: 25px; padding: 20px 15px; position: relative; }
 .header-section h2, .panel-title { margin: 0 0 10px 0; color: #1a1a1a; font-weight: 700; letter-spacing: -0.5px; transition: color 0.4s ease; }
 .point-values { font-size: 13px; color: #555; font-weight: 600; transition: color 0.4s ease; }
 .dkp-goal { font-size: 12px; color: #888; margin-top: 8px; font-weight: 500; transition: color 0.4s ease; }
 
-/* Admin Trigger Button */
-.admin-btn {
-  position: absolute;
-  bottom: 8px; right: 12px;
-  font-size: 14px; cursor: pointer;
-  opacity: 0.3; transition: opacity 0.3s ease;
-}
+.admin-btn { position: absolute; bottom: 8px; right: 12px; font-size: 14px; cursor: pointer; opacity: 0.3; transition: opacity 0.3s ease; display: none; }
 .admin-btn:hover { opacity: 1; }
 
 .trophy { cursor: pointer; display: inline-block; transition: transform 0.3s ease; }
 .trophy:hover { transform: scale(1.3) rotate(15deg); }
 
 /* Inputs & Buttons */
-input {
-  width: 100%; padding: 14px; margin: 8px 0; font-size: 15px; font-family: 'Poppins', sans-serif;
-  box-sizing: border-box; border: 2px solid #e4e6eb; border-radius: 12px; background: #fafafa; color: #333; transition: all 0.3s ease;
-}
+input { width: 100%; padding: 14px; margin: 8px 0; font-size: 15px; font-family: 'Poppins', sans-serif; box-sizing: border-box; border: 2px solid #e4e6eb; border-radius: 12px; background: #fafafa; color: #333; transition: all 0.3s ease; }
 input:focus { border-color: #007aff; background: #fff; box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); outline: none; }
 
 .toggle-link-container { text-align: center; margin: 12px 0 4px 0; }
 .toggle-link { font-size: 12px; color: #007aff; cursor: pointer; font-weight: 600; transition: all 0.3s; user-select: none; background: #eef3ff; padding: 4px 12px; border-radius: 20px; }
 .toggle-link:hover { background: #d1e0ff; }
 
-button.main-btn {
-  width: 100%; padding: 14px; margin-top: 12px; background: #007aff; color: #f8f9fa; border: none;
-  border-radius: 12px; cursor: pointer; font-size: 16px; font-family: 'Poppins', sans-serif; font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); transition: all 0.3s ease;
-}
+button.main-btn { width: 100%; padding: 14px; margin-top: 12px; background: #007aff; color: #f8f9fa; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-family: 'Poppins', sans-serif; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); transition: all 0.3s ease; }
 button.main-btn:hover { background: #005bb5; transform: translateY(-2px); }
 button.main-btn:active { transform: translateY(0); }
 button.success-btn { background: #34c759; box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3); }
 button.success-btn:hover { background: #28a745; }
 
-/* Combined Accounts Checkbox Area */
+/* Checkboxes & Cards */
 .checkbox-container { max-height: 140px; overflow-y: auto; text-align: left; padding: 10px 14px; background: #fff; border: 1px solid #e4e6eb; border-radius: 10px; margin: 10px 0; }
 .checkbox-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 14px; font-weight: 500; color: #333; }
 .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; }
 
-/* Card Action Buttons */
 .card-actions { display: flex; gap: 10px; margin-top: 12px; }
 .btn-small-danger, .btn-small-discord { border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: 'Poppins', sans-serif; cursor: pointer; width: 100%; font-weight: 600; transition: all 0.2s ease; }
 .btn-small-danger { background: #ffe5e5; color: #ff3b30; border: 1px solid #ffccce; }
@@ -159,7 +92,6 @@ button.success-btn:hover { background: #28a745; }
 .section-divider { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #e4e6eb; transition: border-color 0.4s ease; }
 .logs-header { padding: 14px; text-align: center; margin-top: 0; margin-bottom: 20px; color: #1a1a1a; font-size: 18px; font-weight: 700; transition: color 0.4s ease; }
 
-/* Cards & Progress */
 @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 .player-card { padding: 18px; margin-bottom: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); animation: slideUpFade 0.4s ease forwards; }
 .combined-card { border-color: #FFD700; border-width: 2px; background: #fffdf5; }
@@ -178,18 +110,13 @@ button.success-btn:hover { background: #28a745; }
 .small { font-size: 13px; color: #666; transition: color 0.4s ease; }
 .acc-tag { display: inline-block; background: #eef3ff; color: #007aff; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin: 2px 4px 2px 0; font-weight: 600; }
 
-
-/* ==========================================
-   THE HAMMER SMASH ANIMATION
-========================================== */
+/* HAMMER SMASH ANIMATION */
 #giant-hammer { position: fixed; top: -10vh; left: 50vw; font-size: 180px; z-index: 9999; opacity: 0; pointer-events: none; transform-origin: bottom left; transform: rotate(60deg); }
 @keyframes swingHammer { 0% { opacity: 1; transform: rotate(60deg); } 60% { opacity: 1; transform: rotate(-25deg); } 100% { opacity: 0; transform: rotate(-25deg); } }
 .swinging { animation: swingHammer 0.6s ease-in forwards; }
-
 #impact-effect { position: fixed; top: 30vh; left: 45vw; transform: translate(-50%, -50%) scale(0); font-size: 160px; z-index: 9998; opacity: 0; pointer-events: none; }
 @keyframes powEffect { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.3) rotate(-15deg); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.3) rotate(5deg); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.6) rotate(10deg); } }
 .pow-active { animation: powEffect 0.5s ease-out forwards; }
-
 @keyframes shakeScreen {
   0% { transform: translate(4px, 2px) rotate(0deg); } 10% { transform: translate(-2px, -4px) rotate(-1deg); } 20% { transform: translate(-6px, 0px) rotate(2deg); }
   30% { transform: translate(6px, 4px) rotate(0deg); } 40% { transform: translate(2px, -2px) rotate(1deg); } 50% { transform: translate(-2px, 4px) rotate(-2deg); }
@@ -201,11 +128,12 @@ button.success-btn:hover { background: #28a745; }
 /* DARK MODE OVERRIDES */
 body.dark-mode { background: #121212; color: #b0b0b0; }
 body.dark-mode .container { background: #1e1e1e; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-body.dark-mode .theme-toggle, body.dark-mode .lang-select, body.dark-mode .hammer-btn { background: #2d2d2d; color: #b0b0b0; }
+body.dark-mode .theme-toggle, body.dark-mode .lang-select, body.dark-mode .hammer-btn, body.dark-mode .logout-btn { background: #2d2d2d; color: #b0b0b0; }
 body.dark-mode .theme-toggle:hover, body.dark-mode .lang-select:hover, body.dark-mode .hammer-btn:hover { background: #3d3d3d; }
+body.dark-mode .logout-btn:hover { background: #ff3b30; color: white; }
 body.dark-mode .unified-panel { background: #252525; border-color: #333; }
 body.dark-mode .header-section h2, body.dark-mode .panel-title, body.dark-mode .logs-header, body.dark-mode .player-title, body.dark-mode .modal-content h3 { color: #e0e0e0; }
-body.dark-mode .point-values, body.dark-mode .small, body.dark-mode .dkp-goal, body.dark-mode .modal-content label { color: #888; }
+body.dark-mode .point-values, body.dark-mode .small, body.dark-mode .dkp-goal, body.dark-mode .modal-content p, body.dark-mode .modal-content label { color: #888; }
 body.dark-mode .toggle-link { background: #1a2639; color: #66a3ff; }
 body.dark-mode .toggle-link:hover { background: #233554; }
 body.dark-mode input { background: #252525; color: #e0e0e0; border-color: #333; }
@@ -229,29 +157,30 @@ body.dark-mode .close-btn:hover { color: #fff; }
 
 <body>
 
+<div id="authModal" class="modal-overlay">
+    <div class="unified-panel modal-content">
+        <h3>1854 Kingdom Vault</h3>
+        <p>Log in or create an account to access your private dashboard.</p>
+        <input type="email" id="authEmail" placeholder="email@kingdom.com">
+        <input type="password" id="authPassword" placeholder="Password">
+        <button class="main-btn" onclick="processAuth()">Enter Vault</button>
+        <div id="authError" style="color:#ff3b30; font-size:12px; margin-top:10px; text-align:center; font-weight:600;"></div>
+    </div>
+</div>
+
 <div id="adminModal" class="modal-overlay" style="display:none;">
     <div class="unified-panel modal-content">
         <span class="close-btn" onclick="closeAdmin()">×</span>
-        
-        <div id="loginView">
-           <h3>Admin Login</h3>
-           <input type="text" id="adminUser" placeholder="Username">
-           <input type="password" id="adminPass" placeholder="Password">
-           <button class="main-btn" onclick="checkLogin()">Login</button>
-        </div>
-        
-        <div id="settingsView" style="display:none;">
-           <h3>Edit Point Values</h3>
-           <label>T4 Kills</label>
-           <input type="number" id="editT4" step="0.1">
-           <label>T5 Kills</label>
-           <input type="number" id="editT5" step="0.1">
-           <label>Combined (T4 & T5)</label>
-           <input type="number" id="editT4T5" step="0.1">
-           <label>Deads</label>
-           <input type="number" id="editDeads" step="0.1">
-           <button class="main-btn success-btn" onclick="saveAdminSettings()">Save Settings</button>
-        </div>
+        <h3>Edit Point Values</h3>
+        <label>T4 Kills</label>
+        <input type="number" id="editT4" step="0.1">
+        <label>T5 Kills</label>
+        <input type="number" id="editT5" step="0.1">
+        <label>Combined (T4 & T5)</label>
+        <input type="number" id="editT4T5" step="0.1">
+        <label>Deads</label>
+        <input type="number" id="editDeads" step="0.1">
+        <button class="main-btn success-btn" onclick="saveAdminSettings()">Save to Cloud</button>
     </div>
 </div>
 
@@ -259,12 +188,13 @@ body.dark-mode .close-btn:hover { color: #fff; }
 <div id="giant-hammer">🔨</div>
 <div id="impact-effect">💥</div>
 
-<div id="main-app" class="container">
+<div id="main-app" class="container" style="display:none;">
   
   <div class="top-controls">
     <div class="left-controls">
       <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">🌙</button>
       <button class="hammer-btn" onclick="smashScreen()">🔨</button>
+      <button class="logout-btn" onclick="logoutUser()">Log Out</button>
     </div>
     <select id="langSelect" class="lang-select" onchange="changeLanguage()"></select>
   </div>
@@ -276,9 +206,9 @@ body.dark-mode .close-btn:hover { color: #fff; }
       <span class="trophy" onclick="toggleGravity()">🏆</span>
     </h2>
     <div id="pointValues" class="point-values"></div>
-    <div id="dkpGoal" class="dkp-goal"></div>
+    <div id="dkpGoal" class="dkp-goal">🔒 Private Vault Active</div>
     
-    <span class="admin-btn" onclick="openAdmin()" title="Admin Settings">⚙️</span>
+    <span class="admin-btn" id="settingsGear" onclick="openAdmin()" title="Admin Settings">⚙️</span>
   </div>
 
   <input id="name" placeholder="Player name">
@@ -317,66 +247,151 @@ body.dark-mode .close-btn:hover { color: #fff; }
 
 <script>
 // ==========================================
-// ⚙️ ADMIN & DKP SCORING SYSTEM
+// 1. FIREBASE CONFIGURATION (Wired Up)
 // ==========================================
-// Load saved points or use defaults
-let dkpPoints = JSON.parse(localStorage.getItem('dkpSettings')) || { t4: 2, t5: 5, t4t5: 3.5, deads: 15 };
+const firebaseConfig = {
+  apiKey: "AIzaSyAIPs8b6aSVEx3ApDP1TupSOfIEesVoIbM",
+  authDomain: "dkp-37749.firebaseapp.com",
+  projectId: "dkp-37749",
+  storageBucket: "dkp-37749.firebasestorage.app",
+  messagingSenderId: "650648006750",
+  appId: "1:650648006750:web:79d00d4af6fa9e2f5744cf"
+};
 
-function openAdmin() {
-    document.getElementById('adminModal').style.display = 'flex';
-    document.getElementById('loginView').style.display = 'block';
-    document.getElementById('settingsView').style.display = 'none';
-    document.getElementById('adminUser').value = '';
-    document.getElementById('adminPass').value = '';
-}
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-function closeAdmin() {
-    document.getElementById('adminModal').style.display = 'none';
-}
+let cloudPlayers = [];
+let cloudCombined = [];
+let isAdmin = false; 
+let isCombinedMode = false;
+let currentUserId = null;
+let dkpPoints = { t4: 2, t5: 5, t4t5: 3.5, deads: 15 };
+let unsubscribeLogs = null;
+let unsubscribeCombined = null;
 
-function checkLogin() {
-    const u = document.getElementById('adminUser').value;
-    const p = document.getElementById('adminPass').value;
-    
-    if(u === 'Snowy_North001' && p === 'Spurs_001') {
-        document.getElementById('loginView').style.display = 'none';
-        document.getElementById('settingsView').style.display = 'block';
-        
-        // Load current variables into inputs
-        document.getElementById('editT4').value = dkpPoints.t4;
-        document.getElementById('editT5').value = dkpPoints.t5;
-        document.getElementById('editT4T5').value = dkpPoints.t4t5;
-        document.getElementById('editDeads').value = dkpPoints.deads;
-    } else {
-        alert('❌ Incorrect Admin Credentials!');
-    }
-}
-
-function saveAdminSettings() {
-    dkpPoints.t4 = parseFloat(document.getElementById('editT4').value) || 0;
-    dkpPoints.t5 = parseFloat(document.getElementById('editT5').value) || 0;
-    dkpPoints.t4t5 = parseFloat(document.getElementById('editT4T5').value) || 0;
-    dkpPoints.deads = parseFloat(document.getElementById('editDeads').value) || 0;
-    
-    localStorage.setItem('dkpSettings', JSON.stringify(dkpPoints));
-    
-    applyTranslations(); // Refreshes the header text to show new points
-    updateLive(); // Updates any active live-calculations
-    closeAdmin();
-}
-
-// Update core math engine to use the dynamic variables
-function calcDKP(p, t4, t5, t4t5, d) { 
-    return (t4 * dkpPoints.t4) + (t5 * dkpPoints.t5) + (t4t5 * dkpPoints.t4t5) + (d * dkpPoints.deads); 
-}
-
-// ==========================================
-// 🔗 DISCORD WEBHOOK CONFIGURATION
-// ==========================================
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1500504658186338386/9XmK-jNtHSH-kovVsmcnJm0nf-f_xjyMeP9w1ykYeeQCf_WGZ2E8qTJZO1ErArrzYw5g";
 
 // ==========================================
-// 🥔 THE ULTIMATE POTATO PHYSICS ENGINE
+// 2. AUTHENTICATION & BOUNCER LOGIC
+// ==========================================
+function processAuth() {
+    const email = document.getElementById('authEmail').value.trim();
+    const pass = document.getElementById('authPassword').value;
+    const errDiv = document.getElementById('authError');
+
+    if(!email || !pass) { errDiv.innerText = "Please enter an email and password."; return; }
+
+    auth.signInWithEmailAndPassword(email, pass).catch(err => {
+        if(err.code === 'auth/user-not-found') {
+            auth.createUserWithEmailAndPassword(email, pass).catch(e => { errDiv.innerText = e.message; });
+        } else {
+            errDiv.innerText = err.message;
+        }
+    });
+}
+
+function logoutUser() {
+    auth.signOut();
+}
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        currentUserId = user.uid;
+        document.getElementById('authModal').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        
+        // Auto-fill their name based on the email (everything before the @)
+        document.getElementById('name').value = user.email.split('@')[0];
+
+        // Is this the Admin?
+        if(user.email.toLowerCase() === 'snowy_north001@kingdom.com') {
+            isAdmin = true;
+            document.getElementById('settingsGear').style.display = 'inline-block';
+            document.getElementById('dkpGoal').innerHTML = "👑 Admin God Mode Active";
+            startAdminListeners();
+        } else {
+            isAdmin = false;
+            document.getElementById('settingsGear').style.display = 'none';
+            document.getElementById('combinePanel').style.display = 'none';
+            document.getElementById('dkpGoal').innerHTML = "🔒 Private Vault Active";
+            startPlayerListeners(user.uid);
+        }
+    } else {
+        document.getElementById('authModal').style.display = 'flex';
+        document.getElementById('main-app').style.display = 'none';
+        currentUserId = null;
+        if(unsubscribeLogs) unsubscribeLogs();
+        if(unsubscribeCombined) unsubscribeCombined();
+    }
+});
+
+// ==========================================
+// 3. CLOUD SYNC LISTENERS
+// ==========================================
+db.collection("settings").doc("dkpPoints").onSnapshot(doc => {
+    if(doc.exists) { dkpPoints = doc.data(); applyTranslations(); updateLive(); }
+});
+
+function startPlayerListeners(uid) {
+    if(unsubscribeLogs) unsubscribeLogs();
+    // Only pull this specific player's logs!
+    unsubscribeLogs = db.collection("guildLog").where("userId", "==", uid).onSnapshot(snap => {
+        cloudPlayers = [];
+        snap.forEach(doc => { let data = doc.data(); data.id = doc.id; cloudPlayers.push(data); });
+        // Sort manually by time since we can't orderBy without making Firebase Indexes
+        cloudPlayers.sort((a,b) => b.timestampMs - a.timestampMs);
+        displaySavedData();
+        renderCombinedCards(); // Usually empty for normal players
+    });
+}
+
+function startAdminListeners() {
+    if(unsubscribeLogs) unsubscribeLogs();
+    // Admin pulls EVERYONE's logs!
+    unsubscribeLogs = db.collection("guildLog").onSnapshot(snap => {
+        cloudPlayers = [];
+        snap.forEach(doc => { let data = doc.data(); data.id = doc.id; cloudPlayers.push(data); });
+        cloudPlayers.sort((a,b) => b.timestampMs - a.timestampMs);
+        displaySavedData();
+        updateCombineCheckboxes();
+        renderCombinedCards();
+    });
+
+    if(unsubscribeCombined) unsubscribeCombined();
+    unsubscribeCombined = db.collection("guildCombinedLogs").onSnapshot(snap => {
+        cloudCombined = [];
+        snap.forEach(doc => { let data = doc.data(); data.id = doc.id; cloudCombined.push(data); });
+        renderCombinedCards();
+    });
+}
+
+// ==========================================
+// 4. ADMIN POINTS EDITOR
+// ==========================================
+function openAdmin() {
+    document.getElementById('adminModal').style.display = 'flex';
+    document.getElementById('editT4').value = dkpPoints.t4;
+    document.getElementById('editT5').value = dkpPoints.t5;
+    document.getElementById('editT4T5').value = dkpPoints.t4t5;
+    document.getElementById('editDeads').value = dkpPoints.deads;
+}
+function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+function saveAdminSettings() {
+    const newPoints = {
+        t4: parseFloat(document.getElementById('editT4').value) || 0,
+        t5: parseFloat(document.getElementById('editT5').value) || 0,
+        t4t5: parseFloat(document.getElementById('editT4T5').value) || 0,
+        deads: parseFloat(document.getElementById('editDeads').value) || 0
+    };
+    db.collection("settings").doc("dkpPoints").set(newPoints);
+    closeAdmin();
+}
+function calcDKP(p, t4, t5, t4t5, d) { return (t4 * dkpPoints.t4) + (t5 * dkpPoints.t5) + (t4t5 * dkpPoints.t4t5) + (d * dkpPoints.deads); }
+
+// ==========================================
+// 5. POTATO PHYSICS ENGINE
 // ==========================================
 const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bodies = Matter.Bodies, Composite = Matter.Composite, Events = Matter.Events;
 const engine = Engine.create(), world = engine.world;
@@ -393,44 +408,27 @@ function createWalls() {
     Composite.add(world, [floor, leftWall, rightWall]);
 }
 createWalls();
-
-window.addEventListener('resize', () => {
-    render.canvas.width = window.innerWidth; render.canvas.height = window.innerHeight;
-    render.options.width = window.innerWidth; render.options.height = window.innerHeight;
-    Composite.clear(world); Engine.clear(engine); potatoes = []; trapdoorOpen = false; createWalls();
-});
+window.addEventListener('resize', () => { render.canvas.width = window.innerWidth; render.canvas.height = window.innerHeight; render.options.width = window.innerWidth; render.options.height = window.innerHeight; Composite.clear(world); Engine.clear(engine); potatoes = []; trapdoorOpen = false; createWalls(); });
 
 function toggleGravity() { engine.gravity.y = engine.gravity.y > 0 ? -1 : 1; }
 
 function smashScreen() {
     const app = document.getElementById("main-app"), hammer = document.getElementById("giant-hammer"), impact = document.getElementById("impact-effect");
     hammer.classList.add("swinging");
-    setTimeout(() => {
-        impact.classList.add("pow-active"); app.classList.add("smashed");
-        trapdoorOpen = true; Composite.remove(world, floor); 
-    }, 360);
-    setTimeout(() => {
-        hammer.classList.remove("swinging"); impact.classList.remove("pow-active");
-        app.classList.remove("smashed"); app.style.transform = "translateY(0) rotate(0deg)"; app.style.opacity = "1";
-        Composite.add(world, floor); trapdoorOpen = false;
-    }, 4500);
+    setTimeout(() => { impact.classList.add("pow-active"); app.classList.add("smashed"); trapdoorOpen = true; Composite.remove(world, floor); }, 360);
+    setTimeout(() => { hammer.classList.remove("swinging"); impact.classList.remove("pow-active"); app.classList.remove("smashed"); app.style.transform = "translateY(0) rotate(0deg)"; app.style.opacity = "1"; Composite.add(world, floor); trapdoorOpen = false; }, 4500);
 }
 
 window.addEventListener('click', (e) => {
     for (let p of potatoes) {
         const dx = p.body.position.x - e.clientX, dy = p.body.position.y - e.clientY;
-        if (Math.sqrt(dx * dx + dy * dy) < p.fontSize) {
-            p.type = 'fry';
-            Matter.Body.setVelocity(p.body, { x: (Math.random() - 0.5) * 15, y: engine.gravity.y > 0 ? -20 : 20 });
-        }
+        if (Math.sqrt(dx * dx + dy * dy) < p.fontSize) { p.type = 'fry'; Matter.Body.setVelocity(p.body, { x: (Math.random() - 0.5) * 15, y: engine.gravity.y > 0 ? -20 : 20 }); }
     }
 });
 
 function dropPotato(bypassLimits = false) {
     for (let i = potatoes.length - 1; i >= 0; i--) {
-        if (potatoes[i].body.position.y > window.innerHeight + 300 || potatoes[i].body.position.y < -300) { 
-            Composite.remove(world, potatoes[i].body); potatoes.splice(i, 1); 
-        }
+        if (potatoes[i].body.position.y > window.innerHeight + 300 || potatoes[i].body.position.y < -300) { Composite.remove(world, potatoes[i].body); potatoes.splice(i, 1); }
     }
     if (!trapdoorOpen && !bypassLimits) {
         let settledNearQuarter = 0;
@@ -438,10 +436,7 @@ function dropPotato(bypassLimits = false) {
             if (engine.gravity.y > 0 && p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) settledNearQuarter++; 
             if (engine.gravity.y < 0 && p.body.position.y > window.innerHeight * 0.25 && p.body.speed < 0.5) settledNearQuarter++; 
         }
-        if (settledNearQuarter > 5 || potatoes.length > 300) {
-            trapdoorOpen = true; Composite.remove(world, floor); 
-            setTimeout(() => { Composite.add(world, floor); trapdoorOpen = false; }, 3500); 
-        }
+        if (settledNearQuarter > 5 || potatoes.length > 300) { trapdoorOpen = true; Composite.remove(world, floor); setTimeout(() => { Composite.add(world, floor); trapdoorOpen = false; }, 3500); }
     }
     const radius = Math.random() * 8 + 14, x = Math.random() * (window.innerWidth - 60) + 30, yStart = engine.gravity.y > 0 ? -50 : window.innerHeight + 50;
     const body = Bodies.circle(x, yStart, radius, { restitution: 0.3, friction: 0.8, density: 0.05, render: { visible: false } });
@@ -453,20 +448,15 @@ Events.on(render, 'afterRender', function() {
     const context = render.context; context.textAlign = "center"; context.textBaseline = "middle"; 
     for (let p of potatoes) {
         context.save();
-        if (p.isGolden && p.type === 'potato') { context.globalAlpha = 0.9; context.shadowColor = "gold"; context.shadowBlur = 20; } 
-        else { context.globalAlpha = 0.35; context.shadowBlur = 0; }
-        context.font = p.fontSize + "px Arial"; context.translate(p.body.position.x, p.body.position.y); context.rotate(p.body.angle);
-        context.fillText(p.type === 'fry' ? '🍟' : '🥔', 0, 0); context.restore();
+        if (p.isGolden && p.type === 'potato') { context.globalAlpha = 0.9; context.shadowColor = "gold"; context.shadowBlur = 20; } else { context.globalAlpha = 0.35; context.shadowBlur = 0; }
+        context.font = p.fontSize + "px Arial"; context.translate(p.body.position.x, p.body.position.y); context.rotate(p.body.angle); context.fillText(p.type === 'fry' ? '🍟' : '🥔', 0, 0); context.restore();
     }
 });
 setInterval(() => dropPotato(false), 120); 
 
 // ==========================================
-// APP LOGIC & TRANSLATIONS
+// 6. UI & TRANSLATIONS
 // ==========================================
-let isCombinedMode = false;
-
-// Note: {t4}, {t5}, etc. act as placeholders that the system will automatically swap out with your custom admin points!
 const i18n = {
   en: { title: "🏆 1854 DKP System 🏆", points: "T4 Kills: {t4} pts &nbsp;|&nbsp; T5 Kills: {t5} pts &nbsp;|&nbsp; Deads: {deads} pts", pointsCombined: "T4 & T5 Kills: {t4t5} pts &nbsp;|&nbsp; Deads: {deads} pts", dkpGoal: "DKP Target = Starting power", phName: "Player name", phPower: "Starting Power", phT4: "T4 kills", phT5: "T5 kills", phT4T5: "T4 & T5 Kills", btnCombine: "Combine T4 & T5 Kills", btnSplit: "Split T4 & T5 Kills", phDeads: "Deads", btnSave: "Save Player", logTitle: "💾 Player Logs & Progress", noLogs: "No edits logged yet. Enter data above and click Save!", progress: "Current Progress:", history: "Edit History:", clearBtn: "Clear", shareBtn: "Discord", alertName: "Enter player name", confirmDel: "Are you sure you want to delete all logs for", combineHeader: "🧮 Combine Accounts", combineNamePh: "Combined Name (e.g. John's Total)", btnCombineCreate: "Combine Selected", combineAlertSelect: "Please select at least 2 players!", combineAlertName: "Please enter a name for the combined card!", combinedCardTitle: "Combined Totals", delCombineConfirm: "Are you sure you want to delete this combined group?" },
   es: { title: "🏆 Sistema DKP 1854 🏆", points: "Muertes T4: {t4} pts &nbsp;|&nbsp; Muertes T5: {t5} pts &nbsp;|&nbsp; Muertos: {deads} pts", pointsCombined: "Muertes T4 y T5: {t4t5} pts &nbsp;|&nbsp; Muertos: {deads} pts", dkpGoal: "Objetivo DKP = Poder Inicial", phName: "Nombre del jugador", phPower: "Poder Inicial", phT4: "Muertes T4", phT5: "Muertes T5", phT4T5: "Muertes T4 y T5", btnCombine: "Combinar Muertes T4 y T5", btnSplit: "Separar Muertes T4 y T5", phDeads: "Muertos", btnSave: "Guardar Jugador", logTitle: "💾 Registros y Progreso", noLogs: "No hay registros. ¡Ingresa datos arriba!", progress: "Progreso Actual:", history: "Historial:", clearBtn: "Borrar", shareBtn: "Discord", alertName: "Ingresa el nombre del jugador", confirmDel: "¿Estás seguro de que deseas eliminar los registros de", combineHeader: "🧮 Combinar Cuentas", combineNamePh: "Nombre Combinado (ej. Total de John)", btnCombineCreate: "Combinar Seleccionados", combineAlertSelect: "¡Selecciona al menos 2 jugadores!", combineAlertName: "¡Ingresa un nombre para la tarjeta!", combinedCardTitle: "Estadísticas Combinadas", delCombineConfirm: "¿Eliminar este grupo combinado?" },
@@ -492,7 +482,6 @@ const continents = {
   "South America": [ {v:"es", n:"🇦🇷 Argentina"}, {v:"es", n:"🇧🇴 Bolivia"}, {v:"pt", n:"🇧🇷 Brazil"}, {v:"es", n:"🇨🇱 Chile"}, {v:"es", n:"🇨🇴 Colombia"}, {v:"es", n:"🇪🇨 Ecuador"}, {v:"es", n:"🇵🇪 Peru"}, {v:"es", n:"🇺🇾 Uruguay"}, {v:"es", n:"🇻🇪 Venezuela"} ],
   Asia: [ {v:"zh", n:"🇨🇳 China"}, {v:"ja", n:"🇯🇵 Japan"}, {v:"ko", n:"🇰🇷 South Korea"}, {v:"hi", n:"🇮🇳 India"}, {v:"ar", n:"🇸🇦 Saudi Arabia"}, {v:"vi", n:"🇻🇳 Vietnam"}, {v:"th", n:"🇹🇭 Thailand"}, {v:"id", n:"🇮🇩 Indonesia"} ] 
 };
-
 Object.entries(continents).forEach(([name, countries]) => {
   const group = document.createElement("optgroup"); group.label = name;
   countries.forEach(c => { const opt = document.createElement("option"); opt.value = c.v; opt.innerText = c.n; group.appendChild(opt); });
@@ -507,13 +496,9 @@ function changeLanguage() { currentLang = langSelect.value; localStorage.setItem
 function applyTranslations() {
   const t = i18n[currentLang] || i18n['en'];
   document.getElementById("mainTitle").innerHTML = `<span class="trophy" onclick="toggleGravity()">🏆</span> ${t.title.replace(/🏆/g, '').trim()} <span class="trophy" onclick="toggleGravity()">🏆</span>`;
-  
-  // Inject Dynamic Admin Point Values into text
   let pointsStr = isCombinedMode ? t.pointsCombined : t.points;
   pointsStr = pointsStr.replace('{t4}', dkpPoints.t4).replace('{t5}', dkpPoints.t5).replace('{t4t5}', dkpPoints.t4t5).replace('{deads}', dkpPoints.deads);
   document.getElementById("pointValues").innerHTML = pointsStr;
-  
-  document.getElementById("dkpGoal").innerHTML = t.dkpGoal; 
   document.getElementById("name").placeholder = t.phName;
   document.getElementById("startingPower").placeholder = t.phPower;
   document.getElementById("t4").placeholder = t.phT4;
@@ -523,11 +508,9 @@ function applyTranslations() {
   document.getElementById("toggleModeText").innerText = isCombinedMode ? t.btnSplit : t.btnCombine;
   document.getElementById("saveBtn").innerText = t.btnSave;
   document.getElementById("logsTitle").innerText = t.logTitle;
-  
   if(document.getElementById("combineHeader")) document.getElementById("combineHeader").innerText = t.combineHeader;
   if(document.getElementById("combinedName")) document.getElementById("combinedName").placeholder = t.combineNamePh;
   if(document.getElementById("btnCombineCreate")) document.getElementById("btnCombineCreate").innerText = t.btnCombineCreate;
-  
   displaySavedData();
   renderCombinedCards();
 }
@@ -550,7 +533,6 @@ function toggleKillMode() {
 }
 
 function getNum(id) { return Number(document.getElementById(id).value.replace(/,/g, '')) || 0; }
-
 function updateLive() {
   const p = getNum("startingPower"), t4 = isCombinedMode ? 0 : getNum("t4"), t5 = isCombinedMode ? 0 : getNum("t5"), t4t5 = isCombinedMode ? getNum("t4t5") : 0, d = getNum("deads");
   const dkp = calcDKP(p, t4, t5, t4t5, d);
@@ -568,157 +550,112 @@ function updateLive() {
 
 document.getElementById("name").addEventListener("input", function() {
   const currentName = this.value.trim().toLowerCase();
-  
-  if (currentName === "king potato" || currentName === "1854") {
-      for(let i=0; i<50; i++) setTimeout(() => dropPotato(true), i * 20); 
-  }
-
-  const existingPlayer = getSafeData().find(x => x.name.toLowerCase() === currentName);
+  if (currentName === "king potato" || currentName === "1854") { for(let i=0; i<50; i++) setTimeout(() => dropPotato(true), i * 20); }
+  const existingPlayer = cloudPlayers.find(x => x.name.toLowerCase() === currentName);
   if (existingPlayer) { document.getElementById("startingPower").value = existingPlayer.startingPower.toLocaleString('en-US'); updateLive(); }
 });
 
 // ==========================================
-// DATA MANAGEMENT
+// 7. DATA WRITING & RENDERING
 // ==========================================
-function getSafeData() { try { let d = JSON.parse(localStorage.getItem("guildLog")); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
-function getCombinedData() { try { let d = JSON.parse(localStorage.getItem("guildCombinedLogs")); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
-
 function savePlayer() {
   const name = document.getElementById("name").value.trim(), p = getNum("startingPower"), t4 = isCombinedMode ? 0 : getNum("t4"), t5 = isCombinedMode ? 0 : getNum("t5"), t4t5 = isCombinedMode ? getNum("t4t5") : 0, d = getNum("deads");
   const t = i18n[currentLang] || i18n['en'];
   if (!name) return alert(t.alertName);
-  const dkp = calcDKP(p, t4, t5, t4t5, d), players = getSafeData(), currentTime = new Date().toLocaleString();
-  players.unshift({ name, startingPower: p, t4, t5, t4t5, deads: d, dkp, timestamp: currentTime, isCombined: isCombinedMode });
-  localStorage.setItem("guildLog", JSON.stringify(players));
+  
+  db.collection("guildLog").add({
+      userId: currentUserId,
+      name: name,
+      startingPower: p, t4: t4, t5: t5, t4t5: t4t5, deads: d,
+      dkp: calcDKP(p, t4, t5, t4t5, d),
+      timestampString: new Date().toLocaleString(),
+      timestampMs: Date.now(),
+      isCombined: isCombinedMode
+  });
   ["t4","t5","t4t5","deads"].forEach(id => document.getElementById(id).value = "");
-  updateLive(); displaySavedData(); updateCombineCheckboxes(); renderCombinedCards();
+  updateLive(); 
 }
 
 function clearPlayerLogs(playerName) {
   const t = i18n[currentLang] || i18n['en'];
   if (confirm(`${t.confirmDel} ${playerName}?`)) {
-    let d = getSafeData().filter(p => p.name.toLowerCase() !== playerName.toLowerCase());
-    localStorage.setItem("guildLog", JSON.stringify(d));
-    displaySavedData(); updateCombineCheckboxes(); renderCombinedCards();
+    cloudPlayers.filter(p => p.name.toLowerCase() === playerName.toLowerCase()).forEach(p => {
+        db.collection("guildLog").doc(p.id).delete();
+    });
   }
 }
 
-// ==========================================
-// 🧮 COMBINED ACCOUNTS / FARM LOGIC
-// ==========================================
 function updateCombineCheckboxes() {
-  const players = getSafeData();
-  const uniqueNames = [...new Set(players.map(p => p.name))];
-  const combinePanel = document.getElementById("combinePanel");
-  const cbContainer = document.getElementById("combineCheckboxes");
-  
-  if (uniqueNames.length < 2) { combinePanel.style.display = "none"; return; }
+  const uniqueNames = [...new Set(cloudPlayers.map(p => p.name))];
+  const combinePanel = document.getElementById("combinePanel"), cbContainer = document.getElementById("combineCheckboxes");
+  if (uniqueNames.length < 2 || !isAdmin) { combinePanel.style.display = "none"; return; }
   combinePanel.style.display = "block"; cbContainer.innerHTML = "";
-  
-  uniqueNames.forEach(name => {
-    cbContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${name}" class="combine-cb">${name}</label>`;
-  });
+  uniqueNames.forEach(name => { cbContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${name}" class="combine-cb">${name}</label>`; });
 }
 
 function createCombinedCard() {
-  const t = i18n[currentLang] || i18n['en'];
-  const nameInput = document.getElementById("combinedName");
-  const combinedName = nameInput.value.trim();
-  
-  const checkboxes = document.querySelectorAll(".combine-cb:checked");
-  const selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
-
+  const t = i18n[currentLang] || i18n['en'], nameInput = document.getElementById("combinedName"), combinedName = nameInput.value.trim();
+  const checkboxes = document.querySelectorAll(".combine-cb:checked"), selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
   if (selectedAccounts.length < 2) return alert(t.combineAlertSelect);
   if (!combinedName) return alert(t.combineAlertName);
-
-  const combinedLogs = getCombinedData();
-  combinedLogs.unshift({ id: Date.now(), name: combinedName, accounts: selectedAccounts });
-  localStorage.setItem("guildCombinedLogs", JSON.stringify(combinedLogs));
-  
+  db.collection("guildCombinedLogs").add({ name: combinedName, accounts: selectedAccounts, createdAt: Date.now() });
   nameInput.value = ""; checkboxes.forEach(cb => cb.checked = false);
-  renderCombinedCards();
 }
 
-function deleteCombinedCard(id) {
-  const t = i18n[currentLang] || i18n['en'];
-  if (confirm(t.delCombineConfirm)) {
-    let combinedLogs = getCombinedData().filter(c => c.id !== id);
-    localStorage.setItem("guildCombinedLogs", JSON.stringify(combinedLogs));
-    renderCombinedCards();
-  }
-}
+function deleteCombinedCard(id) { if (confirm(i18n[currentLang].delCombineConfirm || "Delete?")) db.collection("guildCombinedLogs").doc(id).delete(); }
 
 function shareCombinedDiscord(id) {
-  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === "PASTE_YOUR_WEBHOOK_URL_HERE") { alert("Missing Webhook URL."); return; }
-  const combinedLogs = getCombinedData(), players = getSafeData(), combo = combinedLogs.find(c => c.id === id);
+  if (!DISCORD_WEBHOOK_URL) return alert("Missing Webhook URL.");
+  const combo = cloudCombined.find(c => c.id === id);
   if(!combo) return;
-
   let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0;
   combo.accounts.forEach(acc => {
-    const latest = players.find(p => p.name.toLowerCase() === acc.toLowerCase());
+    const latest = cloudPlayers.find(p => p.name.toLowerCase() === acc.toLowerCase());
     if(latest) { totalSP += latest.startingPower || 0; totalDKP += latest.dkp || 0; totalT4 += latest.t4 || 0; totalT5 += latest.t5 || 0; totalT4T5 += latest.t4t5 || 0; totalDeads += latest.deads || 0; }
   });
-
-  const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00", accListString = combo.accounts.join(", ");
-  const payload = {
-    embeds: [{
-      title: `🏆 ${combo.name} (Combined Total)`, color: 16766720, description: `**Accounts:** ${accListString}`,
-      fields: [
-        { name: "💎 Total DKP", value: totalDKP.toLocaleString(), inline: true }, { name: "📈 Progress", value: `${percent}%`, inline: true }, { name: "⚡ Combined Power", value: totalSP.toLocaleString(), inline: false },
-        { name: "⚔️ Total T4 Kills", value: totalT4.toLocaleString(), inline: true }, { name: "⚔️ Total T5 Kills", value: totalT5.toLocaleString(), inline: true },
-        { name: "⚔️ Combined T4/T5 Mode", value: totalT4T5.toLocaleString(), inline: true }, { name: "💀 Total Deads", value: totalDeads.toLocaleString(), inline: true }
-      ],
-      footer: { text: "1854 DKP System • Farm Calculator" }, timestamp: new Date().toISOString()
-    }]
-  };
-  fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-  .then(res => { if (res.ok) alert("✅ Combined Stats sent to Discord!"); else alert("❌ Discord Error."); })
-  .catch(err => alert("❌ Network error."));
+  const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00";
+  fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+    embeds: [{ title: `🏆 ${combo.name} (Combined Total)`, color: 16766720, description: `**Accounts:** ${combo.accounts.join(", ")}`, fields: [ { name: "💎 Total DKP", value: totalDKP.toLocaleString(), inline: true }, { name: "📈 Progress", value: `${percent}%`, inline: true }, { name: "⚡ Combined Power", value: totalSP.toLocaleString(), inline: false }, { name: "⚔️ Total T4 Kills", value: totalT4.toLocaleString(), inline: true }, { name: "⚔️ Total T5 Kills", value: totalT5.toLocaleString(), inline: true }, { name: "⚔️ Combined T4/T5 Mode", value: totalT4T5.toLocaleString(), inline: true }, { name: "💀 Total Deads", value: totalDeads.toLocaleString(), inline: true } ], footer: { text: "1854 DKP System • Farm Calculator" }, timestamp: new Date().toISOString() }]
+  })}).then(res => { if(res.ok) alert("✅ Sent!"); else alert("❌ Error."); }).catch(() => alert("❌ Network error."));
 }
 
 function renderCombinedCards() {
-  const t = i18n[currentLang] || i18n['en'], combinedLogs = getCombinedData(), players = getSafeData(), container = document.getElementById("combinedDataList");
-  let html = "";
-  let enrichedCombos = combinedLogs.map(combo => {
+  if(!isAdmin) return; 
+  const t = i18n[currentLang] || i18n['en'], container = document.getElementById("combinedDataList");
+  let html = "", enrichedCombos = cloudCombined.map(combo => {
     let totalSP = 0, totalDKP = 0, totalT4 = 0, totalT5 = 0, totalT4T5 = 0, totalDeads = 0, accountTags = "";
     combo.accounts.forEach(acc => {
-      const latest = players.find(p => p.name.toLowerCase() === acc.toLowerCase());
+      const latest = cloudPlayers.find(p => p.name.toLowerCase() === acc.toLowerCase());
       accountTags += `<span class="acc-tag">${acc}</span>`;
       if(latest) { totalSP += latest.startingPower || 0; totalDKP += latest.dkp || 0; totalT4 += latest.t4 || 0; totalT5 += latest.t5 || 0; totalT4T5 += latest.t4t5 || 0; totalDeads += latest.deads || 0; }
     });
     return { combo, totalSP, totalDKP, totalT4, totalT5, totalT4T5, totalDeads, accountTags };
   });
   enrichedCombos.sort((a, b) => b.totalSP - a.totalSP);
-
   enrichedCombos.forEach((data, idx) => {
-    const { combo, totalSP, totalDKP, totalT4, totalT5, totalT4T5, totalDeads, accountTags } = data;
-    const percent = totalSP > 0 ? ((totalDKP / totalSP) * 100).toFixed(2) : "0.00", pVal = parseFloat(percent), visualWidth = Math.min(pVal, 100);
-    let potato = pVal < 10 ? "Under performing potato" : pVal < 50 ? "Safe but do better potato" : pVal < 96 ? "Met potato expectations" : pVal < 100 ? "ooooo so close potato" : "You're an amazing potato!";
-    let barStyle = pVal < 10 ? "background:#ff4d4d;" : pVal < 50 ? "background:#ffa31a;" : pVal < 96 ? "background:#f6e05e;" : pVal < 100 ? "background:#68d391;" : "";
-
+    const percent = data.totalSP > 0 ? ((data.totalDKP / data.totalSP) * 100).toFixed(2) : "0.00", pVal = parseFloat(percent), visualWidth = Math.min(pVal, 100);
     html += `
       <div class="unified-panel player-card combined-card" style="animation-delay:${idx*0.05}s">
-        <div class="player-title">🧮 ${combo.name} <span class="small" style="font-weight:normal; display:block; margin-top:4px;">${t.combinedCardTitle || 'Combined Totals'}</span></div>
-        <div style="margin-bottom:12px;">${accountTags}</div>
+        <div class="player-title">🧮 ${data.combo.name} <span class="small" style="font-weight:normal; display:block; margin-top:4px;">${t.combinedCardTitle || 'Combined Totals'}</span></div>
+        <div style="margin-bottom:12px;">${data.accountTags}</div>
         <div class="small"><strong>${t.progress}</strong> ${percent}%</div>
-        <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; ${barStyle}"></div><div class="progress-text" style="${pVal>=50&&pVal<96?'color:#1a1a1a;text-shadow:none;':''}">${potato}</div></div>
+        <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; background:#ffd700;"></div><div class="progress-text">${pVal}%</div></div>
         <div class="log-entry" style="background:transparent; border-color:#FFD700;">
-          <strong>Total DKP: ${totalDKP.toLocaleString()}</strong><br>
-          <span class="small">SP: ${totalSP.toLocaleString()} | Deads: ${totalDeads.toLocaleString()}<br>T4: ${totalT4.toLocaleString()} | T5: ${totalT5.toLocaleString()} | T4&T5: ${totalT4T5.toLocaleString()}</span>
+          <strong>Total DKP: ${data.totalDKP.toLocaleString()}</strong><br>
+          <span class="small">SP: ${data.totalSP.toLocaleString()} | Deads: ${data.totalDeads.toLocaleString()}</span>
         </div>
         <div class="card-actions">
-          <button class="btn-small-discord" onclick="shareCombinedDiscord(${combo.id})">👾 Discord</button>
-          <button class="btn-small-danger" onclick="deleteCombinedCard(${combo.id})">🗑️ ${t.clearBtn}</button>
+          <button class="btn-small-discord" onclick="shareCombinedDiscord('${data.combo.id}')">👾 Discord</button>
+          <button class="btn-small-danger" onclick="deleteCombinedCard('${data.combo.id}')">🗑️ ${t.clearBtn}</button>
         </div>
       </div>`;
   });
   container.innerHTML = html;
 }
 
-// STANDARD PLAYER RENDERS
 function sendToDiscord(playerName) {
-  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === "PASTE_YOUR_WEBHOOK_URL_HERE") { alert("Missing Webhook URL."); return; }
-  const t = i18n[currentLang] || i18n['en'], players = getSafeData(), playerEntries = players.filter(p => p.name.toLowerCase() === playerName.toLowerCase());
+  if (!DISCORD_WEBHOOK_URL) return alert("Missing Webhook URL."); 
+  const playerEntries = cloudPlayers.filter(p => p.name.toLowerCase() === playerName.toLowerCase());
   if(playerEntries.length === 0) return;
   const latest = playerEntries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00";
   let statFields = [];
@@ -728,52 +665,51 @@ function sendToDiscord(playerName) {
 
   fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
     embeds: [{ title: `🏆 ${latest.name} DKP Update`, color: 5814783, fields: [ { name: "💎 Total DKP", value: latest.dkp.toLocaleString(), inline: true }, { name: "📈 Progress", value: `${percent}%`, inline: true }, { name: "⚡ Starting Power", value: sp.toLocaleString(), inline: false }, ...statFields ], footer: { text: "1854 DKP System" }, timestamp: new Date().toISOString() }]
-  })}).then(res => { if(res.ok) alert("✅ Sent!"); else alert("❌ Error."); }).catch(() => alert("❌ Network error."));
+  })}).then(res => { if(res.ok) alert("✅ Sent!"); else alert("❌ Error."); });
 }
 
 function displaySavedData() {
-  const t = i18n[currentLang] || i18n['en']; let players = getSafeData(), html = "";
-  if (players.length === 0) { document.getElementById("savedDataList").innerHTML = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`; return; }
+  const t = i18n[currentLang] || i18n['en']; let html = "";
+  if (cloudPlayers.length === 0) { document.getElementById("savedDataList").innerHTML = `<div class="unified-panel" style="text-align:center; padding: 20px;"><span class='small'>${t.noLogs}</span></div>`; return; }
   
-  const groups = {}; players.forEach(p => { const k = p.name.toLowerCase(); if (!groups[k]) groups[k] = { name: p.name, entries: [] }; groups[k].entries.push(p); });
+  const groups = {}; cloudPlayers.forEach(p => { const k = p.name.toLowerCase(); if (!groups[k]) groups[k] = { name: p.name, entries: [] }; groups[k].entries.push(p); });
   const sortedGroups = Object.values(groups).sort((a, b) => { const spA = a.entries[0].startingPower || 0; const spB = b.entries[0].startingPower || 0; return spB - spA; });
   
   sortedGroups.forEach((g, idx) => {
     const latest = g.entries[0], sp = latest.startingPower || 0, percent = sp > 0 ? ((latest.dkp / sp) * 100).toFixed(2) : "0.00", visualWidth = Math.min(parseFloat(percent), 100);
     const pVal = parseFloat(percent);
-    let potato = pVal < 10 ? "Under performing potato" : pVal < 50 ? "Safe but do better potato" : pVal < 96 ? "Met potato expectations" : pVal < 100 ? "ooooo so close potato" : "You're an amazing potato!";
     let barStyle = pVal < 10 ? "background:#ff4d4d;" : pVal < 50 ? "background:#ffa31a;" : pVal < 96 ? "background:#f6e05e;" : pVal < 100 ? "background:#68d391;" : "";
     
     html += `<div class="unified-panel player-card" style="animation-delay:${idx*0.05}s">
         <div class="player-title">👤 ${g.name}</div>
         <div class="small"><strong>${t.progress}</strong> ${percent}%</div>
-        <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; ${barStyle}"></div><div class="progress-text" style="${pVal>=50&&pVal<96?'color:#1a1a1a;text-shadow:none;':''}">${potato}</div></div>
+        <div class="progress-bg"><div class="progress-fill ${pVal>=100?'gold-bar':''}" style="width:${visualWidth}%; ${barStyle}"></div><div class="progress-text">${pVal}%</div></div>
         <div class="small" style="font-weight:bold">${t.history}</div>`;
     
     g.entries.forEach(e => {
       let stats = e.isCombined ? `Combined: ${(e.t4t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}` : `T4: ${(e.t4||0).toLocaleString()} | T5: ${(e.t5||0).toLocaleString()} | Deads: ${(e.deads||0).toLocaleString()}`;
-      html += `<div class="log-entry"><span class="timestamp">${e.timestamp}</span><strong>DKP: ${e.dkp.toLocaleString()}</strong><br><span class="small">${stats}</span></div>`;
+      let displayTime = e.timestampString || "Recently";
+      html += `<div class="log-entry"><span class="timestamp">${displayTime}</span><strong>DKP: ${e.dkp.toLocaleString()}</strong><br><span class="small">${stats}</span></div>`;
     });
     
     const safeName = g.name.replace(/'/g,"\\'");
-    html += `
-        <div class="card-actions">
-          <button class="btn-small-discord" onclick="sendToDiscord('${safeName}')">👾 Discord</button>
-          <button class="btn-small-danger" onclick="clearPlayerLogs('${safeName}')">🗑️ ${t.clearBtn}</button>
-        </div>
-      </div>`;
+    
+    if (isAdmin) {
+        html += `
+            <div class="card-actions">
+              <button class="btn-small-discord" onclick="sendToDiscord('${safeName}')">👾 Discord</button>
+              <button class="btn-small-danger" onclick="clearPlayerLogs('${safeName}')">🗑️ ${t.clearBtn}</button>
+            </div>`;
+    }
+    
+    html += `</div>`;
   });
   document.getElementById("savedDataList").innerHTML = html;
 }
 
-// Initial Boot Sequence
 applyTranslations();
-updateCombineCheckboxes();
-renderCombinedCards();
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
 </script>
 </body>
 </html>
