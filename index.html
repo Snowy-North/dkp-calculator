@@ -248,25 +248,75 @@ button.success-btn:hover { background: #28a745; }
 .small { font-size: 13px; color: #666; transition: color 0.4s ease; }
 .acc-tag { display: inline-block; background: #eef3ff; color: #007aff; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin: 2px 4px 2px 0; font-weight: 600; }
 
-/* THE HAMMER SMASH ANIMATION */
+
+/* ==========================================
+   THE HAMMER SMASH ANIMATION
+========================================== */
+
+/* The Giant Animated Hammer */
+#giant-hammer {
+  position: fixed;
+  top: -10vh;
+  left: 50vw;
+  font-size: 180px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: bottom left; /* Pivot point at the bottom of the handle */
+  transform: rotate(60deg);
+}
+
+@keyframes swingHammer {
+  0% { opacity: 1; transform: rotate(60deg); }
+  60% { opacity: 1; transform: rotate(-25deg); } /* Impact moment */
+  100% { opacity: 0; transform: rotate(-25deg); }
+}
+
+.swinging {
+  animation: swingHammer 0.6s ease-in forwards;
+}
+
+/* The Comic Book Boom Effect */
+#impact-effect {
+  position: fixed;
+  top: 30vh;
+  left: 45vw;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 160px;
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes powEffect {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.3) rotate(-15deg); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.3) rotate(5deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.6) rotate(10deg); }
+}
+
+.pow-active {
+  animation: powEffect 0.5s ease-out forwards;
+}
+
+/* Screen Shake and Fall */
 @keyframes shakeScreen {
-  0% { transform: translate(2px, 1px) rotate(0deg); }
-  10% { transform: translate(-1px, -2px) rotate(-1deg); }
-  20% { transform: translate(-3px, 0px) rotate(1deg); }
-  30% { transform: translate(3px, 2px) rotate(0deg); }
-  40% { transform: translate(1px, -1px) rotate(1deg); }
-  50% { transform: translate(-1px, 2px) rotate(-1deg); }
-  60% { transform: translate(-3px, 1px) rotate(0deg); }
-  70% { transform: translate(3px, 1px) rotate(-1deg); }
-  80% { transform: translate(-1px, -1px) rotate(1deg); }
-  90% { transform: translate(1px, 2px) rotate(0deg); }
-  100% { transform: translate(1px, -2px) rotate(-1deg); }
+  0% { transform: translate(4px, 2px) rotate(0deg); }
+  10% { transform: translate(-2px, -4px) rotate(-1deg); }
+  20% { transform: translate(-6px, 0px) rotate(2deg); }
+  30% { transform: translate(6px, 4px) rotate(0deg); }
+  40% { transform: translate(2px, -2px) rotate(1deg); }
+  50% { transform: translate(-2px, 4px) rotate(-2deg); }
+  60% { transform: translate(-6px, 2px) rotate(0deg); }
+  70% { transform: translate(6px, 2px) rotate(-1deg); }
+  80% { transform: translate(-2px, -2px) rotate(2deg); }
+  90% { transform: translate(2px, 4px) rotate(0deg); }
+  100% { transform: translate(2px, -4px) rotate(-1deg); }
 }
 
 .smashed {
   animation: shakeScreen 0.5s ease-in-out;
   transform: translateY(200vh) rotate(25deg) !important;
-  transition: transform 1.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) 0.5s, opacity 1s ease-in 1s !important;
+  transition: transform 1.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) 0.4s, opacity 1s ease-in 1s !important;
   opacity: 0;
   pointer-events: none;
 }
@@ -302,6 +352,9 @@ body.dark-mode .acc-tag { background: #1a2639; color: #66a3ff; }
 <body>
 
 <canvas id="potato-canvas"></canvas>
+
+<div id="giant-hammer">🔨</div>
+<div id="impact-effect">💥</div>
 
 <div id="main-app" class="container">
   
@@ -395,26 +448,40 @@ window.addEventListener('resize', () => {
 
 // QUIRK 4: Anti-Gravity Function
 function toggleGravity() {
-    // Reverses gravity (default is 1).
     engine.gravity.y = engine.gravity.y > 0 ? -1 : 1;
 }
 
-// QUIRK 5: The Hammer Smash!
+// QUIRK 5: The Cinematic Hammer Smash!
 function smashScreen() {
     const app = document.getElementById("main-app");
-    app.classList.add("smashed");
+    const hammer = document.getElementById("giant-hammer");
+    const impact = document.getElementById("impact-effect");
+
+    // 1. Swing the giant hammer
+    hammer.classList.add("swinging");
     
-    // Open the trapdoor right as the screen falls
+    // 2. Wait exactly 360ms for the hammer visual to "hit" the center
     setTimeout(() => {
+        // Trigger Explosion effect
+        impact.classList.add("pow-active");
+        
+        // Shake the app and start it falling
+        app.classList.add("smashed");
+
+        // Instantly drop the floor so potatoes fall out with the app
         trapdoorOpen = true; 
         Composite.remove(world, floor); 
-    }, 500);
+    }, 360);
 
-    // Reset everything 4.5 seconds later
+    // 3. Reset everything 4.5 seconds later
     setTimeout(() => {
+        hammer.classList.remove("swinging");
+        impact.classList.remove("pow-active");
+        
         app.classList.remove("smashed");
         app.style.transform = "translateY(0) rotate(0deg)";
         app.style.opacity = "1";
+        
         Composite.add(world, floor);
         trapdoorOpen = false;
     }, 4500);
@@ -425,14 +492,13 @@ window.addEventListener('click', (e) => {
     const x = e.clientX;
     const y = e.clientY;
     
-    // Check if the click hit any potatoes
     for (let p of potatoes) {
         const dx = p.body.position.x - x;
         const dy = p.body.position.y - y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
+        // If clicked on a potato, turn to fry and bounce
         if (distance < p.fontSize) {
-            // It's a hit! Turn it into a fry and bounce it
             p.type = 'fry';
             Matter.Body.setVelocity(p.body, { 
                 x: (Math.random() - 0.5) * 15, 
@@ -443,7 +509,6 @@ window.addEventListener('click', (e) => {
 });
 
 function dropPotato(bypassLimits = false) {
-    // Garbage collection for off-screen objects
     for (let i = potatoes.length - 1; i >= 0; i--) {
         if (potatoes[i].body.position.y > window.innerHeight + 300 || potatoes[i].body.position.y < -300) { 
             Composite.remove(world, potatoes[i].body); 
@@ -454,7 +519,6 @@ function dropPotato(bypassLimits = false) {
     if (!trapdoorOpen && !bypassLimits) {
         let settledNearQuarter = 0;
         for (let p of potatoes) { 
-            // Account for inverted gravity too
             if (engine.gravity.y > 0 && p.body.position.y < window.innerHeight * 0.75 && p.body.speed < 0.5) settledNearQuarter++; 
             if (engine.gravity.y < 0 && p.body.position.y > window.innerHeight * 0.25 && p.body.speed < 0.5) settledNearQuarter++; 
         }
@@ -465,11 +529,8 @@ function dropPotato(bypassLimits = false) {
         }
     }
 
-    // Drop logic
     const radius = Math.random() * 8 + 14; 
     const x = Math.random() * (window.innerWidth - 60) + 30; 
-    
-    // Check if it drops from top or bottom depending on gravity
     const yStart = engine.gravity.y > 0 ? -50 : window.innerHeight + 50;
 
     const body = Bodies.circle(x, yStart, radius, { restitution: 0.3, friction: 0.8, density: 0.05, render: { visible: false } });
@@ -488,11 +549,8 @@ Events.on(render, 'afterRender', function() {
     
     for (let p of potatoes) {
         context.save();
-        
-        // Render fries or potatoes
         let emojiToDraw = p.type === 'fry' ? '🍟' : '🥔';
         
-        // Handle Golden Potato Glow
         if (p.isGolden && p.type === 'potato') {
             context.globalAlpha = 0.9;
             context.shadowColor = "gold";
@@ -527,7 +585,7 @@ const i18n = {
   tr: { title: "🏆 1854 DKP Sistemi 🏆", points: "T4 Leş: 2 Puan &nbsp;|&nbsp; T5 Leş: 5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", pointsCombined: "T4 & T5 Leş: 3.5 Puan &nbsp;|&nbsp; Ölü: 15 Puan", dkpGoal: "DKP Hedefi = Başlangıç Gücü", phName: "Oyuncu adı", phPower: "Başlangıç Gücü", phT4: "T4 Leş", phT5: "T5 Leş", phT4T5: "T4 & T5 Leş", btnCombine: "T4 & T5 Leşlerini Birleştir", btnSplit: "T4 & T5 Leşlerini Ayır", phDeads: "Ölü", btnSave: "Oyuncuyu Kaydet", logTitle: "💾 Kayıtlar", noLogs: "Kayıt yok. Yukarıya veri girin!", progress: "İlerleme:", history: "Geçmiş:", clearBtn: "Temizle", shareBtn: "Discord", alertName: "Oyuncu adını girin", confirmDel: "Kayıtları silmek istediğinizden emin misiniz:", combineHeader: "🧮 Hesapları Birleştir", combineNamePh: "Birleştirilmiş İsim", btnCombineCreate: "Seçilenleri Birleştir", combineAlertSelect: "En az 2 oyuncu seçin!", combineAlertName: "Bir isim girin!", combinedCardTitle: "Birleştirilmiş Toplamlar", delCombineConfirm: "Bu birleşik grubu sil?" },
   zh: { title: "🏆 1854 DKP 系统 🏆", points: "T4 击杀: 2 分 &nbsp;|&nbsp; T5 击杀: 5 分 &nbsp;|&nbsp; 阵亡: 15 分", pointsCombined: "T4 & T5 击杀: 3.5 分 &nbsp;|&nbsp; 阵亡: 15 分", dkpGoal: "DKP 目标 = 初始战力", phName: "玩家名字", phPower: "初始战力", phT4: "T4 击杀", phT5: "T5 击杀", phT4T5: "T4 & T5 击杀", btnCombine: "合并 T4 & T5 击杀", btnSplit: "分开 T4 & T5 击杀", phDeads: "阵亡", btnSave: "保存玩家", logTitle: "💾 记录与进度", noLogs: "暂无记录。在上方输入数据！", progress: "当前进度:", history: "历史记录:", clearBtn: "清除", shareBtn: "Discord", alertName: "请输入玩家名字", confirmDel: "确定要删除记录吗", combineHeader: "🧮 合并账号", combineNamePh: "合并名称", btnCombineCreate: "合并选中", combineAlertSelect: "请至少选择2个玩家！", combineAlertName: "请输入合并名称！", combinedCardTitle: "合并统计", delCombineConfirm: "确定要删除此组吗？" },
   ja: { title: "🏆 1854 DKP システム 🏆", points: "T4 撃破: 2 pt &nbsp;|&nbsp; T5 撃破: 5 pt &nbsp;|&nbsp; 戦死: 15 pt", pointsCombined: "T4 & T5 撃破: 3.5 pt &nbsp;|&nbsp; 戦死: 15 pt", dkpGoal: "DKP 目標 = 初期戦力", phName: "プレイヤー名", phPower: "初期戦力", phT4: "T4 撃破", phT5: "T5 撃破", phT4T5: "T4 & T5 撃破", btnCombine: "T4 & T5 撃破を統合", btnSplit: "T4 & T5 撃破を分割", phDeads: "戦死", btnSave: "保存", logTitle: "💾 ログ", noLogs: "ログがありません", progress: "進行状況:", history: "履歴:", clearBtn: "消去", shareBtn: "Discord", alertName: "名前を入力", confirmDel: "ログを削除しますか", combineHeader: "🧮 アカウント統合", combineNamePh: "統合名", btnCombineCreate: "選択して統合", combineAlertSelect: "2人以上選択！", combineAlertName: "名前を入力！", combinedCardTitle: "統合統計", delCombineConfirm: "このグループを削除しますか？" },
-  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", pointsCombined: "T4 & T5 킬: 3.5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", phPower: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phT4T5: "T4 & T5 킬", btnCombine: "T4 & T5 킬 통합", btnSplit: "T4 & T5 킬 분리", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "삭제", shareBtn: "Discord", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까", combineHeader: "🧮 계정 통합", combineNamePh: "통합 이름", btnCombineCreate: "선택 통합", combineAlertSelect: "최소 2명을 선택하세요!", combineAlertName: "이름을 입력하세요!", combinedCardTitle: "통합 통계", delCombineConfirm: "이 통합 그룹을 삭제하시겠습니까?" },
+  ko: { title: "🏆 1854 DKP 시스템 🏆", points: "T4 킬: 2 점 &nbsp;|&nbsp; T5 킬: 5 점 &nbsp;|&nbsp; 전사: 15 점", pointsCombined: "T4 & T5 킬: 3.5 점 &nbsp;|&nbsp; 전사: 15 점", dkpGoal: "DKP 목표 = 초기 투력", phName: "플레이어 이름", 초Power: "초기 투력", phT4: "T4 킬", phT5: "T5 킬", phT4T5: "T4 & T5 킬", btnCombine: "T4 & T5 킬 통합", btnSplit: "T4 & T5 킬 분리", phDeads: "전사", btnSave: "저장하기", logTitle: "💾 기록 및 진행 상황", noLogs: "기록이 없습니다. 데이터를 입력하세요!", progress: "현재 진행 상황:", history: "기록:", clearBtn: "삭제", shareBtn: "Discord", alertName: "플레이어 이름을 입력하세요", confirmDel: "모든 기록을 삭제하시겠습니까", combineHeader: "🧮 계정 통합", combineNamePh: "통합 이름", btnCombineCreate: "선택 통합", combineAlertSelect: "최소 2명을 선택하세요!", combineAlertName: "이름을 입력하세요!", combinedCardTitle: "통합 통계", delCombineConfirm: "이 통합 그룹을 삭제하시겠습니까?" },
   hi: { title: "🏆 1854 DKP सिस्टम 🏆", points: "T4 किल्स: 2 अंक &nbsp;|&nbsp; T5 किल्स: 5 अंक &nbsp;|&nbsp; मृत: 15 अंक", pointsCombined: "T4 और T5 किल्स: 3.5 अंक &nbsp;|&nbsp; मृत: 15 अंक", dkpGoal: "DKP लक्ष्य = प्रारंभिक शक्ति", phName: "खिलाड़ी का नाम", phPower: "प्रारंभिक शक्ति", phT4: "T4 किल्स", phT5: "T5 किल्स", phT4T5: "T4 और T5 किल्स", btnCombine: "T4 और T5 किल्स मिलाएं", btnSplit: "T4 और T5 किल्स अलग करें", phDeads: "मृत", btnSave: "खिलाड़ी सहेजें", logTitle: "💾 लॉग और प्रगति", noLogs: "कोई रिकॉर्ड नहीं। ऊपर डेटा दर्ज करें!", progress: "वर्तमान प्रगति:", history: "इतिहास:", clearBtn: "साफ़ करें", shareBtn: "Discord", alertName: "खिलाड़ी का नाम दर्ज करें", confirmDel: "क्या आप वाकई सभी लॉग हटाना चाहते हैं", combineHeader: "🧮 खाते मिलाएं", combineNamePh: "संयुक्त नाम", btnCombineCreate: "चयनित मिलाएं", combineAlertSelect: "कम से कम 2 खिलाड़ी चुनें!", combineAlertName: "एक नाम दर्ज करें!", combinedCardTitle: "संयुक्त आँकड़े", delCombineConfirm: "क्या आप इस समूह को हटाना चाहते हैं?" },
   ar: { title: "🏆 نظام 1854 DKP 🏆", points: "قتلى T4: 2 نقطة &nbsp;|&nbsp; قتلى T5: 5 نقاط &nbsp;|&nbsp; الموتى: 15 نقطة", pointsCombined: "قتلى T4 و T5: 3.5 نقاط &nbsp;|&nbsp; الموتى: 15 نقطة", dkpGoal: "هدف DKP = القوة الأولية", phName: "اسم اللاعب", phPower: "القوة الأولية", phT4: "قتلى T4", phT5: "قتلى T5", phT4T5: "قتلى T4 و T5", btnCombine: "دمج قتلى T4 و T5", btnSplit: "فصل قتلى T4 و T5", phDeads: "الموتى", btnSave: "حفظ اللاعب", logTitle: "💾 السجلات والتقدم", noLogs: "لا توجد سجلات. أدخل البيانات أعلاه!", progress: "التقدم الحالي:", history: "التاريخ:", clearBtn: "مسح", shareBtn: "Discord", alertName: "أدخل اسم اللاعب", confirmDel: "هل أنت متأكد أنك تريد حذف جميع سجلات", combineHeader: "🧮 دمج الحسابات", combineNamePh: "الاسم المدمج", btnCombineCreate: "دمج المحدد", combineAlertSelect: "الرجاء تحديد لاعبين على الأقل!", combineAlertName: "أدخل اسماً للبطاقة!", combinedCardTitle: "الإحصائيات المدمجة", delCombineConfirm: "حذف هذه المجموعة المدمجة؟" },
   vi: { title: "🏆 Hệ thống DKP 1854 🏆", points: "Giết T4: 2 điểm &nbsp;|&nbsp; Giết T5: 5 điểm &nbsp;|&nbsp; Lính chết: 15 điểm", pointsCombined: "Giết T4 & T5: 3.5 điểm &nbsp;|&nbsp; Lính chết: 15 điểm", dkpGoal: "Mục tiêu DKP = Sức mạnh ban đầu", phName: "Tên người chơi", phPower: "Sức mạnh ban đầu", phT4: "Giết T4", phT5: "Giết T5", phT4T5: "Giết T4 & T5", btnCombine: "Gộp Giết T4 & T5", btnSplit: "Tách Giết T4 & T5", phDeads: "Lính chết", btnSave: "Lưu", logTitle: "💾 Nhật ký & Tiến độ", noLogs: "Chưa có dữ liệu. Nhập ở trên!", progress: "Tiến độ:", history: "Lịch sử:", clearBtn: "Xóa", shareBtn: "Discord", alertName: "Nhập tên", confirmDel: "Bạn có chắc chắn muốn xóa nhật ký của", combineHeader: "🧮 Gộp Tài Khoản", combineNamePh: "Tên Gộp", btnCombineCreate: "Gộp Đã Chọn", combineAlertSelect: "Vui lòng chọn ít nhất 2 người chơi!", combineAlertName: "Vui lòng nhập tên!", combinedCardTitle: "Thống Kê Gộp", delCombineConfirm: "Xóa nhóm gộp này?" },
@@ -555,10 +613,7 @@ function changeLanguage() { currentLang = langSelect.value; localStorage.setItem
 
 function applyTranslations() {
   const t = i18n[currentLang] || i18n['en'];
-  
-  // Re-inject the trophies into the title during translation so they remain clickable
   document.getElementById("mainTitle").innerHTML = `<span class="trophy" onclick="toggleGravity()">🏆</span> ${t.title.replace(/🏆/g, '').trim()} <span class="trophy" onclick="toggleGravity()">🏆</span>`;
-  
   document.getElementById("pointValues").innerHTML = isCombinedMode ? t.pointsCombined : t.points;
   document.getElementById("dkpGoal").innerHTML = t.dkpGoal; 
   document.getElementById("name").placeholder = t.phName;
@@ -617,17 +672,18 @@ function updateLive() {
 document.getElementById("name").addEventListener("input", function() {
   const currentName = this.value.trim().toLowerCase();
   
-  // QUIRK 2: The Easter Egg Avalanche
+  // QUIRK 2: The Avalanche Trigger
   if (currentName === "king potato" || currentName === "1854") {
-      for(let i=0; i<50; i++) {
-          setTimeout(() => dropPotato(true), i * 20); // Spawns 50 potatoes rapidly
-      }
+      for(let i=0; i<50; i++) setTimeout(() => dropPotato(true), i * 20); 
   }
 
   const existingPlayer = getSafeData().find(x => x.name.toLowerCase() === currentName);
   if (existingPlayer) { document.getElementById("startingPower").value = existingPlayer.startingPower.toLocaleString('en-US'); updateLive(); }
 });
 
+// ==========================================
+// DATA MANAGEMENT
+// ==========================================
 function getSafeData() { try { let d = JSON.parse(localStorage.getItem("guildLog")); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
 function getCombinedData() { try { let d = JSON.parse(localStorage.getItem("guildCombinedLogs")); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
 
@@ -651,7 +707,9 @@ function clearPlayerLogs(playerName) {
   }
 }
 
-// 🧮 COMBINED ACCOUNTS LOGIC
+// ==========================================
+// 🧮 COMBINED ACCOUNTS / FARM LOGIC
+// ==========================================
 function updateCombineCheckboxes() {
   const players = getSafeData();
   const uniqueNames = [...new Set(players.map(p => p.name))];
@@ -667,8 +725,12 @@ function updateCombineCheckboxes() {
 }
 
 function createCombinedCard() {
-  const t = i18n[currentLang] || i18n['en'], nameInput = document.getElementById("combinedName"), combinedName = nameInput.value.trim();
-  const checkboxes = document.querySelectorAll(".combine-cb:checked"), selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
+  const t = i18n[currentLang] || i18n['en'];
+  const nameInput = document.getElementById("combinedName");
+  const combinedName = nameInput.value.trim();
+  
+  const checkboxes = document.querySelectorAll(".combine-cb:checked");
+  const selectedAccounts = Array.from(checkboxes).map(cb => cb.value);
 
   if (selectedAccounts.length < 2) return alert(t.combineAlertSelect);
   if (!combinedName) return alert(t.combineAlertName);
